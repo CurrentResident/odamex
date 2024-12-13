@@ -302,7 +302,7 @@ void M_Ticker(void);
 size_t P_NumPlayersInGame();
 void G_PlayerReborn (player_t &player);
 void P_KillMobj (AActor *source, AActor *target, AActor *inflictor, bool joinkill);
-void P_SetPsprite (player_t *player, int position, statenum_t stnum);
+void P_SetPsprite (player_t *player, int position, int32_t stnum);
 void P_ExplodeMissile (AActor* mo);
 void P_CalcHeight (player_t *player);
 bool P_CheckMissileSpawn (AActor* th);

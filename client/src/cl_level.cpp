@@ -239,38 +239,42 @@ void G_InitNew (const char *mapname)
 	{
 		if (wantFast)
 		{
-			for (i = 0; i < NUMSTATES; i++)
+			for (i = 0; i < ::num_state_t_types(); i++)
 			{
-				if (states[i].flags & STATEF_SKILL5FAST &&
-				    (states[i].tics != 1 || demoplayback))
-					states[i].tics >>= 1; // don't change 1->0 since it causes cycles
+				state_t* state = states[i];
+				if (state->flags & STATEF_SKILL5FAST &&
+				    (state->tics != 1 || demoplayback))
+					state->tics >>= 1; // don't change 1->0 since it causes cycles
 			}
 
-			for (i = 0; i < NUMMOBJTYPES; ++i)
+			for (i = 0; i < ::num_mobjinfo_types(); ++i)
 			{
-				if (mobjinfo[i].altspeed != NO_ALTSPEED)
+				mobjinfo_t* minfo = mobjinfo[i];
+				if (minfo->altspeed != NO_ALTSPEED)
 				{
-					int swap = mobjinfo[i].speed;
-					mobjinfo[i].speed = mobjinfo[i].altspeed;
-					mobjinfo[i].altspeed = swap;
+					int swap = minfo->speed;
+					minfo->speed = minfo->altspeed;
+					minfo->altspeed = swap;
 				}
 			}
 		}
 		else
 		{
-			for (i = 0; i < NUMSTATES; i++)
+			for (i = 0; i < ::num_state_t_types(); i++)
 			{
-				if (states[i].flags & STATEF_SKILL5FAST)
-					states[i].tics <<= 1; // don't change 1->0 since it causes cycles
+				state_t* state = states[i];
+				if (state->flags & STATEF_SKILL5FAST)
+					state->tics <<= 1; // don't change 1->0 since it causes cycles
 			}
 
-			for (i = 0; i < NUMMOBJTYPES; ++i)
+			for (i = 0; i < ::num_mobjinfo_types(); ++i)
 			{
-				if (mobjinfo[i].altspeed != NO_ALTSPEED)
+				mobjinfo_t* minfo = mobjinfo[i];
+				if (minfo->altspeed != NO_ALTSPEED)
 				{
-					int swap = mobjinfo[i].altspeed;
-					mobjinfo[i].altspeed = mobjinfo[i].speed;
-					mobjinfo[i].speed = swap;
+					int swap = minfo->altspeed;
+					minfo->altspeed = minfo->speed;
+					minfo->speed = swap;
 				}
 			}
 		}
@@ -297,7 +301,7 @@ void G_InitNew (const char *mapname)
 	viewactive = true;
 
 	D_SetupUserInfo();
-
+	
 	level.mapname = mapname;
 
 	// [AM}] WDL stats (for testing purposes)

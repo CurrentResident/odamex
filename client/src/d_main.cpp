@@ -84,6 +84,10 @@
 #include "g_horde.h"
 #include "w_ident.h"
 #include "gui_boot.h"
+#include "sprite.h"
+#include "mobjinfo.h"
+#include "state.h"
+#include "odamex_objects.h"
 
 #ifdef GEKKO
 #include "i_wii.h"
@@ -749,7 +753,7 @@ void STACK_ARGS D_Shutdown()
 
 
 void C_DoCommand(const char *cmd, uint32_t key);
-void D_Init_DEHEXTRA_Frames(void);
+void D_Init_Nightmare_Flags(void);
 
 //
 // D_DoomMain
@@ -770,8 +774,14 @@ void D_DoomMain()
 
 	// [RH] Initialize items. Still only used for the give command. :-(
 	InitItems();
+	D_Initialize_States(boomstates, ::NUMSTATES);
+    D_Initialize_Mobjinfo(doom_mobjinfo, ::NUMMOBJTYPES);
+	D_Initialize_sprnames(doom_sprnames, ::NUMSPRITES, SPR_TROO);
+	D_Initialize_SoundMap(doom_SoundMap, ARRAY_LENGTH(doom_SoundMap));
 	// Initialize all extra frames
-	D_Init_DEHEXTRA_Frames();
+	D_Init_Nightmare_Flags();
+    // Initialize the odamex specific objects
+    D_Initialize_Odamex_Objects();
 
 	M_FindResponseFile();		// [ML] 23/1/07 - Add Response file support back in
 
@@ -871,6 +881,7 @@ void D_DoomMain()
 	D_AddWadCommandLineFiles(newwadfiles);
 	D_AddDehCommandLineFiles(newpatchfiles);
 
+    // do the deh processing
 	D_LoadResourceFiles(newwadfiles, newpatchfiles);
 
 	Printf(PRINT_HIGH, "I_Init: Init hardware.\n");

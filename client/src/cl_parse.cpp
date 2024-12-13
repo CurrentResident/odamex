@@ -64,6 +64,7 @@
 #include "infomap.h"
 #include "cl_replay.h"
 #include "r_interp.h"
+#include "doom_obj_container.h"
 
 // Extern data from other files.
 
@@ -108,7 +109,7 @@ void G_PlayerReborn(player_t& p); // [Toke - todo] clean this function
 void P_DestroyButtonThinkers();
 void P_ExplodeMissile(AActor* mo);
 void P_PlayerLeavesGame(player_s* player);
-void P_SetPsprite(player_t* player, int position, statenum_t stnum);
+void P_SetPsprite(player_t* player, int position, int32_t stnum);
 void P_SetButtonTexture(line_t* line, short texture);
 
 /**
@@ -490,7 +491,7 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 	mobjtype_t type = static_cast<mobjtype_t>(msg->current().type());
 	statenum_t state = static_cast<statenum_t>(msg->current().statenum());
 
-	if (type < MT_PLAYER || type >= NUMMOBJTYPES)
+	if (type < MT_PLAYER || type >= ::num_mobjinfo_types())
 		return;
 
 	P_ClearId(netid);
@@ -613,7 +614,7 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 			mo->tics = 1;
 	}
 
-	if (state >= S_NULL && state < NUMSTATES)
+    if(state >= S_NULL && states.find(state) != states.end())
 	{
 		P_SetMobjState(mo, state);
 	}
@@ -681,7 +682,8 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 			tics = -1;
 
 		// already spawned as gibs?
-		if (!mo || mo->state - states == S_GIBS)
+		state_t* s_gibs_state = states[S_GIBS];
+		if (!mo || mo->state == s_gibs_state)
 			return;
 
 		if ((frame & FF_FRAMEMASK) >= sprites[mo->sprite].numframes)
@@ -2147,8 +2149,8 @@ static void CL_PlayerState(const odaproto::svc::PlayerState* msg)
 	{
 		if (i < msg->player().psprites_size())
 		{
-			unsigned int state = msg->player().psprites().Get(i).statenum();
-			if (state >= NUMSTATES)
+			int state = msg->player().psprites().Get(i).statenum();
+            if (states.find(state) == states.end())
 			{
 				continue;
 			}
@@ -2430,7 +2432,7 @@ static void CL_SetMobjState(const odaproto::svc::MobjState* msg)
 	AActor* mo = P_FindThingById(msg->netid());
 	int s = msg->mostate();
 
-	if (mo == NULL || s < 0 || s >= NUMSTATES)
+    if (mo == NULL || states.find(s) == states.end())
 		return;
 
 	P_SetMobjState(mo, static_cast<statenum_t>(s));

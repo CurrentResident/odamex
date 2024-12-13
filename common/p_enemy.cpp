@@ -1517,7 +1517,7 @@ void A_VileChase (AActor *actor)
 
 		vileobj = actor;
 
-		viletryradius = mobjinfo[MT_VILE].radius;
+		viletryradius = mobjinfo[MT_VILE]->radius;
 
 		for (bx=xl ; bx<=xh ; bx++)
 		{
@@ -2516,7 +2516,7 @@ void A_PainShootSkull (AActor *actor, angle_t angle)
 	// okay, there's room for another one
 	an = angle >> ANGLETOFINESHIFT;
 
-	prestep = 4*FRACUNIT + 3*(actor->info->radius + mobjinfo[MT_SKULL].radius)/2;
+	prestep = 4*FRACUNIT + 3*(actor->info->radius + mobjinfo[MT_SKULL]->radius)/2;
 
 	x = actor->x + FixedMul (prestep, finecosine[an]);
 	y = actor->y + FixedMul (prestep, finesine[an]);
@@ -3103,14 +3103,20 @@ void A_PlaySound(AActor* mo)
 	// Play the sound from the SoundMap
 
 	int sndmap = mo->state->misc1;
+	char* snd;
 
-	if (sndmap >= static_cast<int>(ARRAY_LENGTH(SoundMap)))
+	auto soundIt = SoundMap.find(sndmap);
+	if (soundIt == SoundMap.end())
 	{
 		DPrintf("Warning: Sound ID is beyond the array of the Sound Map!\n");
-		sndmap = 0;
+		snd = nullptr;
+	}
+	else
+	{
+		snd = (char*)soundIt->second;
 	}
 
-	S_Sound(mo, CHAN_BODY, SoundMap[sndmap], 1,
+	S_Sound(mo, CHAN_BODY, snd, 1,
 		        (mo->state->misc2 ? ATTN_NONE : ATTN_NORM));
 }
 
@@ -3126,8 +3132,8 @@ void A_RandomJump(AActor* mo)
 
 void A_LineEffect(AActor* mo)
 {
-	/* [AM] Not implemented...yet.
-	if (!(mo->intflags & MIF_LINEDONE))                // Unless already used up
+	/* [AM] Not implemented...yet. */
+	if (!(mo->flags & MF_LINEDONE))                // Unless already used up
 	{
 		line_t junk = *lines;                          // Fake linedef set to 1st
 		if ((junk.special = (short)mo->state->misc1))  // Linedef type
@@ -3137,15 +3143,14 @@ void A_LineEffect(AActor* mo)
 			player_t* oldplayer = mo->player;          // Remember player status
 			mo->player = &player;                      // Fake player
 			player.health = 100;                       // Alive player
-			junk.tag = (short)mo->state->misc2;        // Sector tag for linedef
-			if (!P_UseSpecialLine(mo, &junk, 0))       // Try using it
-			    P_CrossSpecialLine(&junk, 0, mo);        // Try crossing it
+			junk.id = (short)mo->state->misc2;        // Sector tag for linedef
+			if (!P_UseSpecialLine(mo, &junk, 0, mo->flags & MF2_BOSS))       // Try using it
+				P_CrossSpecialLine(&junk, 0, mo, mo->flags & MF2_BOSS); // Try crossing it
 			if (!junk.special)                         // If type cleared,
-			    mo->intflags |= MIF_LINEDONE;            // no more for this thing
+			    mo->flags |= MF_LINEDONE;            // no more for this thing
 			mo->player = oldplayer;                    // Restore player status
 		}
 	}
-	*/
 }
 
 VERSION_CONTROL (p_enemy_cpp, "$Id$")

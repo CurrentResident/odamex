@@ -251,7 +251,7 @@ bool P_HordeSpawnRecipe(hordeRecipe_t& out, const hordeDefine_t& define,
 	const hordeDefine_t::monConfig_t* config = &monster->config;
 
 	int outCount = 0;
-	const int health = ::mobjinfo[outType].spawnhealth;
+	const int health = ::mobjinfo[outType]->spawnhealth;
 
 	// Maximum health.
 	int maxHealth = -1;

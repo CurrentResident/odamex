@@ -28,7 +28,7 @@
 
 // Sound equivalences. When a patch tries to change a sound,
 // use these sound names.
-static const char* SoundMap[] = { NULL,
+static const char* doom_SoundMap[] = {NULL,
                             "weapons/pistol",
                             "weapons/shotgf",
                             "weapons/shotgr",
@@ -223,7 +223,10 @@ static const char* SoundMap[] = { NULL,
                             // ZDOOM-Specific sounds
                             "misc/teamchat"};
 
+extern DoomObjectContainer<const char*> SoundMap;
+
 void D_UndoDehPatch();
 void D_PostProcessDeh();
 bool D_DoDehPatch(const OResFile* patchfile, const int lump);
 bool CheckIfDehActorDefined(const mobjtype_t mobjtype);
+void D_Initialize_SoundMap(const char** source, int count);

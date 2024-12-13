@@ -742,12 +742,12 @@ typedef spriteframe_s spriteframe_t;
 // A sprite definition:
 //	a number of animation frames.
 //
-struct spritedef_s
+typedef struct spritedef_s
 {
 	int 			numframes;
 	spriteframe_t	*spriteframes;
-};
-typedef spritedef_s spritedef_t;
+	int32_t spritenum;
+} spritedef_t;
 
 //
 // The infamous visplane

@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id$
@@ -28,10 +28,52 @@
 // Needed for action function pointer handling.
 #include "dthinker.h"
 #include "farchive.h"
+#include "doom_obj_container.h"
 
-typedef enum
+#define NO_ALTSPEED -1
+#ifndef MELEERANGE
+#define MELEERANGE (64 * FRACUNIT)
+#endif
+
+typedef enum spritenum_e: int32_t
 {
-	SPR_TROO,
+    // ---------------odamex sprites------------------------ //
+    // [RH] Gibs
+    SPR_GIB0 = -2147483647,
+    SPR_GIB1,
+    SPR_GIB2,
+    SPR_GIB3,
+    SPR_GIB4,
+    SPR_GIB5,
+    SPR_GIB6,
+    SPR_GIB7,
+    // [RH] Dummy for unknown mapthing
+    SPR_UNKN,
+
+    //    [Toke - CTF]
+    SPR_BSOK,
+    SPR_RSOK,
+    SPR_BFLG,
+    SPR_RFLG,
+    SPR_BDWN,
+    SPR_RDWN,
+    SPR_BCAR,
+    SPR_RCAR,
+
+    SPR_GSOK,
+    SPR_GFLG,
+    SPR_GDWN,
+    SPR_GCAR,
+
+    SPR_TLGL,
+
+    SPR_WPBF,
+    SPR_WPRF,
+    SPR_WPGF,
+
+    SPR_CARE,
+    // ------------------------------------------------------ //
+	SPR_TROO = 0,
 	SPR_SHTG,
 	SPR_PUNG,
 	SPR_PISG,
@@ -192,44 +234,23 @@ typedef enum
     SPR_SP80, SPR_SP81, SPR_SP82, SPR_SP83, SPR_SP84, SPR_SP85, SPR_SP86, SPR_SP87, SPR_SP88, SPR_SP89,
     SPR_SP90, SPR_SP91, SPR_SP92, SPR_SP93, SPR_SP94, SPR_SP95, SPR_SP96, SPR_SP97, SPR_SP98, SPR_SP99,
 
-	// [RH] Gibs
-	SPR_GIB0,
-	SPR_GIB1,
-	SPR_GIB2,
-	SPR_GIB3,
-	SPR_GIB4,
-	SPR_GIB5,
-	SPR_GIB6,
-	SPR_GIB7,
-	// [RH] Dummy for unknown mapthing
-	SPR_UNKN,
-		
-	//	[Toke - CTF]
-	SPR_BSOK,
-	SPR_RSOK,
-	SPR_BFLG,
-	SPR_RFLG,
-	SPR_BDWN,
-	SPR_RDWN,
-	SPR_BCAR,
-	SPR_RCAR,
+	NUMSPRITES,
 
-	SPR_GSOK,
-	SPR_GFLG,
-	SPR_GDWN,
-	SPR_GCAR,
-	
-	SPR_TLGL,
-
-	SPR_WPBF,
-	SPR_WPRF,
-	SPR_WPGF,
-
-	SPR_CARE,
-
-	NUMSPRITES
+	EXTRASPRITES=255,
 
 } spritenum_t;
+
+// id24 spriteinfo_t struct
+typedef struct spriteinfo_s
+{
+	int32_t				spritenum;
+	int32_t				minimumfeatures; // [CMB] use for id24spec
+	const char*			sprite;
+} spriteinfo_t;
+
+extern const char* doom_sprnames[];
+extern DoomObjectContainer<const char*> sprnames; // spritenum_t
+extern size_t num_spritenum_t_types();
 
 inline auto format_as(spritenum_t eSpriteNum)
 {
@@ -239,9 +260,92 @@ inline auto format_as(spritenum_t eSpriteNum)
 inline FArchive &operator<< (FArchive &arc, spritenum_t i) { DWORD out; out = i; return arc << out; }
 inline FArchive &operator>> (FArchive &arc, spritenum_t &i) { DWORD in; arc >> in; i = (spritenum_t)in; return arc; }
 
-typedef enum
+typedef enum statenum_e: int32_t
 {
-	S_NULL,
+	//------------ odamex states -----------
+
+	// [RH] gibs
+	S_GIB0 = -2147483647,
+	S_GIB1,
+	S_GIB2,
+	S_GIB3,
+	S_GIB4,
+	S_GIB5,
+	S_GIB6,
+	S_GIB7,
+	S_AMBIENTSOUND,
+	S_UNKNOWNTHING,
+
+	// -----------------------------------
+	//	[Toke - CTF]
+
+	S_BSOK,	// Blue Flag
+	S_RSOK,	// Red Flag
+
+	// -----[ BLUE Flag Animation ]-------
+	S_BFLG,
+	S_BFLG2,
+	S_BFLG3,
+	S_BFLG4,
+	S_BFLG5,
+	S_BFLG6,
+	S_BFLG7,
+	S_BFLG8,
+
+	// -----[ RED Flag Animation  ]-------
+	S_RFLG,
+	S_RFLG2,
+	S_RFLG3,
+	S_RFLG4,
+	S_RFLG5,
+	S_RFLG6,
+	S_RFLG7,
+	S_RFLG8,
+
+	// -----------------------------------
+	S_BDWN,	// Blue Flag
+	S_RDWN,	// Red Flag
+	S_BCAR,	// Blue Flag
+	S_RCAR,	// Red Flag
+
+	// -----[ Green Flag Animation  ]-------
+
+	S_GSOK,
+	S_GFLG,
+	S_GFLG2,
+	S_GFLG3,
+	S_GFLG4,
+	S_GFLG5,
+	S_GFLG6,
+	S_GFLG7,
+	S_GFLG8,
+	S_GDWN,
+	S_GCAR,
+
+	//------------ bridge states -----------
+	S_BRIDGE1,
+	S_BRIDGE2,
+	S_BRIDGE3,
+	S_BRIDGE4,
+	S_BRIDGE5,
+
+	S_WPBF1, // Waypoint - Blue flag
+	S_WPBF2,
+	S_WPRF1, // Waypoint - Red flag
+	S_WPRF2,
+	S_WPGF1, // Waypoint - Green flag
+	S_WPGF2,
+
+	S_CARE, // Horde - Care Package
+
+	S_NOWEAPONUP,
+	S_NOWEAPONDOWN,
+	S_NOWEAPON,
+
+	//------------------------------------
+
+	//------------ doom states -----------
+	S_NULL = 0,
 	S_LIGHTDONE,
 	S_PUNCH,
 	S_PUNCHDOWN,
@@ -1209,7 +1313,7 @@ typedef enum
 	S_TECH2LAMP3,
 	S_TECH2LAMP4,
 
-	S_TNT1, // add state for invisible sprite         // phares 3/8/98 
+	S_TNT1, // add state for invisible sprite         // phares 3/8/98
 
 	S_GRENADE,   // killough 8/9/98: grenade launcher
 	S_DETONATE,  // killough 8/9/98: detonation of objects
@@ -1243,11 +1347,11 @@ typedef enum
 	S_DOGS_RAISE4,
 	S_DOGS_RAISE5,
 	S_DOGS_RAISE6,
-	
+
 	S_OLDBFG1,  // killough 7/11/98: the old BFG's 43 firing frames
 	S_OLDBFG42 = S_OLDBFG1 + 41,
 	S_OLDBFG43,
-	
+
 
 	S_PLS1BALL,      // killough 7/19/98: first plasma fireball in the beta
 	S_PLS1BALL2,
@@ -1288,85 +1392,6 @@ typedef enum
 
 	S_MUSHROOM,  // killough 10/98: mushroom explosion effect
 
-	EXTRASTATES = 1089,
-
-
-	// [RH] gibs
-	S_GIB0 = 4000,
-	S_GIB1,
-	S_GIB2,
-	S_GIB3,
-	S_GIB4,
-	S_GIB5,
-	S_GIB6,
-	S_GIB7,
-	S_AMBIENTSOUND,
-	S_UNKNOWNTHING,
-
-	// -----------------------------------
-	//	[Toke - CTF]
-
-	S_BSOK,	// Blue Flag
-	S_RSOK,	// Red Flag
-
-	// -----[ BLUE Flag Animation ]-------
-	S_BFLG,
-	S_BFLG2,
-	S_BFLG3,
-	S_BFLG4,
-	S_BFLG5,
-	S_BFLG6,
-	S_BFLG7,
-	S_BFLG8,
-
-	// -----[ RED Flag Animation  ]-------
-	S_RFLG,
-	S_RFLG2,
-	S_RFLG3,
-	S_RFLG4,
-	S_RFLG5,
-	S_RFLG6,
-	S_RFLG7,
-	S_RFLG8,
-
-	// -----------------------------------
-	S_BDWN,	// Blue Flag
-	S_RDWN,	// Red Flag
-	S_BCAR,	// Blue Flag
-	S_RCAR,	// Red Flag
-
-	S_GSOK,
-	S_GFLG,
-	S_GFLG2,
-	S_GFLG3,
-	S_GFLG4,
-	S_GFLG5,
-	S_GFLG6,
-	S_GFLG7,
-	S_GFLG8,
-	S_GDWN,
-	S_GCAR,
-
-	// -----------------------------------
-	S_BRIDGE1,
-	S_BRIDGE2,
-	S_BRIDGE3,
-	S_BRIDGE4,
-	S_BRIDGE5,
-
-	S_WPBF1, // Waypoint - Blue flag
-	S_WPBF2,
-	S_WPRF1, // Waypoint - Red flag
-	S_WPRF2,
-	S_WPGF1, // Waypoint - Green flag
-	S_WPGF2,
-
-	S_CARE, // Horde - Care Package
-
-	S_NOWEAPONUP,
-	S_NOWEAPONDOWN,
-	S_NOWEAPON,
-
 	NUMSTATES
 } statenum_t;
 
@@ -1382,13 +1407,17 @@ inline FArchive &operator>> (FArchive &arc, statenum_t &i) { DWORD in; arc >> in
 #define MAXSTATEARGS 8
 typedef long statearg_t;
 
-typedef struct
+#define STATEF_NONE 0
+#define STATEF_SKILL5FAST BIT(0) // tics halve on nightmare skill
+
+typedef struct _state_t
 {
-	spritenum_t	sprite;
+	int32_t statenum;
+	int32_t	sprite;
 	int			frame;
 	int			tics;
 	actionf_p1 	action;
-	statenum_t	nextstate;
+	int32_t	nextstate;
 	int			misc1, misc2;
 
 	// MBF21
@@ -1398,35 +1427,105 @@ typedef struct
 	DState (spritenum_t sprite, int frame, int tics, acp2, statenum_t nextstate);
 	DState (spritenum_t sprite, int frame, int tics, acp2, statenum_t nextstate, int misc1, int misc2);
 	DState (spritenum_t sprite, int frame, int tics, acp1, statenum_t nextstate);
-*/
+	*/
 } state_t;
 
-extern state_t states[NUMSTATES];
-extern const char *sprnames[NUMSPRITES+1];
-
-#define STATEF_NONE 0
-#define STATEF_SKILL5FAST BIT(0) // tics halve on nightmare skill
+extern state_t boomstates[];
+extern DoomObjectContainer<state_t*> states; // statenum_t
+extern size_t num_state_t_types(); // [CMB] TODO converted to function to just make code work for now
+extern state_t odastates[];
 
 inline FArchive &operator<< (FArchive &arc, state_t *state)
 {
 	if (state)
-		return arc << (WORD)(state - states);
+		return arc << (int32_t)(state->statenum);
 	else
-		return arc << (WORD)0xffff;
+		return arc << (int32_t)0xffffffff;
 }
 
 inline FArchive &operator>> (FArchive &arc, state_t *&state)
 {
-	WORD ofs;
+	int32_t ofs;
 	arc >> ofs;
-	if (ofs == 0xffff)
-		state = NULL;
+	DoomObjectContainer<state_t*, int32_t>::iterator it = states.find(ofs);
+	if (it != states.end())
+		state = it->second;
 	else
-		state = states + ofs;
+		state = NULL;
 	return arc;
 }
 
-typedef enum {
+typedef enum mobjtype_e: int32_t {
+
+    // -------------------- odamex things ----------------------------------- //
+
+    // [RH] Gibs (code is disabled)
+    MT_GIB0 = -2147483647,
+    MT_GIB1,
+    MT_GIB2,
+    MT_GIB3,
+    MT_GIB4,
+    MT_GIB5,
+    MT_GIB6,
+    MT_GIB7,
+    // [RH] Miscellaneous things
+    MT_UNKNOWNTHING,
+    MT_PATHNODE,
+    MT_AMBIENT,        // Ambient sounds
+    MT_TELEPORTMAN2,// Teleport destination that pays attention to its height
+    MT_CAMERA,        // Camera used for "cutscenes"
+    MT_SPARK,        // Throws out sparks when activated
+    MT_FOUNTAIN,    // Just a container for a particle fountain
+    MT_NODE,        //Added by MC:
+    MT_WATERZONE,
+    MT_SECRETTRIGGER,
+
+    // -----------------------------------
+    //    [Toke - CTF]
+    MT_BSOK,
+    MT_RSOK,
+    MT_BFLG,
+    MT_RFLG,
+    MT_BDWN,
+    MT_RDWN,
+    MT_BCAR,
+    MT_RCAR,
+    // -----------------------------------
+
+    MT_BRIDGE,
+    MT_MAPSPOT,
+    MT_MAPSPOTGRAVITY,
+    MT_BRIDGE32,
+    MT_BRIDGE16,
+    MT_BRIDGE8,
+    MT_ZDOOMBRIDGE,
+
+    // Sector Actions
+    MT_SECACTENTER,
+    MT_SECACTEXIT,
+    MT_SECACTHITFLOOR,
+    MT_SECACTHITCEIL,
+    MT_SECACTUSE,
+    MT_SECACTUSEWALL,
+    MT_SECACTEYESDIVE,
+    MT_SECACTEYESSURFACE,
+    MT_SECACTEYESBELOWC,
+    MT_SECACTEYESABOVEC,
+
+    MT_GSOK,
+    MT_GFLG,
+    MT_GDWN,
+    MT_GCAR,
+
+    MT_WPBFLAG,
+    MT_WPRFLAG,
+    MT_WPGFLAG,
+    MT_AVATAR,
+    MT_HORDESPAWN,
+    MT_CAREPACK,
+
+    // --------------------------------------------------------------------- //
+
 	MT_NULL = -1, // ferk: null/invalid mobj (zero is reserved for MT_PLAYER)
 	MT_PLAYER,
 	MT_POSSESSED,
@@ -1600,72 +1699,6 @@ typedef enum {
     MT_EXTRA90, MT_EXTRA91, MT_EXTRA92, MT_EXTRA93, MT_EXTRA94,
     MT_EXTRA95, MT_EXTRA96, MT_EXTRA97, MT_EXTRA98, MT_EXTRA99,
 
-
-	// [RH] Gibs (code is disabled)
-	MT_GIB0,
-	MT_GIB1,
-	MT_GIB2,
-	MT_GIB3,
-	MT_GIB4,
-	MT_GIB5,
-	MT_GIB6,
-	MT_GIB7,
-	// [RH] Miscellaneous things
-	MT_UNKNOWNTHING,
-	MT_PATHNODE,
-	MT_AMBIENT,		// Ambient sounds
-	MT_TELEPORTMAN2,// Teleport destination that pays attention to its height
-	MT_CAMERA,		// Camera used for "cutscenes"
-	MT_SPARK,		// Throws out sparks when activated
-	MT_FOUNTAIN,	// Just a container for a particle fountain
-	MT_NODE,		//Added by MC:
-	MT_WATERZONE,
-	MT_SECRETTRIGGER,
-
-	// -----------------------------------
-	//	[Toke - CTF]
-	MT_BSOK,
-	MT_RSOK,
-	MT_BFLG,
-	MT_RFLG,
-	MT_BDWN,
-	MT_RDWN,
-	MT_BCAR,
-	MT_RCAR,
-	// -----------------------------------
-	
-	MT_BRIDGE,	
-	MT_MAPSPOT,
-	MT_MAPSPOTGRAVITY,
-	MT_BRIDGE32,
-	MT_BRIDGE16,
-	MT_BRIDGE8,
-	MT_ZDOOMBRIDGE,
-
-	// Sector Actions
-	MT_SECACTENTER,
-	MT_SECACTEXIT,
-	MT_SECACTHITFLOOR,
-	MT_SECACTHITCEIL,
-	MT_SECACTUSE,
-	MT_SECACTUSEWALL,
-	MT_SECACTEYESDIVE,
-	MT_SECACTEYESSURFACE,
-	MT_SECACTEYESBELOWC,
-	MT_SECACTEYESABOVEC,
-
-	MT_GSOK,
-	MT_GFLG,
-	MT_GDWN,
-	MT_GCAR,
-
-	MT_WPBFLAG,
-	MT_WPRFLAG,
-	MT_WPGFLAG,
-	MT_AVATAR,
-	MT_HORDESPAWN,
-	MT_CAREPACK,
-
 	NUMMOBJTYPES
 
 } mobjtype_t;
@@ -1699,8 +1732,9 @@ typedef enum
 	SG_END
 } splash_group_t;
 
-typedef struct
+typedef struct _mobjinfo
 {
+	int32_t type;
 	int doomednum;
 	statenum_t spawnstate;
 	int spawnhealth;
@@ -1725,7 +1759,7 @@ typedef struct
 	int damage;
 	const char *activesound;	// [RH] not int
 	int flags;
-	int flags2;	
+	int flags2;
 	statenum_t raisestate;
 	int translucency;
 	const char *name;
@@ -1742,25 +1776,29 @@ typedef struct
 
 } mobjinfo_t;
 
-#define NO_ALTSPEED -1
-
-extern mobjinfo_t mobjinfo[NUMMOBJTYPES];
+// [CMB] TODO: new types and function to allocate mobjinfo for dsdhacked
+extern mobjinfo_t doom_mobjinfo[];
+extern DoomObjectContainer<mobjinfo_t*> mobjinfo; // mobjtype_t
+extern size_t num_mobjinfo_types();
+// [CMB] spawn map per id24 - the pointer is to the mobjinfo table
+extern DoomObjectContainer<mobjinfo_t*> spawn_map; // int
 
 inline FArchive &operator<< (FArchive &arc, mobjinfo_t *info)
 {
 	if (info)
-		return arc << (WORD)(info - mobjinfo);
+		return arc << (int32_t)(info->type);
 	else
-		return arc << (WORD)0xffff;
+		return arc << (int32_t)0xffffffff;
 }
 
 inline FArchive &operator>> (FArchive &arc, mobjinfo_t *&info)
 {
-	WORD ofs;
-	arc >> ofs;
-	if (ofs == 0xffff)
-		info = NULL;
-	else
-		info = mobjinfo + ofs;
-	return arc;
+    int32_t ofs;
+    arc >> ofs;
+    DoomObjectContainer<mobjinfo_t*, int32_t>::iterator it = mobjinfo.find(ofs);
+    if (it != mobjinfo.end())
+        info = it->second;
+    else
+        info = NULL;
+    return arc;
 }

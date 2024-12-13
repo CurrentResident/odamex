@@ -65,7 +65,7 @@ extern int				numspritelumps;
 extern bool				g_ValidLevel;
 
 extern int				numsprites;
-extern spritedef_t* 	sprites;
+extern std::map<int32_t, spritedef_t> sprites;
 
 extern int				numvertexes;
 extern vertex_t*		vertexes;

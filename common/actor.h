@@ -197,6 +197,7 @@ enum mobjflag_t
 
 	MF_SKULLFLY  = BIT(24),		// skull in flight
 	MF_NOTDMATCH = BIT(25),		// don't spawn in death match (key cards)
+	MF_LINEDONE = BIT(26),      // MF - A_LineEffect - activate as if player
 
 	// Player sprites in multiplayer modes are modified
 	//  using an internal color lookup table for re-indexing.
@@ -414,6 +415,7 @@ public:
 	AActor (const AActor &other);
 	AActor &operator= (const AActor &other);
 	AActor (fixed_t x, fixed_t y, fixed_t z, mobjtype_t type);
+	AActor(fixed_t x, fixed_t y, fixed_t z, mobjinfo_t* info);
 	void Destroy ();
 	~AActor ();
 
@@ -433,7 +435,7 @@ public:
     //More drawing info: to determine current sprite.
     angle_t		angle;	// orientation
 	angle_t		prevangle;
-    spritenum_t		sprite;	// used to find patch_t and flip value
+    int32_t		sprite;	// used to find patch_t and flip value
     int			frame;	// might be ORed with FF_FULLBRIGHT
 	fixed_t		pitch;
 	angle_t		prevpitch;

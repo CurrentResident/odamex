@@ -2124,6 +2124,23 @@ void P_SetupLevel (const char *lumpname, int position)
 	g_ValidLevel = true;
 }
 
+// c++11 semantics moves vector on return
+static std::vector<spriteinfo_t*> P_GetSpriteInfos ()
+{
+	std::vector<spriteinfo_t*> infos;
+	for(auto it = sprnames.begin();it != sprnames.end();++it)
+	{
+		spriteinfo_t* spriteinfo = (spriteinfo_t*) Z_Malloc(sizeof(spriteinfo_t), PU_STATIC, nullptr);
+		spriteinfo->sprite = Z_StrDup(it->second, PU_STATIC);
+		spriteinfo->spritenum = it->first;
+		infos.push_back(spriteinfo);
+	}
+	std::sort(infos.begin(), infos.end(), [](spriteinfo_t* lhs, spriteinfo_t* rhs) {
+		return lhs->spritenum < rhs->spritenum;
+	});
+	return infos;
+}
+
 //
 // P_Init
 //
@@ -2131,7 +2148,9 @@ void P_Init (void)
 {
 	P_InitSwitchList ();
 	P_InitPicAnims ();
-	R_InitSprites (sprnames);
+	// code below ASSUMES the sprites are in-order rather than passing an order down-ward
+	std::vector<spriteinfo_t*> infos = P_GetSpriteInfos ();
+	R_InitSprites(infos);
 	InitTeamInfo();
 	P_InitHorde();
 }
