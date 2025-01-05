@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id$
@@ -258,7 +258,7 @@ int S_FindSound(const char *logicalname)
 
 int S_FindSoundByLump(int lump)
 {
-	if (lump != -1) 
+	if (lump != -1)
 	{
 		for (unsigned i = 0; i < S_sfx.size(); i++)
 			if (S_sfx[i].lumpnum == lump)
@@ -341,8 +341,6 @@ void S_AddRandomSound(int owner, std::vector<int>& list)
 // Parses all loaded SNDINFO lumps.
 void S_ParseSndInfo()
 {
-	S_ClearSoundLumps();
-
 	int lump = -1;
 	while ((lump = W_FindLump("SNDINFO", lump)) != -1)
 	{

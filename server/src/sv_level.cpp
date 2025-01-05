@@ -422,38 +422,42 @@ void G_InitNew(const char *mapname)
 	{
 		if (wantFast)
 		{
-			for (i = 0; i < ::num_state_t_types(); i++)
+			for (const auto& it : states)
 			{
-				if (states[i]->flags & STATEF_SKILL5FAST &&
-				    (states[i]->tics != 1 || demoplayback))
-					states[i]->tics >>= 1; // don't change 1->0 since it causes cycles
+				state_t* state = it.second;
+				if (state->flags & STATEF_SKILL5FAST &&
+				    (state->tics != 1 || demoplayback))
+					state->tics >>= 1; // don't change 1->0 since it causes cycles
 			}
 
-			for (i = 0; i < ::num_mobjinfo_types(); ++i)
+			for (const auto& it : mobjinfo)
 			{
-				if (mobjinfo[i]->altspeed != NO_ALTSPEED)
+				mobjinfo_t* minfo = it.second;
+				if (minfo->altspeed != NO_ALTSPEED)
 				{
-					int swap = mobjinfo[i]->speed;
-					mobjinfo[i]->speed = mobjinfo[i]->altspeed;
-					mobjinfo[i]->altspeed = swap;
+					int swap = minfo->speed;
+					minfo->speed = minfo->altspeed;
+					minfo->altspeed = swap;
 				}
 			}
 		}
 		else
 		{
-			for (i = 0; i < ::num_state_t_types(); i++)
+			for (const auto& it : states)
 			{
-				if (states[i]->flags & STATEF_SKILL5FAST)
-					states[i]->tics <<= 1; // don't change 1->0 since it causes cycles
+				state_t* state = it.second;
+				if (state->flags & STATEF_SKILL5FAST)
+					state->tics <<= 1; // don't change 1->0 since it causes cycles
 			}
 
-			for (i = 0; i < ::num_mobjinfo_types(); ++i)
+			for (const auto& it : mobjinfo)
 			{
-				if (mobjinfo[i]->altspeed != NO_ALTSPEED)
+				mobjinfo_t* minfo = it.second;
+				if (minfo->altspeed != NO_ALTSPEED)
 				{
-					int swap = mobjinfo[i]->altspeed;
-					mobjinfo[i]->altspeed = mobjinfo[i]->speed;
-					mobjinfo[i]->speed = swap;
+					int swap = minfo->altspeed;
+					minfo->altspeed = minfo->speed;
+					minfo->speed = swap;
 				}
 			}
 		}

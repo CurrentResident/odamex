@@ -12,7 +12,7 @@
 #include "info.h" // doom object definitions - including enums with negative indices
 
 /*
-extern state_t odastates[]; //statenum_t 
+extern state_t odastates[]; //statenum_t
 extern mobjinfo_t odathings[]; //mobjtype_t
 extern const char* odasprnames[]; // spritenum_t
 
@@ -213,8 +213,8 @@ size_t DoomObjectContainer<ObjType, IdxType, InOrderContainer>::capacity() const
 template <typename ObjType, typename IdxType, typename InOrderContainer>
 void DoomObjectContainer<ObjType, IdxType, InOrderContainer>::clear()
 {
-	this->container.erase(container.begin(), container.end());
-	this->lookup_table.erase(lookup_table.begin(), lookup_table.end());
+	this->container.clear();
+	this->lookup_table.clear();
 }
 
 // Allocation changes

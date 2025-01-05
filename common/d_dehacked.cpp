@@ -532,19 +532,6 @@ static BOOL HandleKey(const struct Key* keys, void* structure, const char* key, 
 	return true;
 }
 
-/*
-typedef struct
-{
-	state_t backupStates[::NUMSTATES];
-	mobjinfo_t backupMobjInfo[::NUMMOBJTYPES];
-	weaponinfo_t backupWeaponInfo[NUMWEAPONS + 1];
-	const char** backupSprnames;
-	int backupMaxAmmo[NUMAMMO];
-	int backupClipAmmo[NUMAMMO];
-	DehInfo backupDeh;
-} DoomBackup;
-*/
-
 typedef struct
 {
 	DoomObjectContainer<state_t> backupStates; // boomstates
@@ -589,8 +576,8 @@ static void BackupData(void)
 	}
 
 	// states
-	doomBackup.backupStates.resize(::NUMSTATES);
 	doomBackup.backupStates.clear();
+	doomBackup.backupStates.reserve(states.size());
 	for (const std::pair<int32_t, state_t*> & it : states)
 	{
 		state_t state = *it.second;
@@ -598,8 +585,8 @@ static void BackupData(void)
 	}
 
 	// mobjinfo
-	doomBackup.backupMobjInfo.resize(::NUMMOBJTYPES);
 	doomBackup.backupMobjInfo.clear();
+	doomBackup.backupMobjInfo.reserve(mobjinfo.size());
 	for (const std::pair<int32_t, mobjinfo_t*> & it : mobjinfo)
 	{
 		mobjinfo_t mobj = *it.second;
@@ -607,8 +594,8 @@ static void BackupData(void)
 	}
 
 	// sprites
-	doomBackup.backupSprnames.resize(::NUMSPRITES);
 	doomBackup.backupSprnames.clear();
+	doomBackup.backupSprnames.reserve(sprnames.size());
 	for(const std::pair<int32_t, const char*> & it : sprnames)
 	{
 		const char* spr = strdup(it.second);
@@ -616,8 +603,8 @@ static void BackupData(void)
 	}
 
 	// sounds
-	doomBackup.backupSoundMap.resize(ARRAY_LENGTH(doom_SoundMap));
 	doomBackup.backupSoundMap.clear();
+	doomBackup.backupSoundMap.reserve(SoundMap.size());
 	for(const std::pair<int32_t, const char*> & it : SoundMap)
 	{
 		const char* sound = strdup(it.second);
@@ -653,11 +640,17 @@ void D_UndoDehPatch()
 	}
 	M_Free(OrgSprNames);
 
+
+	sprnames.clear();
+	sprnames.reserve(doomBackup.backupSprnames.size());
+	for (const auto& sprname : doomBackup.backupSprnames)
+	{
+		sprnames.insert(sprname.second, sprname.first);
+	}
 	// unsafe usage of data() here but to keep a consistent API
-	D_Initialize_sprnames(doomBackup.backupSprnames.data(), ::NUMSPRITES, SPR_TROO);
-	D_Initialize_States(doomBackup.backupStates.data(), ::NUMSTATES);
-	D_Initialize_Mobjinfo(doomBackup.backupMobjInfo.data(), ::NUMMOBJTYPES);
-	D_Initialize_SoundMap(doomBackup.backupSoundMap.data(), ARRAY_LENGTH(doom_SoundMap));
+	D_Initialize_States(doomBackup.backupStates.data(), static_cast<int>(doomBackup.backupStates.size()));
+	D_Initialize_Mobjinfo(doomBackup.backupMobjInfo.data(), static_cast<int>(doomBackup.backupMobjInfo.size()));
+	D_Initialize_SoundMap(doomBackup.backupSoundMap.data(), static_cast<int>(doomBackup.backupSoundMap.size()));
 
 	extern bool isFast;
 	isFast = false;
@@ -2052,12 +2045,11 @@ static int PatchPointer(int ptrNum)
 			int i = atoi(Line2);
 
 			// [CMB]: dsdhacked allows infinite code pointers
-			// if (i >= ::num_state_t_types())
+			// is patchpointer supported at all for dsdhacked or does it only work for the original set of states, its deprecated in bex anyway
             if (states.find(i) == states.end())
 			{
-				DPrintf("Pointer %d overruns array (max: %d wanted: %d)."
-				        "\n",
-				        ptrNum, ::num_state_t_types(), i);
+				DPrintf("Source frame %d not found while patching pointer %d.\n",
+				        i, ptrNum);
 			}
 			else
 			{
@@ -2729,43 +2721,41 @@ static CodePtr null_bexptr = {"(NULL)", NULL, 0, {0, 0, 0, 0, 0, 0, 0, 0}};
 
 void D_PostProcessDeh()
 {
-	int i, j;
+	int i;
 	const CodePtr* bexptr_match;
-	int num_state_t_types = ::num_state_t_types();
 
-	// [CMB] TODO: using ptr here is just to go from front to back - iterator is BETTER but this works
-	state_t** statesptr = states.data();
-	for (i = 0; i < num_state_t_types; i++)
+	for (const auto& it : states)
 	{
+		state_t* state = it.second;
 		bexptr_match = &null_bexptr;
 
-		for (j = 1; CodePtrs[j].func != NULL; ++j)
+		for (i = 1; CodePtrs[i].func != NULL; ++i)
 		{
-			if (statesptr[i]->action == CodePtrs[j].func)
+			if (state->action == CodePtrs[i].func)
 			{
-				bexptr_match = &CodePtrs[j];
+				bexptr_match = &CodePtrs[i];
 				break;
 			}
 		}
 
 		// ensure states don't use more mbf21 args than their
 		// action pointer expects, for future-proofing's sake
-		for (j = MAXSTATEARGS - 1; j >= bexptr_match->argcount; j--)
+		for (i = MAXSTATEARGS - 1; i >= bexptr_match->argcount; i--)
 		{
-			if (statesptr[i]->args[j] != 0)
+			if (state->args[i] != 0)
 			{
 				I_Error("Action %s on state %d expects no more than %d nonzero args (%d "
 				        "found). Check your DEHACKED.",
-				        bexptr_match->name, i, bexptr_match->argcount, j + 1);
+				        bexptr_match->name, state->statenum, bexptr_match->argcount, i + 1);
 			}
 		}
 
 		// replace unset fields with default values
-		for (; j >= 0; j--)
+		for (; i >= 0; i--)
 		{
-			if (statesptr[i]->args[j] == 0 && bexptr_match->default_args[j])
+			if (state->args[i] == 0 && bexptr_match->default_args[i])
 			{
-				statesptr[i]->args[j] = bexptr_match->default_args[j];
+				state->args[i] = bexptr_match->default_args[i];
 			}
 		}
 	}

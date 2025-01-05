@@ -239,17 +239,17 @@ void G_InitNew (const char *mapname)
 	{
 		if (wantFast)
 		{
-			for (i = 0; i < ::num_state_t_types(); i++)
+			for (const auto& it : states)
 			{
-				state_t* state = states[i];
+				state_t* state = it.second;
 				if (state->flags & STATEF_SKILL5FAST &&
 				    (state->tics != 1 || demoplayback))
 					state->tics >>= 1; // don't change 1->0 since it causes cycles
 			}
 
-			for (i = 0; i < ::num_mobjinfo_types(); ++i)
+			for (const auto& it : mobjinfo)
 			{
-				mobjinfo_t* minfo = mobjinfo[i];
+				mobjinfo_t* minfo = it.second;
 				if (minfo->altspeed != NO_ALTSPEED)
 				{
 					int swap = minfo->speed;
@@ -260,16 +260,16 @@ void G_InitNew (const char *mapname)
 		}
 		else
 		{
-			for (i = 0; i < ::num_state_t_types(); i++)
+			for (const auto& it : states)
 			{
-				state_t* state = states[i];
+				state_t* state = it.second;
 				if (state->flags & STATEF_SKILL5FAST)
 					state->tics <<= 1; // don't change 1->0 since it causes cycles
 			}
 
-			for (i = 0; i < ::num_mobjinfo_types(); ++i)
+			for (const auto& it : mobjinfo)
 			{
-				mobjinfo_t* minfo = mobjinfo[i];
+				mobjinfo_t* minfo = it.second;
 				if (minfo->altspeed != NO_ALTSPEED)
 				{
 					int swap = minfo->altspeed;
@@ -301,7 +301,7 @@ void G_InitNew (const char *mapname)
 	viewactive = true;
 
 	D_SetupUserInfo();
-	
+
 	level.mapname = mapname;
 
 	// [AM}] WDL stats (for testing purposes)

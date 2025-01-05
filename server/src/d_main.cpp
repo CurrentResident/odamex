@@ -202,6 +202,7 @@ void STACK_ARGS D_Shutdown()
 
 	// stop sound effects and music
 	S_Stop();
+	S_ClearSoundLumps();
 
 	DThinker::DestroyAllThinkers();
 

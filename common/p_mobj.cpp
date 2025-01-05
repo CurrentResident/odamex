@@ -3268,16 +3268,16 @@ BEGIN_COMMAND(cheat_mobjs)
 	const char* mobj_type = argv[1];
 	ptrdiff_t mobj_index = -1;
 
-	// [CMB] TODO: should we use an iterator here?
-	for (size_t i = 0; i < ::num_mobjinfo_types(); i++)
+	for (const auto& it : mobjinfo)
 	{
-		if (stricmp(::mobjinfo[i]->name, mobj_type) == 0)
+		if (stricmp(it.second->name, mobj_type) == 0)
 		{
-			mobj_index = i;
+			mobj_index = it.first;
 			break;
 		}
 	}
 
+	// TODO: index < 0 is valid now with dsdhacked
 	if (mobj_index < 0)
 	{
 		Printf("Unknown MT_* mobj type\n");
