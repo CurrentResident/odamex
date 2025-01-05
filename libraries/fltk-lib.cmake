@@ -1,12 +1,13 @@
 ### FLTK (dep: libpng) ###
 
 if(BUILD_CLIENT)
-  message(STATUS "Compiling FLTK...")
-
   set(_FLTK_BUILDGEN_PARAMS
     "-DOPTION_USE_SYSTEM_LIBJPEG=OFF"
+    "-DOPTION_USE_SYSTEM_LIBPNG=OFF"
+    "-DOPTION_USE_SYSTEM_ZLIB=OFF"
     "-DOPTION_PRINT_SUPPORT=OFF"
     "-DOPTION_USE_GL=OFF"
+
     "-DFLTK_BUILD_TEST=OFF")
 
   if(USE_INTERNAL_ZLIB)
@@ -27,13 +28,13 @@ if(BUILD_CLIENT)
   lib_build(LIBRARY fltk)
 
   find_package(FLTK CONFIG)
-  if(NOT TARGET fltk)
+  if(NOT TARGET fltk::fltk)
     message(FATAL_ERROR "FLTK target not found.")
   endif()
 
-  set_target_properties(fltk PROPERTIES IMPORTED_GLOBAL True)
-  set_target_properties(fltk_images PROPERTIES IMPORTED_GLOBAL True)
+  set_target_properties(fltk::fltk PROPERTIES IMPORTED_GLOBAL True)
+  set_target_properties(fltk::images PROPERTIES IMPORTED_GLOBAL True)
   if(WIN32)
-    target_link_libraries(fltk INTERFACE gdiplus)
+    target_link_libraries(fltk::fltk INTERFACE gdiplus)
   endif()
 endif()

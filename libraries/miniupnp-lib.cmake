@@ -3,8 +3,6 @@
 if(BUILD_SERVER AND NOT USE_MINIUPNP)
   message(STATUS "Skipping MiniUPnPc...")
 elseif(BUILD_SERVER AND USE_MINIUPNP AND USE_INTERNAL_MINIUPNP)
-  message(STATUS "Compiling MiniUPnPc...")
-
   # Figure out the correct library path to attach to our imported target
   set(MINIUPNPC_LIBRARY
     "${CMAKE_CURRENT_BINARY_DIR}/local/lib/${libprefix}miniupnpc${libsuffix}")

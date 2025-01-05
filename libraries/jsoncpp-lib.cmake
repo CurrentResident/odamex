@@ -1,8 +1,6 @@
 ### JsonCpp ###
 
-if(BUILD_SERVER AND USE_INTERNAL_JSONCPP)
-  message(STATUS "Compiling JsonCpp...")
-
+if((BUILD_CLIENT OR BUILD_SERVER) AND USE_INTERNAL_JSONCPP)
   lib_buildgen(
     LIBRARY jsoncpp
     PARAMS "-DJSONCPP_WITH_TESTS=OFF"

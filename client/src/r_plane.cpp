@@ -39,10 +39,10 @@
 #include "z_zone.h"
 #include "w_wad.h"
 
-
 #include "p_local.h"
 #include "r_local.h"
 #include "r_sky.h"
+#include "p_mapformat.h"
 
 #include "m_alloc.h"
 #include "i_video.h"
@@ -550,16 +550,24 @@ void R_DrawLevelPlane(visplane_t *pl)
 	// values for angle 0. This helps the texture to line up correctly.
 	if (pl->angle == 0)
 	{
-		pl_viewx = viewx;
-		pl_viewy = -viewy;
+		pl_viewx = pl->xoffs + viewx;
+		pl_viewy = pl->yoffs - viewy;
 	}
 	else
 	{
 		const fixed_t pl_cos = finecosine[pl->angle >> ANGLETOFINESHIFT];
 		const fixed_t pl_sin = finesine[pl->angle >> ANGLETOFINESHIFT];
 
-		pl_viewx = FixedMul(viewx, pl_cos) - FixedMul(viewy, pl_sin);
-		pl_viewy = -(FixedMul(viewx, pl_sin) + FixedMul(viewy, pl_cos));
+		if (map_format.getZDoom())
+		{
+			pl_viewx = pl->xoffs + FixedMul(viewx, pl_cos) - FixedMul(viewy, pl_sin);
+			pl_viewy = pl->yoffs - (FixedMul(viewx, pl_sin) + FixedMul(viewy, pl_cos));
+		}
+		else
+		{
+			pl_viewx = FixedMul(viewx + pl->xoffs, pl_cos) - FixedMul(viewy - pl->yoffs, pl_sin);
+			pl_viewy = -(FixedMul(viewx + pl->xoffs, pl_sin) + FixedMul(viewy - pl->yoffs, pl_cos));
+		}
 	}
 
 	// cache a calculation used by R_MapLevelPlane
@@ -567,8 +575,8 @@ void R_DrawLevelPlane(visplane_t *pl)
 	pl_ystepscale = FixedMul(pl_viewcos, pl->yscale) << 10;
 
 	// cache a calculation used by R_MapLevelPlane
-	pl_viewxtrans = FixedMul(pl_viewx + pl->xoffs, pl->xscale) << 10;
-	pl_viewytrans = FixedMul(pl_viewy + pl->yoffs, pl->yscale) << 10;
+	pl_viewxtrans = FixedMul(pl_viewx, pl->xscale) << 10;
+	pl_viewytrans = FixedMul(pl_viewy, pl->yscale) << 10;
 
 	basecolormap = pl->colormap;	// [RH] set basecolormap
 
