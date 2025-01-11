@@ -95,6 +95,12 @@ struct skytex_t
 	fixed_t curry;
 	int32_t texnum;
 	OLumpName texture;
+
+	// for interpolation
+	fixed_t prevx;
+	fixed_t prevy;
+	fixed_t savedx;
+	fixed_t savedy;
 };
 
 struct sky_t
@@ -119,6 +125,102 @@ struct sky_t
 
 OHashTable<OLumpName, sky_t*> skylookup;
 OHashTable<int32_t, sky_t*> skyflatlookup;
+
+/**
+ * @brief Used by OInterpolation::beginGameInterpolation
+ */
+void R_InterpolateSkyDefs(fixed_t amount)
+{
+	for (const auto& skypair : skylookup)
+	{
+		sky_t* sky = skypair.second;
+		if (!sky->active) continue;
+
+		// Perform interp for any active scrolling skies
+		skytex_t* background = &sky->background;
+		skytex_t* foreground = &sky->foreground;
+
+		if (gamestate == GS_LEVEL)
+		{
+			fixed_t newbackgroundxoffset = background->prevx +
+			                    FixedMul(amount, background->currx - background->prevx);
+			fixed_t newbackgroundyoffset = background->prevy +
+			                    FixedMul(amount, background->curry - background->prevy);
+
+			background->savedx = background->currx;
+			background->savedy = background->curry;
+
+			background->currx = newbackgroundxoffset;
+			background->curry = newbackgroundyoffset;
+
+			fixed_t newforegroundxoffset = foreground->prevx +
+			                    FixedMul(amount, foreground->currx - foreground->prevx);
+			fixed_t newforegroundyoffset = foreground->prevy +
+			                    FixedMul(amount, foreground->curry - foreground->prevy);
+
+			foreground->savedx = foreground->currx;
+			foreground->savedy = foreground->curry;
+
+			foreground->currx = newforegroundxoffset;
+			foreground->curry = newforegroundyoffset;
+		}
+		else
+		{
+			background->savedx = 0;
+			background->savedy = 0;
+
+			foreground->savedx = 0;
+			foreground->savedy = 0;
+		}
+	}
+}
+
+/**
+ * @brief Used by OInterpolation::ticInterpolation
+ */
+void R_TicSkyDefInterpolation()
+{
+	for (const auto& skypair : skylookup)
+	{
+		sky_t* sky = skypair.second;
+		if (!sky->active) continue;
+
+		skytex_t* background = &sky->background;
+		skytex_t* foreground = &sky->foreground;
+
+		if (gamestate == GS_LEVEL)
+		{
+			background->prevx = background->currx;
+			background->prevy = background->curry;
+			foreground->prevx = foreground->currx;
+			foreground->prevy = foreground->curry;
+		}
+		else
+		{
+			background->prevx = 0;
+			background->prevy = 0;
+			foreground->prevx = 0;
+			foreground->prevy = 0;
+		}
+	}
+}
+
+/**
+ * @brief Used by OInterpolation::endGameInterpolation
+ */
+void R_RestoreSkyDefs()
+{
+	for (const auto& skypair : skylookup)
+	{
+		sky_t* sky = skypair.second;
+		if (!sky->active) continue;
+
+		sky->background.currx = sky->background.savedx;
+		sky->background.curry = sky->background.savedy;
+		sky->foreground.currx = sky->foreground.savedx;
+		sky->foreground.curry = sky->foreground.savedy;
+	}
+}
 
 //
 // R_InitXToViewAngle
@@ -538,6 +640,14 @@ void R_InitSkiesForLevel()
 		skypair.second->foreground.curry = 0;
 		skypair.second->background.currx = 0;
 		skypair.second->background.curry = 0;
+		skypair.second->foreground.prevx = 0;
+		skypair.second->foreground.prevy = 0;
+		skypair.second->background.prevx = 0;
+		skypair.second->background.prevy = 0;
+		skypair.second->foreground.savedx = 0;
+		skypair.second->foreground.savedy = 0;
+		skypair.second->background.savedx = 0;
+		skypair.second->background.savedy = 0;
 	}
 }
 

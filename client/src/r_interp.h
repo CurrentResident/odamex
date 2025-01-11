@@ -54,7 +54,7 @@ public:
 	fixed_t getInterpolatedConsoleBottom(fixed_t amount);
 	// View interpolation
 	void interpolateView(player_t* player, fixed_t amount);
-	// State 
+	// State
 	void disable(); // enable gamesim interpolation
 	void enable();  // disable gamesim interpolation
 
@@ -93,8 +93,6 @@ private:
 	std::vector<fixed_fixed_uint_pair> saved_sectorfloorscrollingflat;
 
 	// Skies
-	fixed_t saved_sky1offset;
-	fixed_t prev_sky1offset;
 	fixed_t saved_sky2offset;
 	fixed_t prev_sky2offset;
 
