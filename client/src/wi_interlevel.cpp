@@ -529,12 +529,8 @@ interlevel_t* WI_GetIntermissionScript(const char* lumpname)
 	}
 
 	int tnt1 = W_GetNumForName("TNT1A0", ns_sprites);
-	// for (const auto& [map, x, y] : intermissionscript.spots) // uncomment for c++17
-	for (const auto& spot : intermissionscript.spots)           // delete for c++17
+	for (const auto& [map, x, y] : intermissionscript.spots)
 	{
-		OLumpName map = std::get<0>(spot);                      // delete for c++17
-		int x = std::get<1>(spot);                              // delete for c++17
-		int y = std::get<2>(spot);                              // delete for c++17
 		int mapnum = levels.findByName(map).levelnum;
 		splats.emplace_back(
 			std::vector<interlevelframe_t>{{intermissionscript.splat, intermissionscript.splatnum, "", -1, interlevelframe_t::DurationInf, 0, 0}},

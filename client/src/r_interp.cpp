@@ -170,9 +170,9 @@ void OInterpolation::ticGameInterpolation()
 		for (int i = 0; i < numsectors; i++)
 		{
 			if (sectors[i].ceilingdata)
-				prev_ceilingheight.push_back(std::make_pair(P_CeilingHeight(&sectors[i]), i));
+				prev_ceilingheight.emplace_back(P_CeilingHeight(&sectors[i]), i);
 			if (sectors[i].floordata)
-				prev_floorheight.push_back(std::make_pair(P_FloorHeight(&sectors[i]), i));
+				prev_floorheight.emplace_back(P_FloorHeight(&sectors[i]), i);
 		}
 
 		// Handle the scrolling interpolation
@@ -241,7 +241,7 @@ void OInterpolation::interpolateCeilings(fixed_t amount)
 		fixed_t old_value = ceiling_it->first;
 		fixed_t cur_value = P_CeilingHeight(sector);
 
-		saved_ceilingheight.push_back(std::make_pair(cur_value, secnum));
+		saved_ceilingheight.emplace_back(cur_value, secnum);
 
 		fixed_t new_value = old_value + FixedMul(cur_value - old_value, amount);
 		P_SetCeilingHeight(sector, new_value);
@@ -283,7 +283,7 @@ void OInterpolation::interpolateFloors(fixed_t amount)
 		fixed_t old_value = floor_it->first;
 		fixed_t cur_value = P_FloorHeight(sector);
 
-		saved_floorheight.push_back(std::make_pair(cur_value, secnum));
+		saved_floorheight.emplace_back(cur_value, secnum);
 
 		fixed_t new_value = old_value + FixedMul(cur_value - old_value, amount);
 		P_SetFloorHeight(sector, new_value);

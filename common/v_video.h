@@ -124,6 +124,7 @@ public:
 	inline void DrawTextStretchedLuc (int normalcolor, int x, int y, const char *string, int scalex, int scaley) const;
 
 	// Patch drawing functions
+	void DrawPatchIndirectFlipped (const patch_t *patch, int x, int y) const;
 	void DrawPatchFlipped (const patch_t *patch, int x, int y) const;
 
 	inline void DrawPatch (const patch_t *patch, int x, int y) const;

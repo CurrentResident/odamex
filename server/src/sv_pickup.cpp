@@ -74,7 +74,7 @@ bool Pickup_DistributePlayers(size_t num_players, std::string &error) {
 
 	// Jumble up our eligible players and cut the number of
 	// eligible players to the passed number.
-	std::random_shuffle(eligible.begin(), eligible.end());
+	std::shuffle(eligible.begin(), eligible.end(), rng);
 	eligible.resize(num_players);
 
 	// Rip through our eligible vector, forcing players in the vector
@@ -89,7 +89,7 @@ bool Pickup_DistributePlayers(size_t num_players, std::string &error) {
 		SV_SetPlayerSpec(player, false, true);
 
 		// Is the last player an odd-one-out?  Randomize the team he is put on.
-		// Do not randomize if num_players = teamCount for randcaps (3 way ctf) 
+		// Do not randomize if num_players = teamCount for randcaps (3 way ctf)
 		if (static_cast<int>(num_players) != teamCount && (eligible.size() % 2) == 1 && i == (eligible.size() - 1))
 			dest_team = (team_t)(P_Random() % teamCount);
 

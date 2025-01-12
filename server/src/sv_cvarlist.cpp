@@ -89,16 +89,19 @@ CVAR(			sv_endmapscript, "",  "Script to run at end of each map (e.g. to choose 
 CVAR(			sv_startmapscript, "", "Script to run at start of each map (e.g. to override cvars)",
 				CVARTYPE_STRING, CVAR_SERVERARCHIVE | CVAR_NOENABLEDISABLE)
 
+CVAR(			sv_curpwad, "", "Set to the first pwad filename passed to the wad command (for scripting)",
+				CVARTYPE_STRING, CVAR_NOSET | CVAR_NOENABLEDISABLE)
+
 CVAR(			sv_curmap, "", "Set to the last played map",
 				CVARTYPE_STRING, CVAR_NOSET | CVAR_NOENABLEDISABLE)
 
 CVAR(			sv_nextmap, "", "Set to the next map to be played",
 				CVARTYPE_STRING, CVAR_NOSET | CVAR_NOENABLEDISABLE)
 
-CVAR(			sv_loopepisode, "0", "Determines whether Doom 1 episodes carry over",
+CVAR_FUNC_DECL(	sv_shufflemaplist, "0", "Randomly shuffle the maplist",
 				CVARTYPE_BOOL, CVAR_SERVERARCHIVE)
 
-CVAR_FUNC_DECL(	sv_shufflemaplist, "0", "Randomly shuffle the maplist",
+CVAR(			sv_mapliststayonwad, "0", "Stay on the current wad when changing maps, proceed to next maplist entry when the wad is finished",
 				CVARTYPE_BOOL, CVAR_SERVERARCHIVE)
 
 // Network settings

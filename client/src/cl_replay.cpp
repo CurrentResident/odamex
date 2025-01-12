@@ -102,7 +102,7 @@ bool ClientReplay::wasReplayed()
 //
 void ClientReplay::recordReplayItem(int tic, const uint32_t netId)
 {
-	itemReplayStack.push_back(std::make_pair(tic, netId));
+	itemReplayStack.emplace_back(tic, netId);
 }
 
 //
@@ -131,7 +131,7 @@ void ClientReplay::removeReplayItem(const std::pair<int, uint32_t> replayItem)
 // ClientReplay::itemReplayThink
 //
 // Runs logic for the current tic
-// 
+//
 void ClientReplay::itemReplay()
 {
 	if (itemReplayStack.empty() || !consoleplayer().mo || !enabled() ||

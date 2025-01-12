@@ -65,7 +65,7 @@ bool MaplistCache::query(maplist_qrows_t &result) {
 	// Return everything
 	result.reserve(this->maplist.size());
 	for (size_t i = 0;i < maplist.size();i++) {
-		result.push_back(std::pair<size_t, maplist_entry_t*>(i, &(this->maplist[i])));
+		result.emplace_back(i, &(this->maplist[i]));
 	}
 	return true;
 }
@@ -103,7 +103,7 @@ bool MaplistCache::query(const std::vector<std::string> &query,
 			}
 			index -= 1;
 
-			result.push_back(std::pair<size_t, maplist_entry_t*>(index, &(this->maplist[index])));
+			result.emplace_back(index, &(this->maplist[index]));
 			return true;
 		}
 	}
@@ -116,7 +116,7 @@ bool MaplistCache::query(const std::vector<std::string> &query,
 				bool f_map = CheckWildcards(pattern.c_str(), this->maplist[i].map.c_str());
 				bool f_wad = CheckWildcards(pattern.c_str(), JoinStrings(this->maplist[i].wads).c_str());
 				if (f_map || f_wad) {
-					result.push_back(std::pair<size_t, maplist_entry_t*>(i, &(this->maplist[i])));
+					result.emplace_back(i, &(this->maplist[i]));
 				}
 			}
 		} else {
@@ -381,16 +381,17 @@ void CMD_MaplistCallback(const maplist_qrows_t &result) {
 	size_t this_index = 0, next_index = 0;
 	bool show_this_map = MaplistCache::instance().get_this_index(this_index);
 	MaplistCache::instance().get_next_index(next_index);
-	for (maplist_qrows_t::const_iterator it = result.begin();it != result.end();++it) {
+	for (const auto& [index, entry] : result) {
+		const auto& [map, lastmap, wads] = *entry;
 		char flag = ' ';
-		if (show_this_map && it->first == this_index) {
+		if (show_this_map && index == this_index) {
 			flag = '*';
-		} else if (it->first == next_index) {
+		} else if (index == next_index) {
 			flag = '+';
 		}
-		Printf(PRINT_HIGH, "%c%lu. %s %s\n", flag, it->first + 1,
-			   JoinStrings(it->second->wads, " ").c_str(),
-			   it->second->map.c_str());
+		Printf(PRINT_HIGH, "%c%lu. %s %s%s\n", flag, index + 1,
+			   JoinStrings(wads, " ").c_str(), map.c_str(),
+			   lastmap.empty() ? "" : fmt::sprintf(" lastmap=%s", lastmap));
 	}
 }
 

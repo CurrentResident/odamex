@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id$
@@ -18,7 +18,7 @@
 //
 // DESCRIPTION:
 //	Random number LUT.
-//    
+//
 //-----------------------------------------------------------------------------
 
 
@@ -26,6 +26,9 @@
 
 #include "actor.h"
 
+#include <random>
+
+inline std::mt19937 rng(time(NULL));
 
 typedef enum {
 	pr_misc,					// 0
@@ -130,10 +133,10 @@ void M_ClearRandom(void);
 
 /**
  * @brief Get a weighted random number from a vector.
- * 
+ *
  * @detail Upside of this algorithm is that it requires no preperation and
  *         only requires a single complete iteration of the vector.
- * 
+ *
  * @see https://softwareengineering.stackexchange.com/a/150642
  */
 template <typename T>

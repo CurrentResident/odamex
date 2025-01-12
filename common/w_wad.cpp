@@ -144,7 +144,7 @@ void uppercopy (char *to, const char *from)
 
 /**
  * @brief Calculate a CRC32 hash from a file.
- * 
+ *
  * @param filename Filename of file to hash.
  * @return Output hash, or blank if file could not be found.
  */
@@ -325,7 +325,7 @@ void AddFile(const OResFile& file)
 		std::string lumpname;
 		M_ExtractFileBase(filename, lumpname);
 
-		fileinfo = new filelump_t[1];	
+		fileinfo = new filelump_t[1];
 		fileinfo->filepos = 0;
 		fileinfo->size = M_FileLength(handle);
 		std::transform(lumpname.c_str(), lumpname.c_str() + 8, fileinfo->name, toupper);
@@ -365,7 +365,7 @@ void AddFile(const OResFile& file)
 			std::transform(fileinfo[i].name, fileinfo[i].name + 8, fileinfo[i].name, toupper);
 		}
 
-		newlumps = header.numlumps;	
+		newlumps = header.numlumps;
 		Printf(PRINT_HIGH, " (%d lumps)\n", header.numlumps);
 	}
 
@@ -647,7 +647,7 @@ int W_CheckNumForName(const char *name, int namespc)
 	// It has been tuned so that the average chain length never exceeds 2.
 
 	// proff 2001/09/07 - check numlumps==0, this happens when called before WAD loaded
-	register int i = (numlumps==0)?(-1):(lumpinfo[W_LumpNameHash(name) % numlumps].index);
+	int i = (numlumps==0)?(-1):(lumpinfo[W_LumpNameHash(name) % numlumps].index);
 
 	// We search along the chain until end, looking for case-insensitive
 	// matches which also match a namespace tag. Separate hash tables are
@@ -691,7 +691,7 @@ int W_GetNumForName(OLumpName& name, int namespc)
 
 /**
  * @brief Return the name of a lump number.
- * 
+ *
  * @detail You likely only need this for debugging, since a name can be
  *         ambiguous.
  */

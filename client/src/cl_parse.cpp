@@ -1198,7 +1198,7 @@ static void CL_DamagePlayer(const odaproto::svc::DamagePlayer* msg)
 			p->health = 1;
 			p->mo->health = 1;
 		}
-		else 
+		else
 			p->health = 0;
 	}
 
@@ -2262,7 +2262,7 @@ static void CL_ResetMap(const odaproto::svc::ResetMap* msg)
 	P_DestroyScrollerThinkers();
 
 	P_DestroyLightThinkers();
-	
+
 	// You don't get to keep cards.  This isn't communicated anywhere else.
 	if (sv_gametype == GM_COOP)
 		P_ClearPlayerCards(consoleplayer());
@@ -2735,9 +2735,11 @@ static void CL_MaplistUpdate(const odaproto::svc::MaplistUpdate* msg)
 	{
 		const odaproto::svc::MaplistUpdate::Row& row = msg->maplist().Get(i);
 		const std::string& map = indexer.getString(row.map());
+		const std::string& lastmap = indexer.getString(row.lastmap());
 
 		maplist_entry_t maplist_entry;
 		maplist_entry.map = map;
+		maplist_entry.lastmap = lastmap;
 		for (int j = 0; j < row.wads_size(); j++)
 		{
 			const std::string& wad = indexer.getString(row.wads().Get(j));
@@ -2965,8 +2967,7 @@ parseError_e CL_ParseCommand()
 	}
 
 	// Delete pointer on scope exit.
-	// [AM] Should be unique_ptr as of C++11.
-	std::auto_ptr<google::protobuf::Message> autoMSG(msg);
+	std::unique_ptr<google::protobuf::Message> autoMSG(msg);
 
 	// Run the proper message function.
 	switch (cmd)

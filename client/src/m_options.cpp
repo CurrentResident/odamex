@@ -1216,7 +1216,7 @@ static void BuildModesList(int hiwidth, int hiheight)
 	const IVideoModeList* videomodelist = I_GetVideoCapabilities()->getSupportedVideoModes();
 	for (IVideoModeList::const_iterator it = videomodelist->begin(); it != videomodelist->end(); ++it)
 		if (it->isFullScreen() == fullscreen)
-			menumodelist.push_back(std::make_pair(it->width, it->height));
+			menumodelist.emplace_back(it->width, it->height);
 	menumodelist.erase(std::unique(menumodelist.begin(), menumodelist.end()), menumodelist.end());
 
 	MenuModeList::const_iterator mode_it = menumodelist.begin();

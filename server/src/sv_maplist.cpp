@@ -33,6 +33,7 @@
 #include "cmdlib.h"
 #include "i_system.h"
 #include "m_fileio.h"
+#include "m_random.h"
 #include "sv_main.h"
 #include "svc_message.h"
 #include "w_wad.h"
@@ -51,7 +52,7 @@ void Maplist::shuffle() {
 	for (size_t i = 0;i < maplist.size();++i) {
 		this->s_maplist.push_back(i);
 	}
-	std::random_shuffle(this->s_maplist.begin(), this->s_maplist.end());
+	std::shuffle(this->s_maplist.begin(), this->s_maplist.end(), rng);
 
 	// Update s_index based on our newly-shuffled maplist.
 	this->update_shuffle_index();
@@ -130,6 +131,7 @@ bool Maplist::insert(const size_t &position, maplist_entry_t &maplist_entry) {
 
 	// capitalize the map names
 	maplist_entry.map = StdStringToUpper(maplist_entry.map);
+	maplist_entry.lastmap = StdStringToUpper(maplist_entry.lastmap);
 
 	// Puts the map into its proper place
 	this->maplist.insert(this->maplist.begin() + position, maplist_entry);
@@ -321,7 +323,7 @@ bool Maplist::query(std::vector<std::pair<size_t, maplist_entry_t*> > &result) {
 	// Return everything
 	result.reserve(this->maplist.size());
 	for (size_t i = 0;i < maplist.size();i++) {
-		result.push_back(std::pair<size_t, maplist_entry_t*>(i, &(this->maplist[i])));
+		result.emplace_back(i, &(this->maplist[i]));
 	}
 	return true;
 }
@@ -359,7 +361,7 @@ bool Maplist::query(const std::vector<std::string> &query,
 				return false;
 			}
 			index -= 1;
-			result.push_back(std::pair<size_t, maplist_entry_t*>(index, &(this->maplist[index])));
+			result.emplace_back(index, &(this->maplist[index]));
 			return true;
 		}
 	}
@@ -372,7 +374,7 @@ bool Maplist::query(const std::vector<std::string> &query,
 				bool f_map = CheckWildcards(pattern.c_str(), this->maplist[i].map.c_str());
 				bool f_wad = CheckWildcards(pattern.c_str(), JoinStrings(this->maplist[i].wads).c_str());
 				if (f_map || f_wad) {
-					result.push_back(std::pair<size_t, maplist_entry_t*>(i, &(this->maplist[i])));
+					result.emplace_back(i, &(this->maplist[i]));
 				}
 			}
 		} else {
@@ -653,21 +655,30 @@ BEGIN_COMMAND (maplist) {
 	size_t this_index, next_index;
 	bool show_this_map = Maplist::instance().get_this_index(this_index);
 	Maplist::instance().get_next_index(next_index);
-	for (std::vector<std::pair<size_t, maplist_entry_t*> >::iterator it = result.begin();
-		 it != result.end();++it) {
+	for (const auto& [index, entry] : result) {
+		const auto& [map, lastmap, wads] = *entry;
 		char flag = ' ';
-		if (show_this_map && it->first == this_index) {
+		if (show_this_map && index == this_index) {
 			flag = '*';
-		} else if (it->first == next_index) {
+		} else if (index == next_index) {
 			flag = '+';
 		}
-		Printf(PRINT_HIGH, "%c%lu. %s %s\n", flag, it->first + 1,
-			   JoinStrings(it->second->wads, " ").c_str(),
-			   it->second->map.c_str());
+		Printf(PRINT_HIGH, "%c%lu. %s %s%s\n", flag, index + 1,
+			   JoinStrings(wads, " ").c_str(), map.c_str(),
+			   lastmap.empty() ? "" : fmt::sprintf(" lastmap=%s", lastmap));
 	}
 } END_COMMAND (maplist)
 
 BEGIN_COMMAND (addmap) {
+	std::string lastmap = argv[argc-1];
+	if (lastmap.rfind("lastmap=", 0) == 0)
+	{
+		lastmap = lastmap.substr(8);
+		argc--;
+	}
+	else
+		lastmap = "";
+
 	if (argc < 2) {
 		Printf(PRINT_HIGH, "Usage: addmap <map lump> [wad name] [...]\n");
 		Printf(PRINT_HIGH, "If you don't specify a wad name, it'll load the IWAD by default.\n");
@@ -679,6 +690,7 @@ BEGIN_COMMAND (addmap) {
 	// Grab the map lump.
 	maplist_entry_t maplist_entry;
 	maplist_entry.map = arguments[0];
+	maplist_entry.lastmap = lastmap;
 
 	// If we specified any WAD files, grab them too.
 	if (arguments.size() > 1) {
@@ -696,6 +708,15 @@ BEGIN_COMMAND (addmap) {
 } END_COMMAND(addmap)
 
 BEGIN_COMMAND(insertmap) {
+	std::string lastmap = argv[argc-1];
+	if (lastmap.rfind("lastmap=", 0) == 0)
+	{
+		lastmap = lastmap.substr(8);
+		argc--;
+	}
+	else
+		lastmap = "";
+
 	if (argc < 3) {
 		Printf(PRINT_HIGH, "Usage: insertmap <maplist position> <map lump> [wad name] [...]\n");
 	}
@@ -714,6 +735,7 @@ BEGIN_COMMAND(insertmap) {
 	// Grab the map lump.
 	maplist_entry_t maplist_entry;
 	maplist_entry.map = arguments[1];
+	maplist_entry.lastmap = lastmap;
 
 	// If we specified any WAD files, grab them too.
 	if (arguments.size() > 2) {

@@ -1538,7 +1538,7 @@ void C_NewModeAdjust()
 {
 	int surface_width = I_GetSurfaceWidth(), surface_height = I_GetSurfaceHeight();
 
-	ConScale = con_scaletext ? con_scaletext : MAX(1, static_cast<int>(floor(surface_height / 450.0f + 0.5f)));
+	ConScale = con_scaletext ? con_scaletext : MAX(1, static_cast<int>(std::round(surface_height / 450.0f)));
 	ConCharSize = 8 * ConScale;
 
 	if (I_VideoInitialized())

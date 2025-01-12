@@ -12,7 +12,7 @@ endfunction()
 function(odamex_target_settings _TARGET)
   set(ODAMEX_DLLS "")
 
-  set_property(TARGET "${_TARGET}" PROPERTY CXX_STANDARD 14)
+  set_property(TARGET "${_TARGET}" PROPERTY CXX_STANDARD 17)
 
   if(HAS_LTO)
     set_property(TARGET "${_TARGET}"

@@ -131,9 +131,8 @@ OHashTable<int32_t, sky_t*> skyflatlookup;
  */
 void R_InterpolateSkyDefs(fixed_t amount)
 {
-	for (const auto& skypair : skylookup)
+	for (const auto& [_, sky] : skylookup)
 	{
-		sky_t* sky = skypair.second;
 		if (!sky->active) continue;
 
 		// Perform interp for any active scrolling skies
@@ -180,9 +179,8 @@ void R_InterpolateSkyDefs(fixed_t amount)
  */
 void R_TicSkyDefInterpolation()
 {
-	for (const auto& skypair : skylookup)
+	for (const auto& [_, sky] : skylookup)
 	{
-		sky_t* sky = skypair.second;
 		if (!sky->active) continue;
 
 		skytex_t* background = &sky->background;
@@ -210,9 +208,8 @@ void R_TicSkyDefInterpolation()
  */
 void R_RestoreSkyDefs()
 {
-	for (const auto& skypair : skylookup)
+	for (const auto& [_, sky] : skylookup)
 	{
-		sky_t* sky = skypair.second;
 		if (!sky->active) continue;
 
 		sky->background.currx = sky->background.savedx;
@@ -585,11 +582,11 @@ static void R_UpdateSky(sky_t* sky)
 
 void R_UpdateSkies()
 {
-	for(auto& skypair : skylookup)
+	for(auto& [_, sky] : skylookup)
 	{
-		if(skypair.second->active)
+		if(sky->active)
 		{
-			R_UpdateSky(skypair.second);
+			R_UpdateSky(sky);
 		}
 	}
 }
@@ -613,16 +610,16 @@ void R_ActivateSky(sky_t* sky)
 
 void R_ActivateSkies(const byte* hitlist, std::vector<int>& skytextures)
 {
-	for(auto& skypair : skyflatlookup)
+	for(auto& [flat, sky] : skyflatlookup)
 	{
-		if (hitlist[skypair.first])
-			R_ActivateSky(skypair.second);
+		if (hitlist[flat])
+			R_ActivateSky(sky);
 
-		skytextures.push_back(skypair.second->background.texnum);
-		if (skypair.second->type == skytype_t::DOUBLESKY)
+		skytextures.push_back(sky->background.texnum);
+		if (sky->type == skytype_t::DOUBLESKY)
 		{
-			skytextures.push_back(skypair.second->foreground.texnum);
-			auto foreskypair = skylookup.find(skypair.second->foreground.texture);
+			skytextures.push_back(sky->foreground.texnum);
+			auto foreskypair = skylookup.find(sky->foreground.texture);
 			if (foreskypair != skylookup.end())
 			{
 				R_ActivateSky(foreskypair->second);
@@ -633,21 +630,21 @@ void R_ActivateSkies(const byte* hitlist, std::vector<int>& skytextures)
 
 void R_InitSkiesForLevel()
 {
-	for(auto& skypair : skylookup)
+	for(auto& [_, sky] : skylookup)
 	{
-		skypair.second->active = false;
-		skypair.second->foreground.currx = 0;
-		skypair.second->foreground.curry = 0;
-		skypair.second->background.currx = 0;
-		skypair.second->background.curry = 0;
-		skypair.second->foreground.prevx = 0;
-		skypair.second->foreground.prevy = 0;
-		skypair.second->background.prevx = 0;
-		skypair.second->background.prevy = 0;
-		skypair.second->foreground.savedx = 0;
-		skypair.second->foreground.savedy = 0;
-		skypair.second->background.savedx = 0;
-		skypair.second->background.savedy = 0;
+		sky->active = false;
+		sky->foreground.currx = 0;
+		sky->foreground.curry = 0;
+		sky->background.currx = 0;
+		sky->background.curry = 0;
+		sky->foreground.prevx = 0;
+		sky->foreground.prevy = 0;
+		sky->background.prevx = 0;
+		sky->background.prevy = 0;
+		sky->foreground.savedx = 0;
+		sky->foreground.savedy = 0;
+		sky->background.savedx = 0;
+		sky->background.savedy = 0;
 	}
 }
 

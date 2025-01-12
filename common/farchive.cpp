@@ -313,7 +313,7 @@ void FLZOFile::Implode()
 
 	delete [] compressed;
     compressed = NULL;
-    
+
 	M_Free(oldbuf);
 }
 
@@ -344,7 +344,7 @@ void FLZOFile::Explode()
 
 		if (FreeOnExplode())
 		{
-			M_Free(m_Buffer);			
+			M_Free(m_Buffer);
 		}
 
 		m_Buffer = expanded_buffer;
@@ -492,7 +492,7 @@ size_t FLZOMemFile::Length() const
 void FLZOMemFile::WriteToBuffer(void* buf, size_t length) const
 {
 	length = length < (m_BufferSize + 8) ? length : (m_BufferSize + 8);
-	
+
 	if (m_ImplodedBuffer)
 		memcpy(buf, m_ImplodedBuffer, length);
 	else
@@ -544,13 +544,13 @@ FArchive::FArchive(FFile& file, uint32_t flags)
 FArchive::~FArchive()
 {
 	Close();
-	
+
 	delete [] m_TypeMap;
     m_TypeMap = NULL;
-    
+
 	if (m_ObjectMap)
 	{
-		M_Free(m_ObjectMap);	
+		M_Free(m_ObjectMap);
 	}
 }
 
@@ -863,7 +863,7 @@ FArchive &FArchive::ReadObject (DObject* &obj, TypeInfo *wanttype)
 			tempobj->Destroy ();
 			break;
 		}
-		/* fallthrough */
+		[[fallthrough]];
 	case NEW_CLS_OBJ:
 		type = ReadClass (wanttype);
 		obj = type->CreateNew ();
@@ -885,7 +885,7 @@ FArchive &FArchive::ReadObject (DObject* &obj, TypeInfo *wanttype)
 			tempobj->Destroy ();
 			break;
 		}
-		/* fallthrough */
+		[[fallthrough]];
 	case NEW_OBJ:
 		type = ReadStoredClass (wanttype);
 		obj = type->CreateNew ();
