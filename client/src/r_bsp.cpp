@@ -553,7 +553,7 @@ void R_AddLine (seg_t *line)
 }
 
 
-static const int checkcoord[12][4] = // killough -- static const
+static constexpr int checkcoord[12][4] = // killough -- static const
 {
 	{3,0,2,1},
 	{3,0,2,0},

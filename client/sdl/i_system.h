@@ -92,7 +92,7 @@ void STACK_ARGS I_Quit (void);
 
 void I_BaseWarning(const std::string& errortext);
 void I_BaseError(const std::string& errortext);
-NORETURN void I_BaseFatalError(const std::string& errortext);
+[[noreturn]] void I_BaseFatalError(const std::string& errortext);
 
 template <typename... ARGS>
 void I_Warning(const fmt::string_view format, const ARGS&... args)

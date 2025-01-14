@@ -37,7 +37,7 @@
 #include "i_video_sdl12.h"
 #elif defined(SDL20)
 #include "i_video_sdl20.h"
-#else 
+#else
 #error "no video subsystem selected"
 #endif
 
@@ -125,7 +125,7 @@ IWindowSurface::IWindowSurface(uint16_t width, uint16_t height, const PixelForma
 	mPalette(V_GetDefaultPalette()->colors), mPixelFormat(*format),
 	mWidth(width), mHeight(height), mPitch(pitch), mLocks(0)
 {
-	const uintptr_t alignment = 16;
+	constexpr uintptr_t alignment = 16;
 
 	// Not given a pitch? Just base pitch on the given width
 	if (pitch == 0)
@@ -426,8 +426,8 @@ void IWindowSurface::blitcrop(const IWindowSurface* source_surface, int srcx, in
 		    (palindex_t*)source_surface->getBuffer() + srcy * srcpitchpixels + srcx;
 		palindex_t* dest = (palindex_t*)getBuffer() + buffery * destpitchpixels + bufferx;
 
-		BlitLoopCrop(dest, source, destpitchpixels, srcpitchpixels, 
-			destw, desth, 
+		BlitLoopCrop(dest, source, destpitchpixels, srcpitchpixels,
+			destw, desth,
 			off_top, off_bottom, off_left, off_right,
 			xstep, ystep, palette);
 	}
@@ -440,7 +440,7 @@ void IWindowSurface::blitcrop(const IWindowSurface* source_surface, int srcx, in
 		    (palindex_t*)source_surface->getBuffer() + srcy * srcpitchpixels + srcx;
 		argb_t* dest = (argb_t*)getBuffer() + buffery * destpitchpixels + bufferx;
 
-		BlitLoopCrop(dest, source, destpitchpixels, srcpitchpixels, 
+		BlitLoopCrop(dest, source, destpitchpixels, srcpitchpixels,
 				destw, desth,
 				off_top, off_bottom, off_left, off_right,
 				xstep, ystep, palette);
@@ -456,7 +456,7 @@ void IWindowSurface::blitcrop(const IWindowSurface* source_surface, int srcx, in
 		    (argb_t*)source_surface->getBuffer() + srcy * srcpitchpixels + srcx;
 		argb_t* dest = (argb_t*)getBuffer() + buffery * destpitchpixels + bufferx;
 
-		BlitLoopCrop(dest, source, destpitchpixels, srcpitchpixels, 
+		BlitLoopCrop(dest, source, destpitchpixels, srcpitchpixels,
 			destw, desth,
 			off_top, off_bottom, off_left, off_right,
 			xstep, ystep, palette);
@@ -469,7 +469,7 @@ void IWindowSurface::blitcrop(const IWindowSurface* source_surface, int srcx, in
 //
 // Blits a surface into this surface, automatically scaling the source image
 // to fit the destination dimensions.
-// 
+//
 void IWindowSurface::blit(const IWindowSurface* source_surface, int srcx, int srcy, int srcw, int srch,
 			int destx, int desty, int destw, int desth)
 {
@@ -522,7 +522,7 @@ void IWindowSurface::blit(const IWindowSurface* source_surface, int srcx, int sr
 	int destbits = getBitsPerPixel();
 	int srcpitchpixels = source_surface->getPitchInPixels();
 	int destpitchpixels = getPitchInPixels();
-	
+
 	const argb_t* palette = source_surface->getPalette();
 
 	if (srcbits == 8 && destbits == 8)
@@ -666,9 +666,7 @@ std::string I_GetVideoModeString(const IVideoMode& mode)
 		"full screen window"
 	};
 
-	std::string str;
-	StrFormat(str, "%dx%d %dbpp (%s)", mode.width, mode.height, mode.bpp, window_strs[I_GetWindow()->getWindowMode()]);
-	return str;
+	return fmt::sprintf("%dx%d %dbpp (%s)", mode.width, mode.height, mode.bpp, window_strs[I_GetWindow()->getWindowMode()]);
 }
 
 
@@ -720,7 +718,7 @@ static IVideoMode I_ValidateVideoMode(const IVideoMode& mode)
 	// check if the given bit-depth is supported
 	if (!I_IsModeSupported(desired_mode.bpp, desired_mode.window_mode))
 	{
-		// mode is not supported -- check a different bit depth 
+		// mode is not supported -- check a different bit depth
 		desired_mode.bpp = desired_mode.bpp ^ (32 | 8);
 		if (!I_IsModeSupported(desired_mode.bpp, desired_mode.window_mode))
 			return invalid_mode;
@@ -781,7 +779,7 @@ void I_SetVideoMode(const IVideoMode& requested_mode)
 
 	// [SL] 2011-11-30 - Prevent the player's view angle from moving
 	I_FlushInput();
-		
+
 	// Set up the primary and emulated surfaces
 	primary_surface = window->getPrimarySurface();
 	int surface_width = primary_surface->getWidth(), surface_height = primary_surface->getHeight();
@@ -860,7 +858,7 @@ void I_SetVideoMode(const IVideoMode& requested_mode)
 	// Ensure matted surface dimensions are sane and sanitized.
 	surface_width = clamp<uint16_t>(surface_width, 320, MAXWIDTH);
 	surface_height = clamp<uint16_t>(surface_height, 200, MAXHEIGHT);
-	
+
 	// Is matting being used? Create matted_surface based on the primary_surface.
 	if (surface_width != primary_surface->getWidth() ||
 		surface_height != primary_surface->getHeight())

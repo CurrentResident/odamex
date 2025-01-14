@@ -26,7 +26,7 @@
 
 #include "odamex.h"
 
-#include "i_sdl.h" 
+#include "i_sdl.h"
 #include <SDL_mixer.h>
 #include <stdlib.h>
 
@@ -67,13 +67,13 @@ CVAR_FUNC_IMPL(snd_samplerate)
 
 /**
  * @brief Write out a WAV file containing sound data.
- * 
+ *
  * @detail This is an internal debugging function that should be ifdef'ed out
  *         when not in use.
- * 
+ *
  * @param filename Output filename.
  * @param data Data to write.
- * @param length Total length of data to write. 
+ * @param length Total length of data to write.
  * @param samplerate Samplerate to put in the header.
  */
 static void WriteWAV(char* filename, byte* data, uint32_t length, int samplerate)
@@ -175,9 +175,8 @@ static void ExpandSoundData(byte* data, int samplerate, int bits, int length,
 	for (size_t i = 0; i < expanded_length; ++i)
 	{
 		Sint16 sample;
-		int src;
 
-		src = (i * expand_ratio) >> 8;
+		const size_t src = (i * expand_ratio) >> 8;
 
 		// [crispy] Handle 16 bit audio data
 		if (bits == 16)
@@ -313,7 +312,7 @@ static void getsfx(sfxinfo_struct *sfx)
     // Double up twice: 8 -> 16 bit and mono -> stereo
 
     expanded_length *= 4;
-	
+
 	chunk = (Mix_Chunk *)Z_Malloc(sizeof(Mix_Chunk), PU_STATIC, NULL);
     chunk->allocated = 1;
     chunk->alen = expanded_length;
@@ -322,7 +321,7 @@ static void getsfx(sfxinfo_struct *sfx)
 
     ExpandSoundData((byte*)data + 8, samplerate, 8, length, chunk);
     sfx->data = chunk;
-    
+
     Z_ChangeTag(data, PU_CACHE);
 }
 
@@ -356,7 +355,7 @@ int I_StartSound(int id, float vol, int sep, int pitch, bool loop)
 		return -1;
 
 	Mix_Chunk *chunk = (Mix_Chunk *)S_sfx[id].data;
-	
+
 	// find a free channel, starting from the first after
 	// the last channel we used
 	int channel = nextchannel;
@@ -433,7 +432,7 @@ void I_LoadSound (sfxinfo_struct *sfx)
 {
 	if (!sound_initialized)
 		return;
-	
+
 	if (!sfx->data)
 	{
 		DPrintf ("loading sound \"%s\" (%d)\n", sfx->name, sfx->lumpnum);
@@ -445,13 +444,13 @@ void I_InitSound()
 {
 	if (I_IsHeadless() || Args.CheckParm("-nosound"))
 		return;
-		
+
     #if defined(SDL12)
     const char *driver = getenv("SDL_AUDIODRIVER");
 
 	if(!driver)
 		driver = "default";
-		
+
     Printf(PRINT_HIGH, "I_InitSound: Initializing SDL's sound subsystem (%s)\n", driver);
     #elif defined(SDL20)
     Printf("I_InitSound: Initializing SDL's sound subsystem\n");
@@ -460,16 +459,16 @@ void I_InitSound()
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
 		Printf(PRINT_ERROR,
-               "I_InitSound: Unable to set up sound: %s\n", 
+               "I_InitSound: Unable to set up sound: %s\n",
                SDL_GetError());
-               
+
 		return;
 	}
 
     #if defined(SDL20)
 	Printf("I_InitSound: Using SDL's audio driver (%s)\n", SDL_GetCurrentAudioDriver());
 	#endif
-	
+
 	const SDL_version *ver = Mix_Linked_Version();
 
 	if(ver->major != MIX_MAJOR_VERSION
@@ -503,7 +502,7 @@ void I_InitSound()
 #endif
 	{
 		Printf(PRINT_ERROR,
-               "I_InitSound: Error initializing SDL_mixer: %s\n", 
+               "I_InitSound: Error initializing SDL_mixer: %s\n",
                Mix_GetError());
 		return;
 	}
@@ -511,11 +510,11 @@ void I_InitSound()
     if(!Mix_QuerySpec(&mixer_freq, &mixer_format, &mixer_channels))
 	{
 		Printf(PRINT_ERROR,
-               "I_InitSound: Error initializing SDL_mixer: %s\n", 
+               "I_InitSound: Error initializing SDL_mixer: %s\n",
                Mix_GetError());
 		return;
 	}
-	
+
 	Printf("I_InitSound: Using %d channels (freq:%d, fmt:%d, chan:%d)\n",
            Mix_AllocateChannels(NUM_CHANNELS),
 		   mixer_freq, mixer_format, mixer_channels);

@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id$
@@ -83,7 +83,7 @@ bool CHEAT_ChangeLevel(cheatseq_t* cheat)
 		snprintf(buf, sizeof(buf), "map 1%c", cheat->Args[1]);
 	else
 		snprintf(buf, sizeof(buf), "map %c%c\n", cheat->Args[0], cheat->Args[1]);
-	
+
 	AddCommandString(buf);
 	return true;
 }
@@ -255,6 +255,7 @@ void CHEAT_DoCheat(player_t* player, int cheat, bool silentmsg)
 
 				player->health = deh.GodHealth;
 			}
+			[[fallthrough]];
 		case CHT_GOD:
 
 			if (player->spectator)
@@ -286,7 +287,7 @@ void CHEAT_DoCheat(player_t* player, int cheat, bool silentmsg)
 			    return;
 
 			player->cheats ^= CF_NOTARGET;
-		    msg = (player->cheats & CF_NOTARGET) ? "notarget ON" 
+		    msg = (player->cheats & CF_NOTARGET) ? "notarget ON"
 				                                 : "notarget OFF";
 			break;
 
@@ -296,7 +297,7 @@ void CHEAT_DoCheat(player_t* player, int cheat, bool silentmsg)
 			    return;
 
 			player->cheats ^= CF_CHASECAM;
-			msg = (player->cheats & CF_CHASECAM) ? "chasecam ON" 
+			msg = (player->cheats & CF_CHASECAM) ? "chasecam ON"
 				                                 : "chasecam OFF";
 			break;
 
@@ -396,7 +397,7 @@ void CHEAT_DoCheat(player_t* player, int cheat, bool silentmsg)
 			}
 			break;
 
-		case CHT_MDK: 
+		case CHT_MDK:
 		{
 			if (multiplayer && !player->client.allow_rcon)
 				return;
@@ -421,7 +422,7 @@ void CHEAT_DoCheat(player_t* player, int cheat, bool silentmsg)
 		}
 	    break;
 
-		case CHT_BUDDHA: 
+		case CHT_BUDDHA:
 		{
 		        player->cheats ^= CF_BUDDHA;
 		        msg = (player->cheats & CF_BUDDHA) ? GStrings(TXT_BUDDHAON)
@@ -436,8 +437,8 @@ void CHEAT_DoCheat(player_t* player, int cheat, bool silentmsg)
 			if (msg != NULL)
 				Printf("%s\n", msg);
 		}
-				
-			
+
+
 #ifdef SERVER_APP
 			SV_BroadcastPrintfButPlayer(PRINT_HIGH, player->id, "%s is a cheater: %s\n",
 			                            player->userinfo.netname.c_str(), msg);
@@ -472,7 +473,7 @@ void CHEAT_GiveTo(player_t* player, const char* name)
 		} else {
 			if (player->mo)
 				player->mo->health = deh.GodHealth;
-	  
+
 			player->health = deh.GodHealth;
 		}
 

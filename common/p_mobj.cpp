@@ -128,8 +128,8 @@ AActor::AActor()
       prevangle(0), sprite(SPR_UNKN), frame(0), pitch(0), prevpitch(0), effects(0),
       subsector(NULL), floorz(0), ceilingz(0), dropoffz(0), floorsector(NULL), radius(0),
       height(0), momx(0), momy(0), momz(0), validcount(0), type(MT_UNKNOWNTHING),
-      info(NULL), tics(0), state(NULL), damage(0), flags(0), flags2(0),
-      flags3(0), oflags(0), special1(0), special2(0), health(0), movedir(0), movecount(0), visdir(0),
+      info(NULL), tics(0), state(NULL), damage(0), flags(0), flags2(0), 
+      flags3(0), oflags(0), statusflags(0), special1(0), special2(0), health(0), movedir(0), movecount(0), visdir(0),
       reactiontime(0), threshold(0), player(NULL), lastlook(0), special(0), inext(NULL),
       iprev(NULL), translation(translationref_t()), translucency(0), waterlevel(0),
       gear(0), onground(false), touching_sectorlist(NULL), deadtic(0), oldframe(0),
@@ -203,6 +203,7 @@ AActor &AActor::operator= (const AActor &other)
     flags2 = other.flags2;
 	flags3 = other.flags3;
 	oflags = other.oflags;
+	statusflags = other.statusflags;
     special1 = other.special1;
     special2 = other.special2;
     health = other.health;
@@ -250,7 +251,7 @@ AActor::AActor(fixed_t ix, fixed_t iy, fixed_t iz, mobjinfo_t* mobjinfo)
       subsector(NULL), floorz(0), ceilingz(0), dropoffz(0), floorsector(NULL), radius(0),
       height(0), momx(0), momy(0), momz(0), validcount(0), type(MT_UNKNOWNTHING),
       info(NULL), tics(0), state(NULL), damage(0), flags(0), flags2(0), flags3(0), oflags(0),
-      special1(0), special2(0), health(0), movedir(0), movecount(0), visdir(0),
+      statusflags(0), special1(0), special2(0), health(0), movedir(0), movecount(0), visdir(0),
       reactiontime(0), threshold(0), player(NULL), lastlook(0), special(0), inext(NULL),
       iprev(NULL), translation(translationref_t()), translucency(0), waterlevel(0),
       gear(0), onground(false), touching_sectorlist(NULL), deadtic(0), oldframe(0),
@@ -796,8 +797,8 @@ void AActor::RunThink ()
 
 void AActor::Serialize (FArchive &arc)
 {
-	const DWORD TLATE_NONE = 0xFFFFFFFF;
-	const DWORD TLATE_BOSS = 0xFFFFFFFE;
+	constexpr DWORD TLATE_NONE = 0xFFFFFFFF;
+	constexpr DWORD TLATE_BOSS = 0xFFFFFFFE;
 
 	Super::Serialize (arc);
 	if (arc.IsStoring ())
@@ -832,6 +833,7 @@ void AActor::Serialize (FArchive &arc)
 			<< flags2
 			<< flags3
 			<< oflags
+		  << statusflags
 			<< special1
 			<< special2
 			<< health
@@ -914,6 +916,7 @@ void AActor::Serialize (FArchive &arc)
 			>> flags2
 			>> flags3
 			>> oflags
+			>> statusflags
 			>> special1
 			>> special2
 			>> health
@@ -1085,8 +1088,8 @@ static void P_WindThrustActor(AActor* mo)
 {
 	if (mo->flags2 & MF2_WINDTHRUST)
 	{
-		static const int windTab[3] = {2048*5, 2048*10, 2048*25};
-		int special = mo->subsector->sector->special;
+		static constexpr int windTab[3] = {2048*5, 2048*10, 2048*25};
+		const int special = mo->subsector->sector->special;
 		switch (special)
 		{
 			case 40: case 41: case 42: // Wind_East
@@ -1876,7 +1879,7 @@ void P_NightmareRespawn (AActor *mobj)
 	mo = new AActor(
         mobj->x,
         mobj->y,
-        P_FloorHeight(mobj),
+        P_FloorHeight(mobj) + INT2FIXED(gameinfo.telefogHeight),
         MT_TFOG
     );
 	// initiate teleport sound
@@ -1887,7 +1890,7 @@ void P_NightmareRespawn (AActor *mobj)
     ss = P_PointInSubsector (x,y);
 
 	// spawn a teleport fog at the new spot
-    mo = new AActor (x, y,  P_FloorHeight(x, y, ss->sector), MT_TFOG);
+    mo = new AActor (x, y,  P_FloorHeight(x, y, ss->sector) + INT2FIXED(gameinfo.telefogHeight), MT_TFOG);
     if (clientside)
         S_Sound (mo, CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
 

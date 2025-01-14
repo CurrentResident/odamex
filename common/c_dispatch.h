@@ -50,7 +50,7 @@ class DConsoleCommand : public DObject
 	DECLARE_CLASS (DConsoleCommand, DObject)
 public:
 	DConsoleCommand (const char *name);
-	virtual ~DConsoleCommand ();
+	~DConsoleCommand () override;
 	virtual void Run (uint32_t key = 0) = 0;
 	virtual bool IsAlias () { return false; }
 	void PrintCommand () { Printf (PRINT_HIGH, "%s\n", m_Name.c_str()); }
@@ -84,9 +84,9 @@ class DConsoleAlias : public DConsoleCommand
 	bool state_lock;
 public:
 	DConsoleAlias (const char *name, const char *command);
-	virtual ~DConsoleAlias ();
-	virtual void Run (uint32_t key = 0);
-	virtual bool IsAlias () { return true; }
+	~DConsoleAlias () override;
+	void Run (uint32_t key = 0) override;
+	bool IsAlias () override { return true; }
 	void PrintAlias () { Printf (PRINT_HIGH, "%s : %s\n", m_Name.c_str(), m_Command.c_str()); }
 	void Archive (FILE *f);
 

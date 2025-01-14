@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id$
@@ -47,7 +47,7 @@ public:
 	DSectorEffect (sector_t *sector);
 	~DSectorEffect ();
 	virtual DSectorEffect* Clone(sector_t *sector) const;
-	virtual void Destroy();
+	void Destroy() override;
 	sector_t* GetSector() const { return m_Sector; }
 protected:
 	DSectorEffect ();

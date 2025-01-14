@@ -279,11 +279,13 @@ void MaplistCache::status_handler(maplist_status_t status) {
 		// If our cache is out-of-date and we are able to request
 		// an updated maplist, request one.
 		MSG_WriteMarker(&net_buffer, clc_maplist_update);
+		[[fallthrough]];
 	case MAPLIST_EMPTY:
 	case MAPLIST_THROTTLED:
 		// If our cache is out-of-date or the maplist on the other end
 		// is empty, invalidate the local cache.
 		this->invalidate();
+		[[fallthrough]];
 	case MAPLIST_OK:
 		// No matter what, we ought to set the correct status.
 		this->status = status;

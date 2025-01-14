@@ -159,6 +159,7 @@ void DCeiling::RunThink ()
 				m_Sector->damageinterval = m_NewDmgInterval;
 				m_Sector->leakrate = m_NewLeakRate;
 				m_Sector->flags = m_NewFlags;
+				[[fallthrough]];
 			case genCeilingChg:
 				m_Sector->ceilingpic = m_Texture;
 				Destroy();
@@ -227,6 +228,7 @@ void DCeiling::RunThink ()
 				m_Sector->damageinterval = m_NewDmgInterval;
 				m_Sector->leakrate = m_NewLeakRate;
 				m_Sector->flags = m_NewFlags;
+				[[fallthrough]];
 			case genCeilingChg:
 				m_Sector->ceilingpic = m_Texture;
 				Destroy();
@@ -648,6 +650,7 @@ BOOL P_SpawnZDoomCeiling(DCeiling::ECeiling type, line_t* line, int tag, fixed_t
 		case DCeiling::ceilCrushAndRaise:
 		case DCeiling::ceilCrushRaiseAndStay:
 			ceiling->m_TopHeight = ceilingheight;
+			[[fallthrough]];
 		case DCeiling::ceilLowerAndCrush:
 			targheight = ceiling->m_BottomHeight = floorheight + height;
 			ceiling->m_Direction = -1;
@@ -909,6 +912,7 @@ manual_ceiling:
 		case DCeiling::silentCrushAndRaise:
 		case DCeiling::ceilCrushRaiseAndStay:
 			ceiling->m_TopHeight = ceilingheight;
+			[[fallthrough]];
 		case DCeiling::lowerAndCrush:
 			ceiling->m_Crush = crush ? DOOM_CRUSH : NO_CRUSH;
 			targheight = ceiling->m_BottomHeight = floorheight + 8*FRACUNIT;

@@ -340,9 +340,7 @@ bool M_GetAbsPath(const std::string& path, std::string& out)
 {
 
 #ifdef __SWITCH__
-	std::string res;
-	StrFormat(res, "%s", path.c_str());
-	out = res;
+	out = fmt::sprintf("%s", path.c_str());
 	return true;
 #else
 	char buffer[PATH_MAX];

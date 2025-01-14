@@ -254,7 +254,6 @@ static const char *ordinal(int n)
  */
 std::string HelpText()
 {
-	std::string str;
 	int queuePos = consoleplayer().QueuePosition;
 
 	std::string joinmsg;
@@ -278,29 +277,25 @@ std::string HelpText()
 	{
 		if (queuePos > 0)
 		{
-			StrFormat(str, "%s - " TEXTCOLOR_GREEN "%d%s" TEXTCOLOR_NORMAL " in line",
-			          joinmsg.c_str(), queuePos, ordinal(queuePos));
-			return str;
+			return fmt::sprintf("%s - " TEXTCOLOR_GREEN "%d%s" TEXTCOLOR_NORMAL " in line",
+			                    joinmsg.c_str(), queuePos, ordinal(queuePos));
 		}
 
-		StrFormat(str, "%s - Press " TEXTCOLOR_GOLD "%s" TEXTCOLOR_NORMAL " to queue",
-		          joinmsg.c_str(), ::Bindings.GetKeynameFromCommand("+use").c_str());
-		return str;
+		return fmt::sprintf("%s - Press " TEXTCOLOR_GOLD "%s" TEXTCOLOR_NORMAL " to queue",
+		                    joinmsg.c_str(), ::Bindings.GetKeynameFromCommand("+use").c_str());
 	}
 
 	if (G_CanShowJoinTimer())
 	{
-		StrFormat(str,
+		return fmt::sprintf(
 		          "Press " TEXTCOLOR_GOLD "%s" TEXTCOLOR_NORMAL
 		          " to join - " TEXTCOLOR_GREEN "%d" TEXTCOLOR_NORMAL " secs left",
 		          ::Bindings.GetKeynameFromCommand("+use").c_str(),
 		          ::levelstate.getJoinTimeLeft());
-		return str;
 	}
 
-	StrFormat(str, "Press " TEXTCOLOR_GOLD "%s" TEXTCOLOR_NORMAL " to join",
-	          ::Bindings.GetKeynameFromCommand("+use").c_str());
-	return str;
+	return fmt::sprintf("Press " TEXTCOLOR_GOLD "%s" TEXTCOLOR_NORMAL " to join",
+	                    ::Bindings.GetKeynameFromCommand("+use").c_str());
 }
 
 /**
@@ -321,9 +316,7 @@ std::string SpyPlayerName()
 		color = GetTeamInfo(plyr.userinfo.team)->TextColor.c_str();
 	}
 
-	std::string str;
-	StrFormat(str, "%s%s", color, plyr.userinfo.netname.c_str());
-	return str;
+	return fmt::sprintf("%s%s", color, plyr.userinfo.netname.c_str());
 }
 
 /**
@@ -350,7 +343,7 @@ std::string Timer()
 
 
 	OTimespan tspan;
-	if (::levelstate.getState() == LevelState::WARMUP || 
+	if (::levelstate.getState() == LevelState::WARMUP ||
 		::levelstate.getState() == LevelState::WARMUP_COUNTDOWN ||
 		::levelstate.getState() == LevelState::WARMUP_FORCED_COUNTDOWN )
 	{
@@ -382,12 +375,11 @@ std::string Timer()
 	std::string str;
 	if (tspan.hours)
 	{
-		StrFormat(str, "%s%02d:%02d:%02d", color, tspan.hours, tspan.minutes,
-		          tspan.seconds);
+		str = fmt::sprintf("%s%02d:%02d:%02d", color, tspan.hours, tspan.minutes, tspan.seconds);
 	}
 	else
 	{
-		StrFormat(str, "%s%02d:%02d", color, tspan.minutes, tspan.seconds);
+		str = fmt::sprintf("%s%02d:%02d", color, tspan.minutes, tspan.seconds);
 	}
 	return str;
 }
@@ -410,11 +402,11 @@ std::string IntermissionTimer()
 	std::string str;
 	if (tspan.hours)
 	{
-		StrFormat(str, "%02d:%02d:%02d", tspan.hours, tspan.minutes, tspan.seconds);
+		str = fmt::sprintf("%02d:%02d:%02d", tspan.hours, tspan.minutes, tspan.seconds);
 	}
 	else
 	{
-		StrFormat(str, "%02d:%02d", tspan.minutes, tspan.seconds);
+		str = fmt::sprintf("%02d:%02d", tspan.minutes, tspan.seconds);
 	}
 	return str;
 }
@@ -422,12 +414,11 @@ std::string IntermissionTimer()
 /**
  * @brief Return a "spread" of personal frags or team points that the current
  *        player or team is ahead or behind by.
- * 
+ *
  * @return Colored string to render in the HUD.
  */
 std::string PersonalSpread()
 {
-	std::string str;
 	player_t& plyr = displayplayer();
 
 	if (G_IsFFAGame())
@@ -484,14 +475,12 @@ std::string PersonalSpread()
 
 			// Player is on top.
 			int diff = plyr_number - next_number;
-			StrFormat(str, TEXTCOLOR_GREEN "+%d", diff);
-			return str;
+			return fmt::sprintf(TEXTCOLOR_GREEN "+%d", diff);
 		}
 
 		// Player is behind.
 		int diff = top_number - plyr_number;
-		StrFormat(str, TEXTCOLOR_BRICK "-%d", diff);
-		return str;
+		return fmt::sprintf(TEXTCOLOR_BRICK "-%d", diff);
 	}
 	else if (G_IsTeamGame())
 	{
@@ -542,14 +531,12 @@ std::string PersonalSpread()
 
 			// Player team is on top.
 			int diff = plyr_number - next_number;
-			StrFormat(str, TEXTCOLOR_GREEN "+%d", diff);
-			return str;
+			return fmt::sprintf(TEXTCOLOR_GREEN "+%d", diff);
 		}
 
 		// Player team is behind.
 		int diff = top_number - plyr_number;
-		StrFormat(str, TEXTCOLOR_BRICK "-%d", diff);
-		return str;
+		return fmt::sprintf(TEXTCOLOR_BRICK "-%d", diff);
 	}
 
 	// We're not in an appropriate gamemode.
@@ -560,7 +547,7 @@ std::string PersonalSpread()
  * @brief Return a string that contains the current team score or personal
  *        frags of the individual player.  Optionally returns the "limit"
  *        as well.
- * 
+ *
  * @return Colorized string to render to the HUD.
  */
 std::string PersonalScore()
@@ -575,29 +562,29 @@ std::string PersonalScore()
 		{
 			if (g_winlimit)
 			{
-				StrFormat(str, "%s%d/%d", plyr_team.TextColor.c_str(),
-				          plyr_team.RoundWins, g_winlimit.asInt());
+				str = fmt::sprintf("%s%d/%d", plyr_team.TextColor.c_str(),
+				                   plyr_team.RoundWins, g_winlimit.asInt());
 			}
 			else
 			{
-				StrFormat(str, "%s%d", plyr_team.TextColor.c_str(), plyr.roundwins);
+				str = fmt::sprintf("%s%d", plyr_team.TextColor.c_str(), plyr.roundwins);
 			}
 		}
 		else
 		{
 			if (G_UsesFraglimit() && sv_fraglimit > 0)
 			{
-				StrFormat(str, "%s%d/%d", plyr_team.TextColor.c_str(), plyr_team.Points,
-				          sv_fraglimit.asInt());
+				str = fmt::sprintf("%s%d/%d", plyr_team.TextColor.c_str(), plyr_team.Points,
+				                   sv_fraglimit.asInt());
 			}
 			else if (!G_UsesFraglimit() && sv_scorelimit > 0)
 			{
-				StrFormat(str, "%s%d/%d", plyr_team.TextColor.c_str(), plyr_team.Points,
-				          sv_scorelimit.asInt());
+				str = fmt::sprintf("%s%d/%d", plyr_team.TextColor.c_str(), plyr_team.Points,
+				                   sv_scorelimit.asInt());
 			}
 			else
 			{
-				StrFormat(str, "%s%d", plyr_team.TextColor.c_str(), plyr.fragcount);
+				str = fmt::sprintf("%s%d", plyr_team.TextColor.c_str(), plyr.fragcount);
 			}
 		}
 	}
@@ -607,24 +594,24 @@ std::string PersonalScore()
 		{
 			if (g_winlimit)
 			{
-				StrFormat(str, TEXTCOLOR_GREY "%d/%d", plyr.roundwins,
-				          g_winlimit.asInt());
+				str = fmt::sprintf(TEXTCOLOR_GREY "%d/%d", plyr.roundwins,
+				                   g_winlimit.asInt());
 			}
 			else
 			{
-				StrFormat(str, TEXTCOLOR_GREY "%d", plyr.roundwins);
+				str = fmt::sprintf(TEXTCOLOR_GREY "%d", plyr.roundwins);
 			}
 		}
 		else
 		{
 			if (sv_fraglimit)
 			{
-				StrFormat(str, TEXTCOLOR_GREY "%d/%d", plyr.fragcount,
-				          sv_fraglimit.asInt());
+				str = fmt::sprintf(TEXTCOLOR_GREY "%d/%d", plyr.fragcount,
+				                   sv_fraglimit.asInt());
 			}
 			else
 			{
-				StrFormat(str, TEXTCOLOR_GREY "%d", plyr.fragcount);
+				str = fmt::sprintf(TEXTCOLOR_GREY "%d", plyr.fragcount);
 			}
 		}
 	}
@@ -645,12 +632,12 @@ std::string PersonalMatchDuelPlacement()
 
 	if (g_winlimit)
 	{
-		StrFormat(str, TEXTCOLOR_GREY "%d/%d W", plyr.roundwins,
-				    g_winlimit.asInt());
+		str = fmt::sprintf(TEXTCOLOR_GREY "%d/%d W", plyr.roundwins,
+				           g_winlimit.asInt());
 	}
 	else
 	{
-		StrFormat(str, TEXTCOLOR_GREY "%d W", plyr.roundwins);
+		str = fmt::sprintf(TEXTCOLOR_GREY "%d W", plyr.roundwins);
 	}
 
 	return str;
@@ -801,7 +788,7 @@ std::string TeamPoints(int& color, byte team) {
 
 /**
  * @brief Calculate the number of team lives for the HUD.
- * 
+ *
  * @param str Output string buffer.
  * @param color Output color.
  * @param team Team to construct for.
@@ -824,7 +811,7 @@ void TeamLives(std::string& str, int& color, byte team)
 	for (; it != results.players.end(); ++it)
 		lives += (*it)->lives;
 
-	StrFormat(str, "%d", lives);
+	str = fmt::sprintf("%d", lives);
 }
 
 std::string TeamKD(int& color, byte team) {
@@ -947,7 +934,7 @@ void EleBar(const int x, const int y, const int w, const float scale,
 			// i0 is short-circuited, so remove it.
 			const int idx = i - 1;
 
-			// Each unit 
+			// Each unit
 			const float scaled = pct * (UNITS - 2);
 
 			if (scaled < static_cast<float>(idx) + 0.5f)
@@ -1126,8 +1113,8 @@ void EATeamPlayerNames(int x, int y, const float scale,
 			{
 				color = GetTeamPlayerColor(player);
 			}
-			else if(player->id == displayplayer().id) 
-			{	
+			else if(player->id == displayplayer().id)
+			{
 				color = CR_GOLD;
 			}
 			hud::DrawText(x, y, scale, x_align, y_align, x_origin, y_origin,
@@ -1207,8 +1194,7 @@ void EAPlayerRoundWins(int x, int y, const float scale, const x_align_t x_align,
 		player_t* player = sortedPlayers()[i];
 		if (ingamePlayer(player))
 		{
-			std::string buffer;
-			StrFormat(buffer, "%d", player->roundwins);
+			std::string buffer = fmt::sprintf("%d", player->roundwins);
 
 			hud::DrawText(x, y, scale, x_align, y_align, x_origin, y_origin,
 			              buffer.c_str(), CR_GREY, force_opaque);
@@ -1236,8 +1222,7 @@ void EAPlayerLives(int x, int y, const float scale, const x_align_t x_align,
 		player_t* player = sortedPlayers()[i];
 		if (ingamePlayer(player))
 		{
-			std::string buffer;
-			StrFormat(buffer, "%d", player->lives);
+			std::string buffer = fmt::sprintf("%d", player->lives);
 
 			hud::DrawText(x, y, scale, x_align, y_align, x_origin, y_origin,
 			              buffer.c_str(), CR_GREY, force_opaque);
@@ -1265,8 +1250,7 @@ void EATeamPlayerLives(int x, int y, const float scale, const x_align_t x_align,
 		player_t* player = sortedPlayers()[i];
 		if (inTeamPlayer(player, team))
 		{
-			std::string buffer;
-			StrFormat(buffer, "%d", player->lives);
+			std::string buffer = fmt::sprintf("%d", player->lives);
 
 			hud::DrawText(x, y, scale, x_align, y_align, x_origin, y_origin,
 			              buffer.c_str(), CR_GREY, force_opaque);
@@ -1809,7 +1793,7 @@ void EATargets(int x, int y, const float scale,
 				else
 					color = TEXTCOLOR_LIGHTBLUE;
 
-				StrFormat(nameplate, "%s %s%d",
+				nameplate = fmt::sprintf("%s %s%d",
 				          Targets[i].PlayPtr->userinfo.netname.c_str(), color, health);
 			}
 			else

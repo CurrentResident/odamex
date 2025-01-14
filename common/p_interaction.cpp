@@ -40,6 +40,7 @@
 #include "svc_message.h"
 #include "p_horde.h"
 #include "com_misc.h"
+#include "gi.h"
 #include "g_skill.h"
 #include "p_mapformat.h"
 
@@ -519,7 +520,7 @@ ItemEquipVal P_GiveCard(player_t *player, card_t card)
 	{
 #ifdef SERVER_APP
 		// Register the key
-		SV_ShareKeys(card, *player);	
+		SV_ShareKeys(card, *player);
 #endif
 
 
@@ -579,13 +580,13 @@ ItemEquipVal P_GivePower(player_t *player, int /*powertype_t*/ power)
 
 /**
  * @brief Give the player a care package.
- * 
+ *
  * @detail A care package gives you a small collection of items based on what
  *         you're already holding.  TODO: These messages should be LANGUAGE'ed.
  */
 static void P_GiveCarePack(player_t* player)
 {
-	const int ammomulti[NUMAMMO] = {2, 1, 1, 2};
+	constexpr int ammomulti[NUMAMMO] = {2, 1, 1, 2};
 
 	// [AM] There is way too much going on in here to accurately predict.
 	if (!::serverside)
@@ -710,7 +711,7 @@ static void P_GiveCarePack(player_t* player)
 				case NUMWEAPONS:
 					break;
 				}
-				
+
 				break;
 			}
 		}
@@ -1345,7 +1346,7 @@ void SexMessage (const char *from, char *to, int gender, const char *victim, con
 		{ "she", "her", "her" },
 		{ "it",  "it",  "its" }
 	};
-	static const int gendershift[3][3] =
+	static constexpr int gendershift[3][3] =
 	{
 		{ 2, 3, 3 },
 		{ 3, 3, 3 },
@@ -1373,7 +1374,7 @@ void SexMessage (const char *from, char *to, int gender, const char *victim, con
 			}
 			if (subst != NULL)
 			{
-				int len = strlen (subst);
+				size_t len = strlen (subst);
 				memcpy (to, subst, len);
 				to += len;
 				from++;
@@ -1875,7 +1876,8 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	P_RemoveHealthPool(target);
 	P_QueueCorpseForDestroy(target);
 
-    if (target->info->xdeathstate && target->health < target->info->gibhealth)
+    if (target->info->xdeathstate &&
+		static_cast<float>(target->health) < static_cast<float>(target->info->gibhealth) * gameinfo.gibFactor)
     {
         P_SetMobjState(target, target->info->xdeathstate);
     }
@@ -2101,15 +2103,15 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 	// inflict thrust and push the victim out of reach,
 	// thus kick away unless using the chainsaw.
 
-	if (inflictor && 
-		!(target->flags & MF_NOCLIP) && 
+	if (inflictor &&
+		!(target->flags & MF_NOCLIP) &&
 	    (!source || !source->player || !(weaponinfo[source->player->readyweapon].flags & WPF_NOTHRUST)) &&
 	    !(inflictor->flags2 & MF2_NODMGTHRUST))
 	{
 
 		unsigned int ang = P_PointToAngle(inflictor->x, inflictor->y, target->x, target->y);
 
-		fixed_t thrust = damage * (FRACUNIT >> 3) * 100 / target->info->mass;
+		fixed_t thrust = damage * (FRACUNIT >> 3) * gameinfo.defKickback / target->info->mass;
 
 		// make fall forwards sometimes
 		if (damage < 40
@@ -2157,7 +2159,7 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 		if (!sv_friendlyfire && source && source->player && target != source &&
 			mod != MOD_TELEFRAG)
 		{
-			if (G_IsCoopGame() || 
+			if (G_IsCoopGame() ||
 				(G_IsTeamGame() && player->userinfo.team == source->player->userinfo.team))
 			{
 				damage = 0;
@@ -2184,8 +2186,8 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 
 		// WDL damage events - they have to be up here to ensure we know how
 		// much armor is subtracted.
-		int low = std::max(target->health - damage, 0);
-		int actualdamage = target->health - low;
+		const int low = std::max(target->health - damage, 0);
+		const int actualdamage = target->health - low;
 
 		angle_t sangle = 0;
 
@@ -2255,7 +2257,7 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 			else
 			{
 				player->health = 0;
-			} 
+			}
 		}
 
 		player->attacker = source ? source->ptr() : AActor::AActorPtr();

@@ -271,7 +271,7 @@ struct CodePtr
 	long default_args[MAXSTATEARGS];
 };
 
-static const struct CodePtr CodePtrs[] = {
+static const CodePtr CodePtrs[] = {
     {"NULL", NULL, 0, {0, 0, 0, 0, 0, 0, 0, 0}},
     {"MonsterRail", A_MonsterRail, 0, {0, 0, 0, 0, 0, 0, 0, 0}},
     {"FireRailgun", A_FireRailgun, 0, {0, 0, 0, 0, 0, 0, 0, 0}},
@@ -1077,7 +1077,7 @@ static int PatchThing(int thingy)
 	while ((result = GetLine()) == 1)
 	{
 		size_t val = atoi(Line2);
-		int linelen = strlen(Line1);
+		size_t linelen = strlen(Line1);
 
 		if (stricmp(Line1 + linelen - 6, " frame") == 0)
 		{
@@ -1577,23 +1577,23 @@ static int PatchSound(int soundNum)
 
 static int PatchFrame(int frameNum)
 {
-    static const struct Key keys[] = {{"Sprite number", offsetof(state_t, sprite)},
-        {"Sprite subnumber", offsetof(state_t, frame)},
-        {"Duration", offsetof(state_t, tics)},
-        {"Next frame", offsetof(state_t, nextstate)},
-        {"Unknown 1", offsetof(state_t, misc1)},
-        {"Unknown 2", offsetof(state_t, misc2)},
-        {"Args1", offsetof(state_t, args[0])},
-        {"Args2", offsetof(state_t, args[1])},
-        {"Args3", offsetof(state_t, args[2])},
-        {"Args4", offsetof(state_t, args[3])},
-        {"Args5", offsetof(state_t, args[4])},
-        {"Args6", offsetof(state_t, args[5])},
-        {"Args7", offsetof(state_t, args[6])},
-        {"Args8", offsetof(state_t, args[7])},
-        {NULL, 0}};
-    int result;
-    state_t *info, dummy;
+	static const Key keys[] = {{"Sprite number", offsetof(state_t, sprite)},
+	                             {"Sprite subnumber", offsetof(state_t, frame)},
+	                             {"Duration", offsetof(state_t, tics)},
+	                             {"Next frame", offsetof(state_t, nextstate)},
+	                             {"Unknown 1", offsetof(state_t, misc1)},
+	                             {"Unknown 2", offsetof(state_t, misc2)},
+	                             {"Args1", offsetof(state_t, args[0])},
+	                             {"Args2", offsetof(state_t, args[1])},
+	                             {"Args3", offsetof(state_t, args[2])},
+	                             {"Args4", offsetof(state_t, args[3])},
+	                             {"Args5", offsetof(state_t, args[4])},
+	                             {"Args6", offsetof(state_t, args[5])},
+	                             {"Args7", offsetof(state_t, args[6])},
+	                             {"Args8", offsetof(state_t, args[7])},
+	                             {NULL, 0}};
+	int result;
+	state_t *info, dummy;
 
     static const struct
     {
@@ -1639,7 +1639,7 @@ static int PatchFrame(int frameNum)
 	while ((result = GetLine()) == 1)
 	{
 		size_t val = atoi(Line2);
-		int linelen = strlen(Line1);
+		size_t linelen = strlen(Line1);
 
 		if (HandleKey(keys, info, Line1, val, sizeof(*info)))
 		{
@@ -1920,7 +1920,7 @@ static int PatchAmmo(int ammoNum)
 
 static int PatchWeapon(int weapNum)
 {
-	static const struct Key keys[] = {
+	static const Key keys[] = {
 	    {"Ammo type", offsetof(weaponinfo_t, ammotype)},
 	    {"Deselect frame", offsetof(weaponinfo_t, upstate)},
 	    {"Select frame", offsetof(weaponinfo_t, downstate)},
@@ -2080,7 +2080,7 @@ static int PatchCheats(int dummy)
 
 static int PatchMisc(int dummy)
 {
-	static const struct Key keys[] = {
+	static const Key keys[] = {
 	    {"Initial Health", offsetof(struct DehInfo, StartHealth)},
 	    {"Initial Bullets", offsetof(struct DehInfo, StartBullets)},
 	    {"Max Health", offsetof(struct DehInfo, MaxHealth)},
@@ -2465,7 +2465,7 @@ static int PatchStrings(int dummy)
 			    (i >= GStrings.toIndex(OB_FRIENDLY1) &&
 			     i <= GStrings.toIndex(OB_FRIENDLY4) && strstr(holdstring, "%k") == NULL))
 			{
-				int len = strlen(holdstring);
+				size_t len = strlen(holdstring);
 				memmove(holdstring + 3, holdstring, len);
 				holdstring[0] = '%';
 				holdstring[1] = i <= GStrings.toIndex(OB_DEFAULT) ? 'o' : 'k';

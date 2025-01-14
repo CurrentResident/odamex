@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // $Id$
@@ -79,7 +79,7 @@ ticcmd_t *I_BaseTiccmd (void);
 void STACK_ARGS I_Quit (void);
 
 void I_BaseError(const std::string& errortext);
-NORETURN void I_BaseFatalError(const std::string& errortext);
+[[noreturn]] void I_BaseFatalError(const std::string& errortext);
 
 template <typename... ARGS>
 void I_Error(const fmt::string_view format, const ARGS&... args)

@@ -346,7 +346,9 @@ CVAR(cl_downloadsites,
      "https://static.allfearthesentinel.com/wads/ https://doomshack.org/wads/ "
      "http://grandpachuck.org/files/wads/ https://wads.doomleague.org/ "
      "http://files.funcrusher.net/wads/ https://doomshack.org/uploads/ "
-     "https://doom.dogsoft.net/getwad.php?search=",
+     "https://doom.dogsoft.net/getwad.php?search= https://doomshack.org/wadlist.php "
+     "https://wads.firestick.games/ https://euroboros.net/zandronum/wads/ "
+     "https://static.audrealms.org/wads/ https://downloadbox.captainpollutiontv.de/DooM/WADSEEKER/",
      "A list of websites to download WAD files from.  These websites are used if the "
      "server doesn't provide any websites to download files from, or the file can't be "
      "found on any of their sites.  The list of sites is separated by spaces.  These "

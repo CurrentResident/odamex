@@ -35,7 +35,7 @@ class DEarthquake : public DThinker
 	DECLARE_SERIAL (DEarthquake, DThinker);
 public:
 	DEarthquake (AActor *center, int intensity, int duration, int damrad, int tremrad);
-	virtual void RunThink ();
+	void RunThink () override;
 	virtual void DestroyedPointer(DObject *obj);
 
 	AActor *m_Spot;
@@ -77,7 +77,7 @@ void DEarthquake::RunThink ()
 {
 	if (level.time % 48 == 0)
 		S_Sound (m_Spot, CHAN_BODY, "world/quake", 1, ATTN_NORM);
-		
+
 	if (serverside)
 	{
 		for (Players::iterator it = players.begin();it != players.end();++it)
@@ -148,6 +148,6 @@ BOOL P_StartQuake (int tid, int intensity, int duration, int damrad, int tremrad
 		res = true;
 		new DEarthquake (center, intensity, duration, damrad, tremrad);
 	}
-	
+
 	return res;
 }

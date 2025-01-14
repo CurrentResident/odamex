@@ -95,11 +95,11 @@ class DSeqActorNode : public DSeqNode
 	DECLARE_SERIAL (DSeqActorNode, DSeqNode)
 public:
 	DSeqActorNode (AActor *actor, int sequence);
-	~DSeqActorNode ();
-	void MakeSound () { S_SoundID (m_Actor, CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
-	void MakeLoopedSound () { S_LoopedSoundID (m_Actor, CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
-	bool IsPlaying () { return S_GetSoundPlayingInfo (m_Actor, m_CurrentSoundID); }
-	void *Source () { return m_Actor; }
+	~DSeqActorNode () override;
+	void MakeSound () override { S_SoundID (m_Actor, CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
+	void MakeLoopedSound () override { S_LoopedSoundID (m_Actor, CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
+	bool IsPlaying () override { return S_GetSoundPlayingInfo (m_Actor, m_CurrentSoundID); }
+	void *Source () override { return m_Actor; }
 	virtual void DestroyedPointer(DObject *obj);
 private:
 	DSeqActorNode () {}
@@ -111,11 +111,11 @@ class DSeqPolyNode : public DSeqNode
 	DECLARE_SERIAL (DSeqPolyNode, DSeqNode)
 public:
 	DSeqPolyNode (polyobj_t *poly, int sequence);
-	~DSeqPolyNode ();
-	void MakeSound () { S_SoundID (&m_Poly->startSpot[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
-	void MakeLoopedSound () { S_LoopedSoundID (&m_Poly->startSpot[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
-	bool IsPlaying () { return S_GetSoundPlayingInfo (&m_Poly->startSpot[0], m_CurrentSoundID); }
-	void *Source () { return m_Poly; }
+	~DSeqPolyNode () override;
+	void MakeSound () override { S_SoundID (&m_Poly->startSpot[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
+	void MakeLoopedSound () override { S_LoopedSoundID (&m_Poly->startSpot[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
+	bool IsPlaying () override { return S_GetSoundPlayingInfo (&m_Poly->startSpot[0], m_CurrentSoundID); }
+	void *Source () override { return m_Poly; }
 private:
 	DSeqPolyNode () {}
 	polyobj_t *m_Poly;
@@ -126,11 +126,11 @@ class DSeqSectorNode : public DSeqNode
 	DECLARE_SERIAL (DSeqSectorNode, DSeqNode)
 public:
 	DSeqSectorNode (sector_t *sec, int sequence);
-	~DSeqSectorNode ();
-	void MakeSound () { S_SoundID (&m_Sector->soundorg[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
-	void MakeLoopedSound () { S_LoopedSoundID (&m_Sector->soundorg[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
-	bool IsPlaying () { return S_GetSoundPlayingInfo (m_Sector->soundorg, m_CurrentSoundID); }
-	void *Source () { return m_Sector; }
+	~DSeqSectorNode () override;
+	void MakeSound () override { S_SoundID (&m_Sector->soundorg[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
+	void MakeLoopedSound () override { S_LoopedSoundID (&m_Sector->soundorg[0], CHAN_BODY, m_CurrentSoundID, m_Volume, m_Atten); }
+	bool IsPlaying () override { return S_GetSoundPlayingInfo (m_Sector->soundorg, m_CurrentSoundID); }
+	void *Source () override { return m_Sector; }
 private:
 	DSeqSectorNode() {}
 	sector_t *m_Sector;
@@ -440,7 +440,7 @@ void S_ParseSndSeq()
 		    true,     // cComments
 		};
 		OScanner os = OScanner::openBuffer(config, buffer, buffer + W_LumpLength(lump));
-		
+
 		while (os.scan())
 		{
 			std::string str = os.getToken();
@@ -886,7 +886,7 @@ void DSeqNode::RunThink ()
 		Destroy ();
 		break;
 
-	default:	
+	default:
 		break;
 	}
 }
@@ -923,7 +923,7 @@ void SN_StopAllSequences (void)
 		node = next;
 	}
 }
-	
+
 //==========================================================================
 //
 //  SN_GetSequenceOffset

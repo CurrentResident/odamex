@@ -128,18 +128,18 @@ public:
 		// [SL] quickly convert the table value (-1 or 1) into (-pitch or pitch).
 		// [AM] Replaced with a multiply that returns accurate results.  Hopefully
 		//      we can find a way to improve upon an imul someday.
-		int pitch = R_GetRenderingSurface()->getPitchInPixels();
-		int value = table[pos];
+		const int pitch = R_GetRenderingSurface()->getPitchInPixels();
+		const int value = table[pos];
 		return pitch * value;
 	}
 
 private:
-	static const size_t size = 64;
+	static constexpr size_t size = 64;
 	static const int table[FuzzTable::size];
 	int pos;
 };
 
-const int FuzzTable::table[FuzzTable::size] = {
+constexpr int FuzzTable::table[FuzzTable::size] = {
 		1,-1, 1,-1, 1, 1,-1, 1,
 		1,-1, 1, 1, 1,-1, 1, 1,
 		1,-1,-1,-1,-1, 1,-1,-1,
@@ -216,17 +216,19 @@ argb_t translationRGB[MAXPLAYERS+1][16];
 byte *Ranges;
 static byte *translationtablesmem = NULL;
 byte bosstable[256];
+byte greentable[MAXPLAYERS + 1][256];
+byte redtable[MAXPLAYERS + 1][256];
 
 static void R_BuildFontTranslation(int color_num, argb_t start_color, argb_t end_color)
 {
-	const palindex_t chexstart_index = 0x70;
-	const palindex_t chexend_index = 0x7F;
-	const palindex_t hacxstart_index = 0xC3;
-	const palindex_t hacxmid1_index = 0xCF;
-	const palindex_t hacxmid2_index = 0xF0;
-	const palindex_t hacxend_index = 0xF2;
-	const palindex_t start_index = 0xB0;
-	const palindex_t end_index = 0xBF;
+	constexpr palindex_t chexstart_index = 0x70;
+	constexpr palindex_t chexend_index = 0x7F;
+	constexpr palindex_t hacxstart_index = 0xC3;
+	constexpr palindex_t hacxmid1_index = 0xCF;
+	constexpr palindex_t hacxmid2_index = 0xF0;
+	constexpr palindex_t hacxend_index = 0xF2;
+	constexpr palindex_t start_index = 0xB0;
+	constexpr palindex_t end_index = 0xBF;
 	const int index_range = end_index - start_index + 1;
 
 	palindex_t* dest = (palindex_t*)Ranges + color_num * 256;
@@ -264,11 +266,11 @@ static void R_BuildFontTranslation(int color_num, argb_t start_color, argb_t end
 	{
 		for (palindex_t index = chexstart_index; index <= chexend_index; index++)
 		{
-			int i = index - chexstart_index;
+			const int i = index - chexstart_index;
 
-			int r = start_color.getr() + i * r_diff / index_range;
-			int g = start_color.getg() + i * g_diff / index_range;
-			int b = start_color.getb() + i * b_diff / index_range;
+			const int r = start_color.getr() + i * r_diff / index_range;
+			const int g = start_color.getg() + i * g_diff / index_range;
+			const int b = start_color.getb() + i * b_diff / index_range;
 
 			dest[index] = V_BestColor(V_GetDefaultPalette()->basecolors, r, g, b);
 		}
@@ -331,6 +333,52 @@ static byte SoftLight(const byte bot, const byte top)
 	return res * 255;
 }
 
+void R_RebuildPlayerGreenTintTables(int player)
+{
+	argb_t gtop(0x62, 0xff, 0x5c);
+	for (size_t i = 0; i < ARRAY_LENGTH(::greentable[player]); i++)
+	{
+		argb_t bot = argb_t();
+		if (i > 0x70 && i < 0x80)
+		{
+			bot = translationRGB[player][i - 0x70];
+		}
+		else
+		{
+			bot = V_GetDefaultPalette()->basecolors[i];
+		}
+
+		const argb_t mul(SoftLight(bot.getr(), gtop.getr()),
+		                 SoftLight(bot.getg(), gtop.getg()),
+		                 SoftLight(bot.getb(), gtop.getb()));
+
+		::greentable[player][i] = V_BestColor(V_GetDefaultPalette()->basecolors, mul);
+	}
+}
+
+void R_RebuildPlayerRedTintTables(int player)
+{
+	argb_t rtop(0xff, 0x28, 0x28);
+	for (size_t i = 0; i < ARRAY_LENGTH(::redtable[player]); i++)
+	{
+		argb_t bot = argb_t();
+		if (i > 0x70 && i < 0x80)
+		{
+			bot = translationRGB[player][i - 0x70];
+		}
+		else
+		{
+			bot = V_GetDefaultPalette()->basecolors[i];
+		}
+
+		const argb_t mul(SoftLight(bot.getr(), rtop.getr()),
+		                 SoftLight(bot.getg(), rtop.getg()),
+		                 SoftLight(bot.getb(), rtop.getb()));
+
+		::redtable[player][i] = V_BestColor(V_GetDefaultPalette()->basecolors, mul);
+	}
+}
+
 //
 // R_InitTranslationTables
 //
@@ -344,13 +392,13 @@ void R_InitTranslationTables()
     R_FreeTranslationTables();
 
 	// Boss translation is a yellow tint.
-	argb_t top(0xff, 0xff, 0x73);
+    const argb_t ytop(0xff, 0xff, 0x73);
 	for (size_t i = 0; i < ARRAY_LENGTH(::bosstable); i++)
 	{
 		const argb_t bot = V_GetDefaultPalette()->basecolors[i];
-		const argb_t mul(SoftLight(bot.getr(), top.getr()),
-		                 SoftLight(bot.getg(), top.getg()),
-		                 SoftLight(bot.getb(), top.getb()));
+		const argb_t mul(SoftLight(bot.getr(), ytop.getr()),
+		                 SoftLight(bot.getg(), ytop.getg()),
+		                 SoftLight(bot.getb(), ytop.getb()));
 
 		::bosstable[i] = V_BestColor(V_GetDefaultPalette()->basecolors, mul);
 	}
@@ -387,6 +435,13 @@ void R_InitTranslationTables()
 		translationtables[i+(MAXPLAYERS+0)*256] = 0x60 + (i&0xf);
 		translationtables[i+(MAXPLAYERS+1)*256] = 0x40 + (i&0xf);
 		translationtables[i+(MAXPLAYERS+2)*256] = 0x20 + (i&0xf);
+	}
+
+	// Create powerup tints by grabbing each players rgb translation table
+	for (int i = 0; i < MAXPLAYERS + 1; i++)
+	{
+		R_RebuildPlayerGreenTintTables(i);
+		R_RebuildPlayerRedTintTables(i);
 	}
 
 	Ranges = translationtables + (MAXPLAYERS+3)*256;
@@ -446,6 +501,12 @@ void R_BuildClassicPlayerTranslation (int player, int color)
 		}
 }
 
+void R_RebuildPlayerTintTables(int playerid)
+{
+	R_RebuildPlayerGreenTintTables(playerid);
+	R_RebuildPlayerRedTintTables(playerid);
+}
+
 void R_CopyTranslationRGB (int fromplayer, int toplayer)
 {
 	for (int i = 0x70; i < 0x80; ++i)
@@ -453,6 +514,8 @@ void R_CopyTranslationRGB (int fromplayer, int toplayer)
 		translationRGB[toplayer][i - 0x70] = translationRGB[fromplayer][i - 0x70];
 		translationtables[i+(toplayer * 256)] = translationtables[i+(fromplayer * 256)];
 	}
+
+	R_RebuildPlayerTintTables(toplayer);
 }
 
 // [RH] Create a player's translation table based on
@@ -462,8 +525,9 @@ void R_BuildPlayerTranslation(int player, argb_t dest_color)
 	const palette_t* pal = V_GetDefaultPalette();
 	byte* table = &translationtables[player * 256];
 
-	fahsv_t hsv_temp = V_RGBtoHSV(dest_color);
-	float h = hsv_temp.geth(), s = hsv_temp.gets(), v = hsv_temp.getv();
+	const fahsv_t hsv_temp = V_RGBtoHSV(dest_color);
+	const float h = hsv_temp.geth();
+	float s = hsv_temp.gets(), v = hsv_temp.getv();
 
 	s -= 0.23f;
 	if (s < 0.0f)
@@ -477,7 +541,7 @@ void R_BuildPlayerTranslation(int player, argb_t dest_color)
 
 	for (int i = 0x70; i < 0x80; i++)
 	{
-		argb_t color(V_HSVtoRGB(fahsv_t(h, s, v)));
+		const argb_t color(V_HSVtoRGB(fahsv_t(h, s, v)));
 
 		// Set up RGB values for 32bpp translation:
 		translationRGB[player][i - 0x70] = color;
@@ -685,7 +749,7 @@ static forceinline void R_DrawColumnGeneric(PIXEL_T* dest, const drawcolumn_t& d
 			colorfunc(source[(frac >> FRACBITS) & mask], dest);
 			dest += pitch; frac += fracstep;
 			colorfunc(source[(frac >> FRACBITS) & mask], dest);
-			dest += pitch; frac += fracstep;
+			dest += pitch;
 		}
 	}
 }
@@ -828,8 +892,8 @@ static forceinline void R_DrawSlopedSpanGeneric(PIXEL_T* dest, const drawspan_t&
 		const float uend = iu * mulend;
 		const float vend = iv * mulend;
 
-		fixed_t ustep = (fixed_t)((uend - ustart) * INTERPSTEP);
-		fixed_t vstep = (fixed_t)((vend - vstart) * INTERPSTEP);
+		const fixed_t ustep = (fixed_t)((uend - ustart) * INTERPSTEP);
+		const fixed_t vstep = (fixed_t)((vend - vstart) * INTERPSTEP);
 
 		int incount = SPANJUMP;
 		while (incount--)
@@ -864,8 +928,8 @@ static forceinline void R_DrawSlopedSpanGeneric(PIXEL_T* dest, const drawspan_t&
 		const float uend = iu * mulend;
 		const float vend = iv * mulend;
 
-		fixed_t ustep = (fixed_t)((uend - ustart) / count);
-		fixed_t vstep = (fixed_t)((vend - vstart) / count);
+		const fixed_t ustep = (fixed_t)((uend - ustart) / count);
+		const fixed_t vstep = (fixed_t)((vend - vstart) / count);
 
 		int incount = count;
 		while (incount--)
@@ -874,7 +938,7 @@ static forceinline void R_DrawSlopedSpanGeneric(PIXEL_T* dest, const drawspan_t&
 
 			const int spot = ((vfrac >> 10) & 0xFC0) | ((ufrac >> 16) & 63);
 			colorfunc(source[spot], dest);
-			dest++;
+			++dest;
 			ufrac += ustep;
 			vfrac += vstep;
 		}
@@ -1266,7 +1330,7 @@ public:
 
 	forceinline void operator()(byte c, argb_t* dest) const
 	{
-		argb_t work = dest[fuzztable.getValue()];
+		const argb_t work = dest[fuzztable.getValue()];
 		*dest = work - ((work >> 2) & 0x3f3f3f);
 		fuzztable.incrementRow();
 	}
@@ -1289,8 +1353,8 @@ public:
 
 	forceinline void operator()(byte c, argb_t* dest) const
 	{
-		argb_t fg = colormap.shade(c);
-		argb_t bg = *dest;
+		const argb_t fg = colormap.shade(c);
+		const argb_t bg = *dest;
 		*dest = alphablend2a(bg, bga, fg, fga);
 	}
 
@@ -1535,7 +1599,7 @@ void R_InitializeScreenblocksCanvas()
 	    surface_height = primary_surface->getHeight();
 
 	// background
-	int lumpnum = W_CheckNumForName(::gameinfo.borderFlat, ns_flats);
+	int lumpnum = W_CheckNumForName(::gameinfo.borderFlat.c_str(), ns_flats);
 
 	// Draw screenblocks to a 320x200 surface and scale it based on viewport height
 	// If it doesn't reach the side edges of viewport or over, scale it via
@@ -1614,15 +1678,11 @@ void R_DrawViewBorder()
 		return;
 
 	IWindowSurface* surface = R_GetRenderingSurface();
-	DCanvas* canvas = surface->getDefaultCanvas();
-	int surface_width = surface->getWidth();
-	int surface_height = surface->getHeight();
-	int top = 0, bottom = ST_StatusBarY(surface_width, surface_height);
-	int left = 0, right = surface_width;
-
-	const gameborder_t* border = gameinfo.border;
-	const int offset = border->offset;
-	const int size = border->size;
+	const DCanvas* canvas = surface->getDefaultCanvas();
+	const int surface_width = surface->getWidth();
+	const int surface_height = surface->getHeight();
+	const int top = 0, bottom = ST_StatusBarY(surface_width, surface_height);
+	const int left = 0, right = surface_width;
 
 	// draw top border
 	R_DrawBorder(left, top, right, viewwindowy);
@@ -1633,25 +1693,32 @@ void R_DrawViewBorder()
 	// draw right border
 	R_DrawBorder(viewwindowx + viewwidth, viewwindowy, right, viewwindowy + viewheight);
 
+	const gameborder_t& border = gameinfo.border;
+	const int offset = border.offset;
+	const int size = border.size;
+
+	if (size == 0)
+		return;
+
 	// draw beveled edge for the viewing window's top and bottom edges
 	for (int x = viewwindowx; x < viewwindowx + viewwidth; x += size)
 	{
-		canvas->DrawPatch(W_CachePatch(border->t), x, viewwindowy - offset);
-		canvas->DrawPatch(W_CachePatch(border->b), x, viewwindowy + viewheight);
+		canvas->DrawPatch(W_CachePatch(border.t.c_str()), x, viewwindowy - offset);
+		canvas->DrawPatch(W_CachePatch(border.b.c_str()), x, viewwindowy + viewheight);
 	}
 
 	// draw beveled edge for the viewing window's left and right edges
 	for (int y = viewwindowy; y < viewwindowy + viewheight; y += size)
 	{
-		canvas->DrawPatch(W_CachePatch(border->l), viewwindowx - offset, y);
-		canvas->DrawPatch(W_CachePatch(border->r), viewwindowx + viewwidth, y);
+		canvas->DrawPatch(W_CachePatch(border.l.c_str()), viewwindowx - offset, y);
+		canvas->DrawPatch(W_CachePatch(border.r.c_str()), viewwindowx + viewwidth, y);
 	}
 
 	// draw beveled edge for the viewing window's corners
-	canvas->DrawPatch(W_CachePatch(border->tl), viewwindowx - offset, viewwindowy - offset);
-	canvas->DrawPatch(W_CachePatch(border->tr), viewwindowx + viewwidth, viewwindowy - offset);
-	canvas->DrawPatch(W_CachePatch(border->bl), viewwindowx - offset, viewwindowy + viewheight);
-	canvas->DrawPatch(W_CachePatch(border->br), viewwindowx + viewwidth, viewwindowy + viewheight);
+	canvas->DrawPatch(W_CachePatch(border.tl.c_str()), viewwindowx - offset, viewwindowy - offset);
+	canvas->DrawPatch(W_CachePatch(border.tr.c_str()), viewwindowx + viewwidth, viewwindowy - offset);
+	canvas->DrawPatch(W_CachePatch(border.bl.c_str()), viewwindowx - offset, viewwindowy + viewheight);
+	canvas->DrawPatch(W_CachePatch(border.br.c_str()), viewwindowx + viewwidth, viewwindowy + viewheight);
 
 	V_MarkRect(left, top, right, bottom);
 }

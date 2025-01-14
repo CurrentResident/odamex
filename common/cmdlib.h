@@ -91,7 +91,6 @@ std::string JoinStrings(const std::vector<std::string> &pieces, const std::strin
 typedef std::vector<std::string> StringTokens;
 StringTokens TokenizeString(const std::string& str, const std::string& delim);
 
-FORMAT_PRINTF(2, 3) void STACK_ARGS StrFormat(std::string& out, const char* fmt, ...);
 void STACK_ARGS VStrFormat(std::string& out, const char* fmt, va_list va);
 
 void StrFormatBytes(std::string& out, size_t bytes);
@@ -113,7 +112,7 @@ float NextAfter(const float from, const float to);
 
 /**
  * @brief Initialize an array with a specific value.
- * 
+ *
  * @tparam A Array type to initialize.
  * @tparam T Value type to initialize with.
  * @param dst Array to initialize.
@@ -128,10 +127,10 @@ static void ArrayInit(A& dst, const T& val)
 
 /**
  * @brief Copy the complete contents of an array from one to the other.
- * 
+ *
  * @detail Both params are templated in case the destination's type doesn't
  *         line up 100% with the source.
- * 
+ *
  * @tparam A1 Destination array type.
  * @tparam A2 Source array type.
  * @param dst Destination array to write to.

@@ -206,8 +206,8 @@ private:
 	typedef OHashTable<KT, VT, HF> HashTableType;
 
 	typedef unsigned int IndexType;
-	static const unsigned int MAX_CAPACITY	= 65536;
-	static const IndexType NOT_FOUND		= HashTableType::MAX_CAPACITY;
+	static constexpr unsigned int MAX_CAPACITY	= 65536;
+	static constexpr IndexType NOT_FOUND		= HashTableType::MAX_CAPACITY;
 
 	struct Bucket
 	{
@@ -230,7 +230,7 @@ public:
 	typedef generic_iterator<const HashPairType, const HashTableType> const_iterator;
 
 	template <typename IVT, typename IHTT>
-	class generic_iterator : public std::iterator<std::forward_iterator_tag, OHashTable>
+	class generic_iterator
 	{
 	private:
 		// typedef for easier-to-read code
@@ -238,6 +238,12 @@ public:
 		typedef generic_iterator<const IVT, const IHTT> ConstThisClass;
 
 	public:
+		using iterator_category = std::forward_iterator_tag;
+		using value_type = OHashTable;
+		using difference_type = std::ptrdiff_t;
+		using pointer = value_type*;
+		using reference = value_type&;
+
 		generic_iterator() :
 			mBucketNum(IHTT::NOT_FOUND), mHashTable(NULL)
 		{ }

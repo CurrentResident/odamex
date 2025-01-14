@@ -513,6 +513,7 @@ BOOL EV_DoPlat (int tag, line_t *line, DPlat::EPlatType type, fixed_t height,
 	{
 	case DPlat::platToggle:
 		rtn = true;
+		[[fallthrough]];
 	case DPlat::platPerpetualRaise:
 		P_ActivateInStasis (tag);
 		break;

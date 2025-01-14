@@ -157,6 +157,7 @@ EXTERN_CVAR(sv_nomonsters)
 EXTERN_CVAR(sv_fastmonsters)
 EXTERN_CVAR(sv_freelook)
 EXTERN_CVAR(sv_allowjump)
+EXTERN_CVAR(sv_showplayerpowerups)
 EXTERN_CVAR(co_zdoomphys)
 EXTERN_CVAR(co_fixweaponimpacts)
 EXTERN_CVAR(co_blockmapfix)
@@ -1362,7 +1363,7 @@ bool G_CheckSpot (player_t &player, mapthing2_t *mthing)
 			}
 		}
 
-		mo = new AActor (x+20*xa, y+20*ya, z, MT_TFOG);
+		mo = new AActor(x + 20 * xa, y + 20 * ya, z + INT2FIXED(gameinfo.telefogHeight), MT_TFOG);
 
 		if (level.time)
 			S_Sound (mo, CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);	// don't start sound on first frame
@@ -1691,7 +1692,7 @@ void G_BuildSaveName(std::string &name, int slot)
 #else
 	std::string path = M_GetUserFileName(name.c_str());
 #endif
-	StrFormat(name, "%s" PATHSEP "odasv%d.ods", path.c_str(), slot);
+	name = fmt::sprintf("%s" PATHSEP "odasv%d.ods", path.c_str(), slot);
 }
 
 void G_DoSaveGame()
@@ -2032,6 +2033,7 @@ void G_DoPlayDemo(bool justStreamInput)
 			}
 
 			sv_respawnsuper.Set(0.0f);
+			sv_showplayerpowerups.Set(0.0f);
 
 			usergame = false;
 		}

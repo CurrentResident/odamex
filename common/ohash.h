@@ -42,7 +42,7 @@ class OHash
 class OMD5Hash : public OHash
 {
   protected:
-	void concrete() { }
+	void concrete() override { }
 
   public:
 	static bool makeFromHexStr(OMD5Hash& out, const std::string& hash);
@@ -51,7 +51,7 @@ class OMD5Hash : public OHash
 class OCRC32Sum : public OHash
 {
   protected:
-	void concrete() { }
+	void concrete() override { }
 
   public:
 	static bool makeFromHexStr(OCRC32Sum& out, const std::string& hash);

@@ -452,8 +452,8 @@ bool OTransfer::tick()
 		{
 			ext = std::string(".") + ext;
 		}
-		StrFormat(fallback, "%s%s%s.%s%s", path.c_str(), PATHSEP, base.c_str(),
-		          actualHash.getHexStr().substr(0, 6).c_str(), ext.c_str());
+		fallback = fmt::sprintf("%s%s%s.%s%s", path.c_str(), PATHSEP, base.c_str(),
+		                        actualHash.getHexStr().substr(0, 6).c_str(), ext.c_str());
 
 		// Try one more time.
 		ok = rename(m_filePart.c_str(), fallback.c_str());
@@ -462,9 +462,8 @@ bool OTransfer::tick()
 			// Something is seriously wrong with our writable directory.
 			m_shouldCheckAgain = false;
 
-			std::string buf;
-			StrFormat(buf, "File %s could not be renamed to %s - %s", m_filePart.c_str(),
-			          m_filename.c_str(), strerror(errno));
+			std::string buf = fmt::sprintf("File %s could not be renamed to %s - %s", m_filePart.c_str(),
+			                               m_filename.c_str(), strerror(errno));
 			m_errorProc(buf.c_str());
 			return false;
 		}

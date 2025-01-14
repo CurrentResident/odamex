@@ -1585,7 +1585,7 @@ bool SV_CheckClientVersion(client_t *cl, Players::iterator it)
 		GameVer = MSG_ReadLong();
 		BREAKVER(GameVer, cl_major, cl_minor, cl_patch);
 
-		StrFormat(VersionStr, "%d.%d.%d", cl_major, cl_minor, cl_patch);
+		VersionStr = fmt::sprintf("%d.%d.%d", cl_major, cl_minor, cl_patch);
 
 		cl->packedversion = GameVer;
 
@@ -1621,8 +1621,7 @@ bool SV_CheckClientVersion(client_t *cl, Players::iterator it)
 		if (msg.empty())
 		{
 			// Failsafe.
-			StrFormat(
-			    msg,
+			msg = fmt::sprintf(
 			    "Your version of Odamex does not match the server %s.\nFor updates, "
 			    "visit https://odamex.net/\n",
 			    DOTVERSIONSTR);
@@ -1672,7 +1671,7 @@ static void SV_DisconnectOldClient()
 	if (msg.empty())
 	{
 		// Failsafe.
-		StrFormat(msg,
+		msg = fmt::sprintf(
 		          "Your version of Odamex does not match the server %s.\nFor updates, "
 		          "visit https://odamex.net/\n",
 		          DOTVERSIONSTR);
@@ -2836,7 +2835,7 @@ void SV_UpdateGametype(player_t& pl)
 {
 	if (G_IsHordeMode())
 	{
-		static hordeInfo_t lastInfo = {HS_STARTING, -1, -1, -1, 0, 0, -1, -1, -1, -1, -1};
+		static hordeInfo_t lastInfo = {HS_STARTING, -1, -1, -1, 0, -1, -1, -1, -1, -1};
 		static int ticsent;
 
 		// If the hordeinfo has changed since last tic, save and send it.
@@ -4362,22 +4361,21 @@ BEGIN_COMMAND(playerlist)
 		}
 
 		std::string strMain, strScore;
-		StrFormat(strMain, "(%02d): %s %s - %s - time:%d - ping:%d", it->id,
-		          it->userinfo.netname.c_str(), it->spectator ? "(SPEC)" : "",
-		          NET_AdrToString(it->client.address), it->GameTime, it->ping);
+		strMain = fmt::sprintf("(%02d): %s %s - %s - time:%d - ping:%d", it->id,
+		                       it->userinfo.netname.c_str(), it->spectator ? "(SPEC)" : "",
+		                       NET_AdrToString(it->client.address), it->GameTime, it->ping);
 
 		if (G_IsCoopGame())
 		{
 			if (G_IsLivesGame())
 			{
 				// Kills and Lives
-				StrFormat(strScore, " - kills:%d - lives:%d", it->killcount, it->lives);
+				strScore = fmt::sprintf(" - kills:%d - lives:%d", it->killcount, it->lives);
 			}
 			else
 			{
 				// Kills and Deaths
-				StrFormat(strScore, " - kills:%d - deaths:%d", it->killcount,
-				          it->deathcount);
+				strScore = fmt::sprintf(" - kills:%d - deaths:%d", it->killcount, it->deathcount);
 			}
 		}
 		else if (sv_gametype == GM_DM)
@@ -4385,13 +4383,13 @@ BEGIN_COMMAND(playerlist)
 			if (G_IsLivesGame())
 			{
 				// Wins, Lives, and Frags
-				StrFormat(strScore, " - wins:%d - lives:%d - frags:%d", it->roundwins,
+				strScore = fmt::sprintf(" - wins:%d - lives:%d - frags:%d", it->roundwins,
 				          it->lives, frags);
 			}
 			else
 			{
 				// Frags, Deaths
-				StrFormat(strScore, " - frags:%d - deaths:%d", frags, deaths);
+				strScore = fmt::sprintf(" - frags:%d - deaths:%d", frags, deaths);
 			}
 		}
 		else if (sv_gametype == GM_TEAMDM)
@@ -4399,12 +4397,12 @@ BEGIN_COMMAND(playerlist)
 			if (G_IsLivesGame())
 			{
 				// Frags and Lives
-				StrFormat(strScore, " - frags:%d - lives:%d", frags, it->lives);
+				strScore = fmt::sprintf(" - frags:%d - lives:%d", frags, it->lives);
 			}
 			else
 			{
 				// Frags
-				StrFormat(strScore, " - frags:%d", frags);
+				strScore = fmt::sprintf(" - frags:%d", frags);
 			}
 		}
 		else if (sv_gametype == GM_CTF)
@@ -4412,13 +4410,13 @@ BEGIN_COMMAND(playerlist)
 			if (G_IsLivesGame())
 			{
 				// Points and Lives
-				StrFormat(strScore, " - points:%d - lives:%d", points, it->lives);
+				strScore = fmt::sprintf(" - points:%d - lives:%d", points, it->lives);
 			}
 			else
 			{
 				// Points and Frags
 				// Special case here: frags will only be from the current round, not global.
-				StrFormat(strScore, " - points:%d - frags:%d", points, it->fragcount);
+				strScore = fmt::sprintf(" - points:%d - frags:%d", points, it->fragcount);
 			}
 		}
 

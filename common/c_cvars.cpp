@@ -153,7 +153,7 @@ void cvar_t::ForceSet(const char* valstr)
 	// [SL] 2013-04-16 - Latched CVARs do not change values until the next map.
 	// Servers and single-player games should abide by this behavior but
 	// multiplayer clients should just do what the server tells them.
-	if (m_Flags & CVAR_LATCH && serverside && 
+	if (m_Flags & CVAR_LATCH && serverside &&
 		(gamestate == GS_LEVEL || gamestate == GS_INTERMISSION))
 	{
 		m_Flags |= CVAR_MODIFIED;
@@ -331,12 +331,10 @@ void cvar_t::FilterCompactCVars (TArray<cvar_t *> &cvars, DWORD filter)
 	}
 }
 
-// Uses sprintf's return value (number of chars written) to advance
+// Uses snprintf's return value (number of chars written) to advance
 // a pointer of an array of chars to write out a packed byte array
-// of cvars.
-// 
-// To rewrite it for snprintf, we need the base array size
-// which we'll subtract from the total every advancement
+// of cvars, subtracting the base array size from the total after
+// each advancement.
 void cvar_t::C_WriteCVars (byte **demo_p, DWORD filter, size_t array_size, bool compact)
 {
 	if (array_size <= 0)
@@ -633,7 +631,7 @@ static std::string C_GetValueString(const cvar_t* var)
 	if (atof(var->cstring()) == 0.0f)
 		return "disabled";
 	else
-		return "enabled";	
+		return "enabled";
 }
 
 static std::string C_GetLatchedValueString(const cvar_t* var)
@@ -646,9 +644,7 @@ static std::string C_GetLatchedValueString(const cvar_t* var)
 
 	if (var->flags() & CVAR_NOENABLEDISABLE)
 	{
-		std::string str = "";
-		StrFormat(str, "\"%s\"", var->latched());
-		return str;
+		return fmt::sprintf("\"%s\"", var->latched());
 	}
 
 	if (atof(var->latched()) == 0.0f)

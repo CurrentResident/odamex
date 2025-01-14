@@ -51,12 +51,6 @@
 	#define FORMAT_PRINTF(index, first_arg) __attribute__ ((format(printf, index, first_arg)))
 #endif
 
-#ifdef _MSC_VER
-	#define NORETURN __declspec(noreturn)
-#else
-	#define NORETURN __attribute__ ((noreturn))
-#endif
-
 // [RH] Some windows includes already define this
 #if !defined(_WINDEF_) && !defined(__wtypes_h__) && !defined(GEKKO)
 typedef int BOOL;
@@ -185,9 +179,9 @@ typedef uint64_t			dtime_t;
 
 /**
  * @brief Returns a bitfield with a range of bits set from a to b, inclusive.
- * 
+ *
  * @param a Low bit in the mask.
- * @param b High bit in the mask. 
+ * @param b High bit in the mask.
  */
 static inline uint32_t BIT_MASK(uint32_t a, uint32_t b)
 {
@@ -235,7 +229,7 @@ typedef enum {
 
 	PRINT_NORCON,		// Do NOT send the message to any rcon client.
 
-	PRINT_FILTERCHAT,	// Filter the message to not be displayed ingame, but only in the console (ugly hack)		
+	PRINT_FILTERCHAT,	// Filter the message to not be displayed ingame, but only in the console (ugly hack)
 
 	PRINT_MAXPRINT
 } printlevel_t;
@@ -249,7 +243,7 @@ typedef enum {
 	#undef MIN
 #endif
 template<class T>
-forceinline const T MIN (const T a, const T b)
+forceinline constexpr T MIN(const T a, const T b)
 {
 	return a < b ? a : b;
 }
@@ -263,7 +257,7 @@ forceinline const T MIN (const T a, const T b)
 	#undef MAX
 #endif
 template<class T>
-forceinline const T MAX (const T a, const T b)
+forceinline constexpr T MAX (const T a, const T b)
 {
 	return a > b ? a : b;
 }
@@ -280,7 +274,7 @@ forceinline const T MAX (const T a, const T b)
 	#undef clamp
 #endif
 template<class T>
-forceinline T clamp (const T in, const T min, const T max)
+forceinline constexpr T clamp(const T in, const T min, const T max)
 {
 	return in <= min ? min : in >= max ? max : in;
 }
@@ -289,7 +283,7 @@ forceinline T clamp (const T in, const T min, const T max)
 // ARRAY_LENGTH
 //
 // Safely counts the number of items in an C array.
-// 
+//
 // https://www.drdobbs.com/cpp/counting-array-elements-at-compile-time/197800525?pgno=1
 //
 #define ARRAY_LENGTH(arr) ( \

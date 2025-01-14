@@ -1045,8 +1045,6 @@ void P_LoadLineDefs (const int lump)
 	// We'll fix this for now by just checking for the E2M7 FarmHash
 	const std::string e2m7hash = "43ffa244f5ae923b7df59dbf511c0468";
 
-	std::string levelHash;
-
 	// [Blair] Serialize the hashes before reading.
 	uint64_t reconsthash1 = (uint64_t)(::level.level_fingerprint[0]) |
 	                        (uint64_t)(::level.level_fingerprint[1]) << 8 |
@@ -1066,7 +1064,7 @@ void P_LoadLineDefs (const int lump)
 	                        (uint64_t)(::level.level_fingerprint[14]) << 48 |
 	                        (uint64_t)(::level.level_fingerprint[15]) << 56;
 
-	StrFormat(levelHash, "%16llx%16llx", reconsthash1, reconsthash2);
+	std:: string levelHash = fmt::sprintf("%16llx%16llx", reconsthash1, reconsthash2);
 
 	bool isE2M7 = (levelHash == e2m7hash);
 

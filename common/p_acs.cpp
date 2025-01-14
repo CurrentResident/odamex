@@ -1105,7 +1105,7 @@ public:
 				 float r2, float g2, float b2, float a2,
 				 float time, AActor *who);
 	~DFlashFader ();
-	virtual void RunThink ();
+	void RunThink () override;
 	virtual void DestroyedPointer(DObject *obj);
 	AActor *WhoFor() { return ForWho; }
 	void Cancel ();
@@ -1215,7 +1215,7 @@ public:
 	DPlaneWatcher (AActor *it, line_t *line, int lineSide, bool ceiling,
 		int tag, int height, int special,
 		int arg0, int arg1, int arg2, int arg3, int arg4);
-	virtual void RunThink ();
+	void RunThink () override;
 	virtual void DestroyedPointer(DObject *obj);
 private:
 	sector_t *Sector;

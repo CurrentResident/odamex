@@ -39,6 +39,8 @@
 #include "i_system.h"
 #include "cmdlib.h"
 
+#include "fmt/ranges.h"
+
 #ifdef GEKKO
 #include "i_wii.h"
 #endif
@@ -327,15 +329,7 @@ std::vector<std::string> VectorArgs(size_t argc, char **argv) {
 
 // [AM] Return a joined string based on a vector of strings
 std::string JoinStrings(const std::vector<std::string> &pieces, const std::string &glue) {
-	std::ostringstream result;
-	for (std::vector<std::string>::const_iterator it = pieces.begin();
-		 it != pieces.end();++it) {
-		result << *it;
-		if (it != (pieces.end() - 1)) {
-			result << glue;
-		}
-	}
-	return result.str();
+	return fmt::format("{}", fmt::join(pieces, glue));
 }
 
 // Tokenize a string
@@ -355,17 +349,6 @@ StringTokens TokenizeString(const std::string& str, const std::string& delim) {
 	}
 
 	return tokens;
-}
-
-//
-// A quick and dirty std::string formatting that uses snprintf under the covers.
-//
-FORMAT_PRINTF(2, 3) void STACK_ARGS StrFormat(std::string& out, const char* fmt, ...)
-{
-	va_list va;
-	va_start(va, fmt);
-	VStrFormat(out, fmt, va);
-	va_end(va);
 }
 
 //
@@ -426,9 +409,9 @@ void StrFormatBytes(std::string& out, size_t bytes)
 	}
 
 	if (magnitude)
-		StrFormat(out, "%.2f %s", checkbytes, BYTE_MAGS[magnitude]);
+		out = fmt::sprintf("%.2f %s", checkbytes, BYTE_MAGS[magnitude]);
 	else
-		StrFormat(out, "%.0f %s", checkbytes, BYTE_MAGS[magnitude]);
+		out = fmt::sprintf("%.0f %s", checkbytes, BYTE_MAGS[magnitude]);
 }
 
 // [AM] Format a tm struct as an ISO8601-compliant extended format string.
@@ -791,7 +774,7 @@ double Remap(const double value, const double low1, const double high1, const do
 uint32_t Log2(uint32_t n)
 {
 	#define LT(n) n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n
-	static const signed char LogTable256[256] =
+	static constexpr signed char LogTable256[256] =
 	{
 		-1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
 		LT(4), LT(5), LT(5), LT(6), LT(6), LT(6), LT(6),

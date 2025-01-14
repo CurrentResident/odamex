@@ -273,8 +273,6 @@ void R_GenerateLookup(int texnum, int *const errors); // from r_data.cpp
 
 void R_InitSkyMap()
 {
-	fixed_t fskyheight;
-
 	if (textureheight == NULL)
 		return;
 
@@ -284,7 +282,7 @@ void R_InitSkyMap()
 
 	sky_t* defaultsky = skyflatlookup[skyflatnum];
 
-	fskyheight = textureheight[defaultsky->background.texnum];
+	const fixed_t fskyheight = textureheight[defaultsky->background.texnum];
 
 	if (fskyheight <= (128 << FRACBITS))
 	{
@@ -678,7 +676,7 @@ void R_SetDefaultSky(const char* sky)
 //
 // R_BlastSkyColumn
 //
-static inline void R_BlastSkyColumn(void (*drawfunc)(void))
+static inline void R_BlastSkyColumn(void (*drawfunc)())
 {
 	if (dcol.yl <= dcol.yh)
 	{
@@ -721,7 +719,7 @@ void R_RenderSkyRange(visplane_t* pl)
 	if (pl->minx > pl->maxx)
 		return;
 
-	int columnmethod = 2;
+	constexpr int columnmethod = 2;
 	int frontskytex, backskytex;
 	fixed_t front_offset = 0;
 	fixed_t back_offset = 0;
@@ -782,7 +780,7 @@ void R_RenderSkyRange(visplane_t* pl)
 	else
 	{
 		// MBF's linedef-controlled skies
-		int picnum = (pl->picnum & ~PL_SKYFLAT) - 1;
+		const int picnum = (pl->picnum & ~PL_SKYFLAT) - 1;
 		const line_t* line = &lines[picnum < numlines ? picnum : 0];
 
 		// Sky transferred from first sidedef

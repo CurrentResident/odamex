@@ -72,7 +72,7 @@ struct spawnInventory_t
 
 // Berserk time that prevents showing any red.  If you want to show a teensy
 // bit of red, you're going to need to send the player's powers on map change.
-const int INV_BERSERK_TIME = 64 * 12;
+constexpr int INV_BERSERK_TIME = 64 * 12;
 
 /**
  * @brief Convert a string form of a boolean to an actual boolean.
@@ -145,9 +145,7 @@ static int WeaponTypeFromChar(const char ch)
  */
 static std::string InvHealthStr(const spawnInventory_t& inv)
 {
-	std::string rvo;
-	StrFormat(rvo, "%d", inv.health);
-	return rvo;
+	return fmt::sprintf("%d", inv.health);
 }
 
 /**
@@ -155,9 +153,7 @@ static std::string InvHealthStr(const spawnInventory_t& inv)
  */
 static std::string InvArmorPointsStr(const spawnInventory_t& inv)
 {
-	std::string rvo;
-	StrFormat(rvo, "%d", inv.armorpoints);
-	return rvo;
+	return fmt::sprintf("%d", inv.armorpoints);
 }
 
 /**
@@ -165,9 +161,7 @@ static std::string InvArmorPointsStr(const spawnInventory_t& inv)
  */
 static std::string InvReadyWeaponStr(const spawnInventory_t& inv)
 {
-	std::string rvo;
-	StrFormat(rvo, "%c", WeaponTypeToChar(inv.readyweapon));
-	return rvo;
+	return fmt::sprintf("%c", WeaponTypeToChar(inv.readyweapon));
 }
 
 /**
@@ -196,9 +190,7 @@ static std::string InvAmmoStr(const spawnInventory_t& inv, const ammotype_t type
 	{
 		return "";
 	}
-	std::string rvo;
-	StrFormat(rvo, "%d", inv.ammo[type]);
-	return rvo;
+	return fmt::sprintf("%d", inv.ammo[type]);
 }
 // unused
 /**
@@ -222,9 +214,7 @@ static std::string InvAmmoStr(const spawnInventory_t& inv, const ammotype_t type
  */
 static std::string InvInvulStr(const spawnInventory_t& inv)
 {
-	std::string rvo;
-	StrFormat(rvo, "%d", inv.invul);
-	return rvo;
+	return fmt::sprintf("%d", inv.invul);
 }
 
 /**
@@ -342,52 +332,52 @@ static std::string SpawnInvSerialize(const spawnInventory_t& inv)
 	StringTokens params;
 	std::string buf;
 
-	StrFormat(buf, "health:%s", InvHealthStr(inv).c_str());
+	buf = fmt::sprintf("health:%s", InvHealthStr(inv).c_str());
 	params.push_back(buf);
 
 	if (inv.armortype > 0 && inv.armortype <= 2 && inv.armorpoints > 0)
 	{
 		if (inv.armortype == 1)
-			StrFormat(buf, "armor1:%s", InvArmorPointsStr(inv).c_str());
+			buf = fmt::sprintf("armor1:%s", InvArmorPointsStr(inv).c_str());
 		else if (inv.armortype == 2)
-			StrFormat(buf, "armor2:%s", InvArmorPointsStr(inv).c_str());
+			buf = fmt::sprintf("armor2:%s", InvArmorPointsStr(inv).c_str());
 
 		params.push_back(buf);
 	}
 
 	if (inv.readyweapon != NUMWEAPONS)
 	{
-		StrFormat(buf, "rweapon:%s", InvReadyWeaponStr(inv).c_str());
+		buf = fmt::sprintf("rweapon:%s", InvReadyWeaponStr(inv).c_str());
 		params.push_back(buf);
 	}
 
 	if (!InvWeaponsStr(inv).empty())
 	{
-		StrFormat(buf, "weapons:%s", InvWeaponsStr(inv).c_str());
+		buf = fmt::sprintf("weapons:%s", InvWeaponsStr(inv).c_str());
 		params.push_back(buf);
 	}
 
 	if (inv.ammo[am_clip] > 0)
 	{
-		StrFormat(buf, "bullets:%s", InvAmmoStr(inv, am_clip).c_str());
+		buf = fmt::sprintf("bullets:%s", InvAmmoStr(inv, am_clip).c_str());
 		params.push_back(buf);
 	}
 
 	if (inv.ammo[am_shell] > 0)
 	{
-		StrFormat(buf, "shells:%s", InvAmmoStr(inv, am_shell).c_str());
+		buf = fmt::sprintf("shells:%s", InvAmmoStr(inv, am_shell).c_str());
 		params.push_back(buf);
 	}
 
 	if (inv.ammo[am_misl] > 0)
 	{
-		StrFormat(buf, "rockets:%s", InvAmmoStr(inv, am_misl).c_str());
+		buf = fmt::sprintf("rockets:%s", InvAmmoStr(inv, am_misl).c_str());
 		params.push_back(buf);
 	}
 
 	if (inv.ammo[am_cell] > 0)
 	{
-		StrFormat(buf, "cells:%s", InvAmmoStr(inv, am_cell).c_str());
+		buf = fmt::sprintf("cells:%s", InvAmmoStr(inv, am_cell).c_str());
 		params.push_back(buf);
 	}
 
@@ -398,7 +388,7 @@ static std::string SpawnInvSerialize(const spawnInventory_t& inv)
 
 	if (inv.invul > 0)
 	{
-		StrFormat(buf, "invul:%s", InvInvulStr(inv).c_str());
+		buf = fmt::sprintf("invul:%s", InvInvulStr(inv).c_str());
 		params.push_back(buf);
 	}
 
@@ -789,8 +779,7 @@ BEGIN_COMMAND(spawninv)
 		}
 		if (::gSpawnInv.invul)
 		{
-			std::string buf;
-			StrFormat(buf, "Invul (%ds)", ::gSpawnInv.invul);
+			std::string buf = fmt::sprintf("Invul (%ds)", ::gSpawnInv.invul);
 			other.push_back(buf);
 		}
 		if (!other.empty())

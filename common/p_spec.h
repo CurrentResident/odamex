@@ -34,7 +34,7 @@ typedef struct movingsector_s
 	movingsector_s() :
 		sector(NULL), moving_ceiling(false), moving_floor(false)
 	{}
-	
+
 	sector_t	*sector;
 	bool		moving_ceiling;
 	bool		moving_floor;
@@ -220,7 +220,7 @@ public:
 	DScroller (EScrollType type, fixed_t dx, fixed_t dy, int control, int affectee, int accel);
 	DScroller (fixed_t dx, fixed_t dy, const line_t *l, int control, int accel);
 
-	void RunThink ();
+	void RunThink () override;
 
 	bool AffectsWall (int wallnum) { return m_Type == sc_side && m_Affectee == wallnum; }
 	int GetWallNum () { return m_Type == sc_side ? m_Affectee : -1; }
@@ -317,7 +317,7 @@ public:
 		m_Magnitude = magnitude;
 	}
 
-	virtual void RunThink ();
+	void RunThink () override;
 
 protected:
 	EPusher m_Type;
@@ -661,7 +661,7 @@ public:
 		platRaiseAndStayLockout
 	};
 
-	void RunThink ();
+	void RunThink () override;
 
 	void SetState(byte state, int count) { m_Status = (EPlatState)state; m_Count = count; }
 	void GetState(byte &state, int &count) { state = (byte)m_Status; count = m_Count; }
@@ -669,9 +669,9 @@ public:
 	DPlat(sector_t *sector);
 	DPlat(sector_t *sector, DPlat::EPlatType type, fixed_t height, int speed, int delay, fixed_t lip);
 	DPlat(sector_t* sector, int target, int delay, int speed, int trigger); // [Blair] Boom Generic Plat type
-	DPlat* Clone(sector_t* sec) const;
+	DPlat* Clone(sector_t* sec) const override;
 	friend void P_SetPlatDestroy(DPlat *plat);
-	
+
 	void PlayPlatSound ();
 
 	fixed_t 	m_Speed;
@@ -735,7 +735,7 @@ public:
 		destroy,
 		state_size
 	};
-	
+
 	enum EPillar
 	{
 		pillarBuild,
@@ -746,13 +746,13 @@ public:
 	DPillar ();
 	DPillar(sector_t* sector, EPillar type, fixed_t speed, fixed_t height,
 	        fixed_t height2, int crush, bool hexencrush);
-	DPillar* Clone(sector_t* sec) const;
-	friend void P_SetPillarDestroy(DPillar *pillar);	
+	DPillar* Clone(sector_t* sec) const override;
+	friend void P_SetPillarDestroy(DPillar *pillar);
 	friend bool EV_DoZDoomPillar(DPillar::EPillar type, line_t* line, int tag,
 	                             fixed_t speed, fixed_t floordist, fixed_t ceilingdist,
 	                             int crush, bool hexencrush);
-	
-	void RunThink ();
+
+	void RunThink () override;
 	void PlayPillarSound();
 
 	EPillar		m_Type;
@@ -762,7 +762,7 @@ public:
 	fixed_t		m_CeilingTarget;
 	int			m_Crush;
 	bool		m_HexenCrush;
-	
+
 	EPillarState m_Status;
 
 };
@@ -844,12 +844,12 @@ public:
 	// ZDoom Compatible DDoor
 	DDoor(sector_t* sec, line_t* ln, EVlDoor type, fixed_t speed, int topwait,
 	      byte lighttag, int topcountdown);
-	DDoor* Clone(sector_t* sec) const;
+	DDoor* Clone(sector_t* sec) const override;
 
 	friend void P_SetDoorDestroy(DDoor *door);
-	
-	void RunThink ();
-	void PlayDoorSound();	
+
+	void RunThink () override;
+	void PlayDoorSound();
 
 	EVlDoor		m_Type;
 	fixed_t 	m_TopHeight;
@@ -917,7 +917,7 @@ public:
 		destroy,
 		state_size
 	};
-	
+
 	enum ECeiling
 	{
 		lowerToFloor,
@@ -966,12 +966,12 @@ public:
 	DCeiling (sector_t* sec, line_t* line, int speed,
 	         int target, int crush, int change, int direction, int model);
 	DCeiling(sector_t* sec, line_t* line, int silent, int speed);
-	DCeiling* Clone(sector_t* sec) const;
+	DCeiling* Clone(sector_t* sec) const override;
 	friend void P_SetCeilingDestroy(DCeiling *ceiling);
-	
-	void RunThink ();
-	void PlayCeilingSound();	
-	
+
+	void RunThink () override;
+	void PlayCeilingSound();
+
 	ECeiling	m_Type;
 	crushmode_e m_CrushMode;
 	fixed_t 	m_BottomHeight;
@@ -994,9 +994,9 @@ public:
 	// ID
 	int 		m_Tag;
 	int 		m_OldDirection;
-	
+
 	ECeilingState m_Status;
-	
+
 protected:
 
 
@@ -1047,7 +1047,7 @@ public:
 		destroy,
 		state_size
 	};
-	
+
 	enum EFloor
 	{
 		floorLowerToLowest,
@@ -1104,13 +1104,13 @@ public:
 	DFloor(sector_t* sec, DFloor::EFloor floortype, line_t* line, fixed_t speed,
 	               fixed_t height, int crush, int change, bool hexencrush,
 	               bool hereticlower);
-	DFloor* Clone(sector_t* sec) const;
+	DFloor* Clone(sector_t* sec) const override;
 	friend void P_SetFloorDestroy(DFloor *floor);
 	friend BOOL EV_DoGenFloor(line_t* line);
 	friend BOOL EV_DoGenStairs(line_t* line);
-		
-	void RunThink ();
-	void PlayFloorSound();	
+
+	void RunThink () override;
+	void PlayFloorSound();
 
 	EFloor	 	m_Type;
 	EFloorState	m_Status;
@@ -1133,7 +1133,7 @@ public:
 	int			m_PauseTime;
 	int			m_StepTime;
 	int			m_PerStepTime;
-	
+
 	fixed_t		m_Height;
 	line_t		*m_Line;
 	int			m_Change;
@@ -1196,10 +1196,10 @@ public:
 	};
 
 	DElevator (sector_t *sec);
-	DElevator* Clone(sector_t* sec) const;
-	friend void P_SetElevatorDestroy(DElevator *elevator);	
+	DElevator* Clone(sector_t* sec) const override;
+	friend void P_SetElevatorDestroy(DElevator *elevator);
 
-	void RunThink ();
+	void RunThink () override;
 	void PlayElevatorSound();
 
 	EElevator	m_Type;
@@ -1207,9 +1207,9 @@ public:
 	fixed_t		m_FloorDestHeight;
 	fixed_t		m_CeilingDestHeight;
 	fixed_t		m_Speed;
-	
+
 	EElevatorState m_Status;
-	
+
 protected:
 	friend BOOL EV_DoElevator (line_t *line, DElevator::EElevator type, fixed_t speed,
 		fixed_t height, int tag);
@@ -1256,10 +1256,10 @@ class DWaggle : public DMover
 	DWaggle(sector_t* sec);
 	DWaggle(sector_t* sector, int height, int speed, int offset, int timer,
 	                 bool ceiling);
-	DWaggle* Clone(sector_t* sec) const;
+	DWaggle* Clone(sector_t* sec) const override;
 	friend void P_SetWaggleDestroy(DWaggle* waggle);
 
-	void RunThink();
+	void RunThink() override;
 
 	fixed_t m_OriginalHeight;
 	fixed_t m_Accumulator;

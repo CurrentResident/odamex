@@ -1521,11 +1521,11 @@ void M_DrawSlider (int x, int y, float leftval, float rightval, float cur, float
 	if (step == 0.0f)
 		return;
 	else if (step >= 1.0f)
-		StrFormat(buf, "%.0f", cur);
+		buf = fmt::sprintf("%.0f", cur);
 	else if (step >= 0.1f)
-		StrFormat(buf, "%.1f", cur);
+		buf = fmt::sprintf("%.1f", cur);
 	else
-		StrFormat(buf, "%.2f", cur);
+		buf = fmt::sprintf("%.2f", cur);
 	screen->DrawTextCleanMove(CR_GREEN, x + 96, y, buf.c_str());
 }
 

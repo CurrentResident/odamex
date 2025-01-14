@@ -200,7 +200,7 @@ bool P_CrossCompatibleSpecialLine(line_t* line, int side, AActor* thing,
 		case 269:
 			if (bossaction)
 				return false;
-
+			[[fallthrough]];
 		case 4:  // raise door
 		case 10: // plat down-wait-up-stay trigger
 		case 88: // plat down-wait-up-stay retrigger
@@ -1803,7 +1803,7 @@ void P_SpawnCompatibleScroller(line_t* l, int i)
 	case 2085:
 	case 2086:
 		control = sides[*l->sidenum].sector - sectors;
-
+		[[fallthrough]];
 	case 1024: // special 255 with tag control
 	case 2084:
 		if (l->id == 0)

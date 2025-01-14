@@ -1017,7 +1017,7 @@ void ST_drawWidgets(bool force_refresh)
 		w_frags.update(force_refresh);
 	}
 
-	w_lives.update(true, G_IsLivesGame()); // Force refreshing to avoid tens
+	w_lives.update(true, !G_IsLivesGame()); // Force refreshing to avoid tens
 	                                       // to be hidden by Doomguy's face
 }
 

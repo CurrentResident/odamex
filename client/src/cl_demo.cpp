@@ -538,14 +538,14 @@ bool NetDemo::startPlaying(const std::string &filename)
 		{
 			int maj, min, patch;
 			BREAKVER(latestVersion, maj, min, patch);
-			StrFormat(buffer,
+			buffer = fmt::sprintf(
 			          "This demo is too old to play in this version of Odamex.  Please "
 			          "visit https://odamex.net/ to obtain Odamex %d.%d.%d or older.",
 			          maj, min, patch);
 		}
 		else
 		{
-			StrFormat(buffer,
+			buffer = fmt::sprintf(
 			          "This demo is too new to play in this version of Odamex.  Please "
 			          "visit https://odamex.net/ to obtain a newer version of Odamex.");
 		}

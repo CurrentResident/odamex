@@ -59,8 +59,8 @@ class DThinker : public DObject
 public:
 	DThinker ();
 	void Orphan();
-	virtual void Destroy ();
-	virtual ~DThinker ();
+	void Destroy () override;
+	~DThinker () override;
 	virtual void RunThink () {}
 
 	void *operator new (size_t size);

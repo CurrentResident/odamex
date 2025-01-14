@@ -49,20 +49,29 @@ OLumpName::OLumpName()
 
 OLumpName::OLumpName(const OLumpName& other)
 {
-	memcpy(m_data, other.m_data, 8);
-	MakeDataPresentable();
+	if (other.m_data)
+	{
+		memcpy(m_data, other.m_data, 8);
+		MakeDataPresentable();
+	}
 }
 
 OLumpName::OLumpName(const char* other)
 {
-	strncpy(m_data, other, 8);
-	MakeDataPresentable();
+	if (other)
+	{
+		strncpy(m_data, other, 8);
+		MakeDataPresentable();
+	}
 }
 
 OLumpName::OLumpName(const std::string& other)
 {
-	strncpy(m_data, other.data(), 8);
-	MakeDataPresentable();
+	if (!other.empty())
+	{
+		strncpy(m_data, other.data(), 8);
+		MakeDataPresentable();
+	}
 }
 
 OLumpName& OLumpName::operator=(const OLumpName& other)
@@ -104,7 +113,7 @@ size_t OLumpName::size() const
 			break;
 		}
 	}
-	
+
 	return i;
 }
 
@@ -132,15 +141,10 @@ bool OLumpName::empty() const
 char& OLumpName::at(const size_t pos)
 {
 	const size_t s = size();
-	
+
 	if (pos > 7 || pos > s)
 	{
-		char buffer[80];
-		snprintf(buffer, 80,
-				"Attempted to access OLumpName at position %lu when the size was %lu",
-				pos, s);
-		
-		throw std::out_of_range(buffer);
+		throw std::out_of_range(fmt::format("Attempted to access OLumpName at position {} when the size was {}", pos, s));
 	}
 
 	return m_data[pos];
@@ -152,12 +156,7 @@ const char& OLumpName::at(const size_t pos) const
 
 	if (pos > 7 || pos > s)
 	{
-		char buffer[80];
-		snprintf(buffer, 80,
-		        "Attempted to access OLumpName at position %lu when the size was %lu",
-		        pos, s);
-
-		throw std::out_of_range(buffer);
+		throw std::out_of_range(fmt::format("Attempted to access OLumpName at position {} when the size was {}", pos, s));
 	}
 
 	return m_data[pos];

@@ -833,7 +833,7 @@ void G_InitLevelLocals()
 		if (info.mapname[0] == 'E' && info.mapname[2] == 'M')
 		{
 			std::string search;
-			StrFormat(search, "E%cM%c: ", info.mapname[1], info.mapname[3]);
+			search = fmt::sprintf("E%cM%c: ", info.mapname[1], info.mapname[3]);
 
 			const std::size_t pos = info.level_name.find(search);
 
@@ -845,7 +845,7 @@ void G_InitLevelLocals()
 		else if (strstr(info.mapname.c_str(), "MAP") == &info.mapname[0])
 		{
 			std::string search;
-			StrFormat(search, "%u: ", info.levelnum);
+			search = fmt::sprintf("%u: ", info.levelnum);
 
 			const std::size_t pos = info.level_name.find(search);
 

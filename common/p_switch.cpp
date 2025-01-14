@@ -58,7 +58,7 @@ public:
 	DActiveButton ();
 	DActiveButton (line_t *, EWhere, SWORD tex, SDWORD time, fixed_t x, fixed_t y);
 
-	void RunThink ();
+	void RunThink () override;
 
 	line_t	*m_Line;
 	EWhere	m_Where;

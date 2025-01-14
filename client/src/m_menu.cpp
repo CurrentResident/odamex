@@ -146,34 +146,34 @@ void M_Sound(int choice);
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
 void M_SaveSelect(int choice);
-void M_ReadSaveStrings(void);
-void M_QuickSave(void);
-void M_QuickLoad(void);
+void M_ReadSaveStrings();
+void M_QuickSave();
+void M_QuickLoad();
 
-void M_DrawMainMenu(void);
-void M_DrawReadThis1(void);
-void M_DrawReadThis2(void);
-void M_DrawReadThis3(void);
-void M_DrawNewGame(void);
-void M_DrawEpisode(void);
-void M_DrawOptions(void);
-void M_DrawSound(void);
-void M_DrawLoad(void);
-void M_DrawSave(void);
+void M_DrawMainMenu();
+void M_DrawReadThis1();
+void M_DrawReadThis2();
+void M_DrawReadThis3();
+void M_DrawNewGame();
+void M_DrawEpisode();
+void M_DrawOptions();
+void M_DrawSound();
+void M_DrawLoad();
+void M_DrawSave();
 
 void M_DrawSaveLoadBorder(int x,int y, int len);
 void M_SetupNextMenu(oldmenu_t *menudef);
 void M_DrawEmptyCell(oldmenu_t *menu,int item);
 void M_DrawSelCell(oldmenu_t *menu,int item);
 int  M_StringHeight(char *string);
-void M_StartControlPanel(void);
+void M_StartControlPanel();
 void M_StartMessage(const char *string,void (*routine)(int),bool input);
-void M_StopMessage(void);
-void M_ClearMenus (void);
+void M_StopMessage();
+void M_ClearMenus();
 
 // [RH] For player setup menu.
-static void M_PlayerSetupTicker (void);
-static void M_PlayerSetupDrawer (void);
+static void M_PlayerSetupTicker();
+static void M_PlayerSetupDrawer();
 static void M_EditPlayerName (int choice);
 //static void M_EditPlayerTeam (int choice);
 //static void M_PlayerTeamChanged (int choice);
@@ -188,8 +188,8 @@ static void M_SlidePlayerBlue (int choice);
 bool M_DemoNoPlay;
 
 static IWindowSurface* fire_surface;
-static const int fire_surface_width = 72;
-static const int fire_surface_height = 77;
+static constexpr int fire_surface_width = 72;
+static constexpr int fire_surface_height = 77;
 
 //
 // DOOM MENU
@@ -374,15 +374,6 @@ oldmenu_t PSetupDef = {
 // [RH] This menu is now handled in m_options.c
 //
 bool OptionsActive;
-
-oldmenu_t OptionsDef =
-{
-	0,
-	NULL,
-	NULL,
-	0,0,
-	0
-};
 
 
 //
@@ -623,18 +614,15 @@ void M_LoadGame (int choice)
 // M_ReadSaveStrings
 //	read the strings from the savegame files
 //
-void M_ReadSaveStrings(void)
+void M_ReadSaveStrings()
 {
-	FILE *handle;
-	int i;
-
-	for (i = 0; i < load_end; i++)
+	for (int i = 0; i < load_end; i++)
 	{
 		std::string name;
 
 		G_BuildSaveName (name, i);
 
-		handle = fopen (name.c_str(), "rb");
+		FILE* handle = fopen(name.c_str(), "rb");
 		if (handle == NULL)
 		{
 			strcpy (&savegamestrings[i][0], GStrings(EMPTYSTRING));
@@ -659,12 +647,10 @@ void M_ReadSaveStrings(void)
 //
 // M_LoadGame & Cie.
 //
-void M_DrawLoad (void)
+void M_DrawLoad ()
 {
-	int i;
-
 	screen->DrawPatchClean ((patch_t *)W_CachePatch("M_LOADG"), 72, 28);
-	for (i = 0; i < load_end; i++)
+	for (int i = 0; i < load_end; i++)
 	{
 		M_DrawSaveLoadBorder (LoadDef.x, LoadDef.y+LINEHEIGHT*i, 24);
 		screen->DrawTextCleanMove (CR_RED, LoadDef.x, LoadDef.y+LINEHEIGHT*i, savegamestrings[i]);
@@ -704,7 +690,7 @@ void M_LoadGame (int choice)
 // [ML] 7 Sept 08: Bringing game saving/loading in from
 //                 zdoom 1.22 source, see MAINTAINERS
 //
-void M_DrawSave(void)
+void M_DrawSave()
 {
 	int i;
 
@@ -744,8 +730,8 @@ void M_DoSave (int slot)
 //
 void M_SaveSelect (int choice)
 {
-	const time_t     ti = time(NULL);
-	const struct tm *lt = localtime(&ti);
+	const time_t ti = time(NULL);
+	const tm *lt = localtime(&ti);
 
 	// we are going to be intercepting all chars
 	genStringEnter = 1;
@@ -813,7 +799,7 @@ void M_QuickSaveResponse(int ch)
 	}
 }
 
-void M_QuickSave(void)
+void M_QuickSave()
 {
 	if (multiplayer)
 	{
@@ -861,7 +847,7 @@ void M_QuickLoadResponse(int ch)
 }
 
 
-void M_QuickLoad(void)
+void M_QuickLoad()
 {
 	if (quickSaveSlot < 0)
 	{
@@ -916,11 +902,9 @@ void M_FinishReadThis(int choice)
 //
 void M_DrawSaveLoadBorder (int x, int y, int len)
 {
-	int i;
-
 	screen->DrawPatchClean (W_CachePatch ("M_LSLEFT"), x-8, y+7);
 
-	for (i = 0; i < len; i++)
+	for (int i = 0; i < len; i++)
 	{
 		screen->DrawPatchClean (W_CachePatch ("M_LSCNTR"), x, y+7);
 		x += 8;
@@ -934,15 +918,15 @@ void M_DrawSaveLoadBorder (int x, int y, int len)
 //
 void M_DrawMainMenu()
 {
-	screen->DrawPatchClean (W_CachePatch("M_DOOM"), 94, 2);
+	screen->DrawPatchClean(W_CachePatch("M_DOOM"), 94, 2);
 }
 
 void M_DrawNewGame()
 {
-	screen->DrawPatchClean((patch_t*)W_CachePatch("M_NEWG"), 96, 14);
-	screen->DrawPatchClean((patch_t*)W_CachePatch("M_SKILL"), 54, 38);
+	screen->DrawPatchClean(W_CachePatch("M_NEWG"), 96, 14);
+	screen->DrawPatchClean(W_CachePatch("M_SKILL"), 54, 38);
 
-	const int SMALLFONT_OFFSET = 8; // Line up with the skull
+	constexpr int SMALLFONT_OFFSET = 8; // Line up with the skull
 
 	const char* pslabel = "Pistol Start Each Level ";
 	const int psy = NewDef.y + (LINEHEIGHT * skillnum) + SMALLFONT_OFFSET;
@@ -997,6 +981,8 @@ namespace
 
 void M_NewGame(int choice)
 {
+	NewDef.numitems = skillnum + 1;
+
 	if (gamemode == commercial_bfg)
     {
         M_SetupNextMenu(&ExpDef);
@@ -1015,8 +1001,6 @@ void M_NewGame(int choice)
 		}
 
 		epi = 0;
-
-		NewDef.numitems = skillnum + 1;
 
 		if (episodenum > 1)
 		{
@@ -1044,7 +1028,7 @@ void M_DrawEpisode()
 	{
 		y -= (LINEHEIGHT * (episodenum - 4));
 	}
-		
+
 	screen->DrawPatchClean(W_CachePatch("M_EPISOD"), 54, y);
 }
 
@@ -1157,7 +1141,7 @@ void M_Expansion(int choice)
 //
 void M_DrawReadThis1()
 {
-	const patch_t *p = W_CachePatch(gameinfo.info.infoPage[0]);
+	const patch_t *p = W_CachePatch(gameinfo.infoPage[0].c_str());
 	screen->DrawPatchFullScreen(p, false);
 }
 
@@ -1166,7 +1150,7 @@ void M_DrawReadThis1()
 //
 void M_DrawReadThis2()
 {
-	const patch_t *p = W_CachePatch(gameinfo.info.infoPage[1]);
+	const patch_t *p = W_CachePatch(gameinfo.infoPage[1].c_str());
 	screen->DrawPatchFullScreen(p, false);
 }
 
@@ -1175,7 +1159,7 @@ void M_DrawReadThis2()
 //
 void M_DrawReadThis3()
 {
-	const patch_t *p = W_CachePatch(gameinfo.info.infoPage[2]);
+	const patch_t *p = W_CachePatch(gameinfo.infoPage[2].c_str());
 	screen->DrawPatchFullScreen(p, false);
 }
 
@@ -1257,13 +1241,12 @@ void M_QuitResponse(int ch)
 
 void M_QuitDOOM(int choice)
 {
-	static std::string endstring;
-
 	// We pick index 0 which is language sensitive,
 	//  or one at random, between 1 and maximum number.
-	StrFormat(endstring, "%s\n\n%s",
-	          GStrings.getIndex(GStrings.toIndex(QUITMSG) + (gametic % NUM_QUITMESSAGES)),
-	          GStrings(DOSY));
+	static std::string endstring =
+		fmt::sprintf("%s\n\n%s",
+		             GStrings.getIndex(GStrings.toIndex(QUITMSG) + (gametic % NUM_QUITMESSAGES)),
+		             GStrings(DOSY));
 
 	M_StartMessage(endstring.c_str(), M_QuitResponse, true);
 }
@@ -1406,18 +1389,15 @@ static void M_PlayerSetupDrawer()
 		}
 		else
 		{
-			// [RH] The following fire code is based on the PTC fire demo
-			int a, b;
-
 			fire_surface->lock();
 			const int pitch = fire_surface->getPitch();
 
 			palindex_t* from = (palindex_t*)fire_surface->getBuffer() + (fire_surface_height - 3) * pitch;
-			for (a = 0; a < fire_surface_width; a++, from++)
+			for (int a = 0; a < fire_surface_width; a++, from++)
 				*from = *(from + (pitch << 1)) = M_Random();
 
 			from = (palindex_t*)fire_surface->getBuffer();
-			for (b = 0; b < fire_surface_height - 4; b += 2)
+			for (int b = 0; b < fire_surface_height - 4; b += 2)
 			{
 				palindex_t* pixel = from;
 
@@ -1434,7 +1414,7 @@ static void M_PlayerSetupDrawer()
 				pixel++;
 
 				// main line loop
-				for (a = 1; a < fire_surface_width - 1; a++)
+				for (int a = 1; a < fire_surface_width - 1; a++)
 				{
 					// sum top pixels
 					p = pixel + (pitch << 1);
@@ -1609,7 +1589,7 @@ static void M_ChangeGender (int choice)
 
 static void M_ChangeAutoAim (int choice)
 {
-	static const float ranges[] = { 0, 0.25, 0.5, 1, 2, 3, 5000 };
+	static constexpr float ranges[] = { 0, 0.25, 0.5, 1, 2, 3, 5000 };
 	float aim = cl_autoaim;
 
 	if (!choice) {
@@ -1709,16 +1689,12 @@ static void M_PlayerTeamChanged (int choice)
 
 static void SendNewColor(int red, int green, int blue)
 {
-	std::string colorcommand;
-	std::string customcolorcommand;
 	int colorpreset = D_ColorPreset(cl_colorpreset.cstring());
 
-	StrFormat(colorcommand, "cl_color \"%02x %02x %02x\"", red, green, blue);
-	AddCommandString(colorcommand);
+	AddCommandString(fmt::sprintf("cl_color \"%02x %02x %02x\"", red, green, blue));
 	if (colorpreset == COLOR_CUSTOM)
 	{
-		StrFormat(customcolorcommand, "cl_customcolor \"%02x %02x %02x\"", red, green, blue);
-		AddCommandString(customcolorcommand);
+		AddCommandString(fmt::sprintf("cl_customcolor \"%02x %02x %02x\"", red, green, blue));
 	}
 
 	// [SL] not connected to a server so we don't have to wait for the server
@@ -1875,7 +1851,7 @@ bool M_Responder (event_t* ev)
 	if (ch == -1 || HU_ChatMode() != CHAT_INACTIVE)
 		return false;
 
-	// Transfer any action to the Options Menu Responder 
+	// Transfer any action to the Options Menu Responder
 	// if we're not on the main menu.
 	if (menuactive && OptionsActive) {
 		M_OptResponder (ev);
@@ -1909,7 +1885,7 @@ bool M_Responder (event_t* ev)
 				saveCharIndex--;
 				savegamestrings[saveSlot][saveCharIndex] = 0;
 			}
-		} 
+		}
 		else if (Key_IsCancelKey(ch))
 		{
 			genStringEnter = 0;
@@ -1923,8 +1899,8 @@ bool M_Responder (event_t* ev)
 			if (savegamestrings[saveSlot][0])
 				genStringEnd(saveSlot);	// [RH] Function to call when enter is pressed
 		}
-		else 
-		{ 
+		else
+		{
 			ch = ev->data3;	// [RH] Use user keymap
 			if (ch >= 32 && ch <= 127 &&
 				saveCharIndex < genStringLen &&
@@ -1943,8 +1919,8 @@ bool M_Responder (event_t* ev)
 	if (messageToPrint)
 	{
 		if (messageNeedsInput &&
-		    (!(ch2 == ' ' || Key_IsMenuKey(ch) || Key_IsYesKey(ch) || Key_IsNoKey(ch) || 
-			(isascii(ch2) && (toupper(ch2) == 'N' || toupper(ch2) == 'Y'))))) 
+		    (!(ch2 == ' ' || Key_IsMenuKey(ch) || Key_IsYesKey(ch) || Key_IsNoKey(ch) ||
+			(isascii(ch2) && (toupper(ch2) == 'N' || toupper(ch2) == 'Y')))))
 			return true;
 
 		menuactive = messageLastMenuActive;
@@ -2095,7 +2071,7 @@ bool M_Responder (event_t* ev)
 //
 // M_StartControlPanel
 //
-void M_StartControlPanel (void)
+void M_StartControlPanel()
 {
 	// intro might call this repeatedly
 	if (menuactive)
@@ -2186,7 +2162,7 @@ void M_Drawer()
 //
 // M_ClearMenus
 //
-void M_ClearMenus (void)
+void M_ClearMenus()
 {
 	I_FreeSurface(fire_surface);
 	MenuStackDepth = 0;
@@ -2213,7 +2189,7 @@ void M_SetupNextMenu (oldmenu_t *menudef)
 }
 
 
-void M_PopMenuStack (void)
+void M_PopMenuStack()
 {
 	M_DemoNoPlay = false;
 	if (MenuStackDepth > 1) {
@@ -2249,7 +2225,7 @@ void M_PopMenuStack (void)
 //
 // M_Ticker
 //
-void M_Ticker (void)
+void M_Ticker()
 {
 	if (--skullAnimCounter <= 0)
 	{
@@ -2267,10 +2243,8 @@ void M_Ticker (void)
 //
 EXTERN_CVAR (screenblocks)
 
-void M_Init (void)
+void M_Init()
 {
-	int i;
-
     // [Russell] - Set this beforehand, because when you switch wads
     // (ie from doom to doom2 back to doom), you will have less menu items
     {
@@ -2306,7 +2280,7 @@ void M_Init (void)
 	M_OptInit ();
 
 	// [RH] Build a palette translation table for the fire
-	for (i = 0; i < 256; i++)
+	for (int i = 0; i < 256; i++)
 		FireRemap[i] = V_BestColor(V_GetDefaultPalette()->basecolors, i, 0, 0);
 }
 

@@ -130,7 +130,7 @@ static void ShoveChatStr(std::string str, byte who);
 static std::string input_text;
 static chatmode_t chatmode;
 
-static const int DefaultTeamHeight = 56;
+static constexpr int DefaultTeamHeight = 56;
 
 chatmode_t HU_ChatMode()
 {
@@ -184,7 +184,7 @@ cvar_t *chat_macros[10] =
 	&chatmacro9
 };
 
-static const int HiResolutionWidth = 480;
+static constexpr int HiResolutionWidth = 480;
 
 //
 // HU_Init
@@ -278,7 +278,7 @@ BOOL HU_Responder(event_t *ev)
 	}
 	else
 	{
-		altdown = false;	
+		altdown = false;
 	}
 
 	if ((gamestate != GS_LEVEL && gamestate != GS_INTERMISSION) || ev->type != ev_keydown)
@@ -393,7 +393,7 @@ static void HU_DrawCrosshair()
 
 	if (hud_crosshair && crosshair_lump)
 	{
-		static const byte crosshair_color = 0xB0;
+		static constexpr byte crosshair_color = 0xB0;
 		if (hud_crosshairhealth)
 		{
 			if (camera->health > 75)
@@ -753,10 +753,10 @@ void drawHeader(player_t *player, int y)
 	              hud::ClientsSplit().c_str(), CR_GREEN, true);
 
 	int yOffset = 0;
-	if (G_IsTeamGame()) 
+	if (G_IsTeamGame())
 	{
 		int xOffset = GetLongestTeamWidth();
-		
+
 		for (int i = 0; i < sv_teamsinplay; i++)
 		{
 			// Display wins for round-based gamemodes, otherwise points.
@@ -776,18 +776,18 @@ void drawHeader(player_t *player, int y)
 			std::string points;
 			if (g_rounds)
 			{
-				StrFormat(points, "%d", GetTeamInfo((team_t)i)->RoundWins);
+				points = fmt::sprintf("%d", GetTeamInfo((team_t)i)->RoundWins);
 			}
 			else
 			{
-				StrFormat(points, "%d", GetTeamInfo((team_t)i)->Points);
+				points = fmt::sprintf("%d", GetTeamInfo((team_t)i)->Points);
 			}
 
 			hud::DrawText(-236 + xOffset, y + yOffset, hud_scalescoreboard, hud::X_CENTER,
 			              hud::Y_MIDDLE, hud::X_LEFT, hud::Y_TOP, points.c_str(),
 			              CR_GREEN, true);
 		}
-	} 
+	}
 	else
 	{
 		hud::DrawText(-236, y + 8, hud_scalescoreboard,
@@ -826,7 +826,7 @@ void drawHeader(player_t *player, int y)
 	// Winlimit.
 	if (g_winlimit > 0.0 && G_UsesWinlimit())
 	{
-		StrFormat(str, "%d", g_winlimit.asInt());
+		str = fmt::sprintf("%d", g_winlimit.asInt());
 		names.push_back("WIN LIMIT: ");
 		values.push_back(str);
 	}
@@ -834,7 +834,7 @@ void drawHeader(player_t *player, int y)
 	// Roundlimit.
 	if (g_roundlimit > 0.0 && G_UsesRoundlimit())
 	{
-		StrFormat(str, "%d", g_roundlimit.asInt());
+		str = fmt::sprintf("%d", g_roundlimit.asInt());
 		names.push_back("ROUND LIMIT: ");
 		values.push_back(str);
 	}
@@ -842,7 +842,7 @@ void drawHeader(player_t *player, int y)
 	// Scorelimit.
 	if (sv_scorelimit > 0.0 && G_UsesScorelimit())
 	{
-		StrFormat(str, "%d", sv_scorelimit.asInt());
+		str = fmt::sprintf("%d", sv_scorelimit.asInt());
 		names.push_back("SCORE LIMIT: ");
 		values.push_back(str);
 	}
@@ -850,7 +850,7 @@ void drawHeader(player_t *player, int y)
 	// Fraglimit
 	if (sv_fraglimit > 0.0 && G_UsesFraglimit())
 	{
-		StrFormat(str, "%d", sv_fraglimit.asInt());
+		str = fmt::sprintf("%d", sv_fraglimit.asInt());
 		names.push_back("FRAG LIMIT: ");
 		values.push_back(str);
 	}
@@ -1360,7 +1360,7 @@ void Scoreboard(player_t *player)
 			height += extraQuadRows / 2 * DefaultTeamHeight;
 			height += extraQuadRows * 16;
 		}
-	} 
+	}
 	else
 	{
 		height = 92;
@@ -1401,7 +1401,7 @@ void Scoreboard(player_t *player)
 			teams++;
 		y += 31 + (teams * 8);
 		hud::drawTeamScores(player, y, extra_player_rows);
-	} 
+	}
 	else
 	{
 		y += 31;
@@ -1834,8 +1834,8 @@ void LowScoreboard(player_t *player)
 void HU_DrawScores(player_t *player)
 {
 	if (hud::XSize(hud_scalescoreboard) >= HiResolutionWidth)
-		hud::Scoreboard(player); 
-	else 
+		hud::Scoreboard(player);
+	else
 		hud::LowScoreboard(player);
 }
 
@@ -1915,7 +1915,7 @@ static float HU_CalculateFragDeathRatio(const player_t* player)
 	int deaths = 0;
 
 	if (G_IsRoundsGame() && !G_IsDuelGame())
-	{	
+	{
 		frags = player->totalpoints;
 		deaths = player->totaldeaths;
 	}

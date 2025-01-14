@@ -307,8 +307,7 @@ void OScanner::mustScanInt()
 	std::string str = m_token;
 	if (IsNum(str.c_str()) == false && str != "MAXINT")
 	{
-		std::string err;
-		StrFormat(err, "Expected integer, got \"%s\".", m_token.c_str());
+		std::string err = fmt::sprintf("Expected integer, got \"%s\".", m_token.c_str());
 		error(err.c_str());
 	}
 }
@@ -326,8 +325,7 @@ void OScanner::mustScanFloat()
 	std::string str = m_token;
 	if (IsRealNum(str.c_str()) == false)
 	{
-		std::string err;
-		StrFormat(err, "Expected float, got \"%s\".", m_token.c_str());
+		std::string err = fmt::sprintf("Expected float, got \"%s\".", m_token.c_str());
 		error(err.c_str());
 	}
 }
@@ -344,8 +342,7 @@ void OScanner::mustScanBool()
 
 	if (!iequals(m_token, "true") && !iequals(m_token, "false"))
 	{
-		std::string err;
-		StrFormat(err, "Expected boolean, got \"%s\".", m_token.c_str());
+		std::string err = fmt::sprintf("Expected boolean, got \"%s\".", m_token.c_str());
 		error(err.c_str());
 	}
 }
@@ -391,8 +388,7 @@ int OScanner::getTokenInt() const
 
 	if (*stopper != 0)
 	{
-		std::string err;
-		StrFormat(err, "Bad integer constant \"%s\".", m_token.c_str());
+		std::string err = fmt::sprintf("Bad integer constant \"%s\".", m_token.c_str());
 		error(err.c_str());
 	}
 
@@ -411,8 +407,7 @@ float OScanner::getTokenFloat() const
 
 	if (*stopper != 0)
 	{
-		std::string err;
-		StrFormat(err, "Bad float constant \"%s\".", m_token.c_str());
+		std::string err = fmt::sprintf("Bad float constant \"%s\".", m_token.c_str());
 		error(err.c_str());
 	}
 

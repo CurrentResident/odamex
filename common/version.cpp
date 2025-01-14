@@ -39,7 +39,7 @@
 /**
  * @brief Compare two "packed" versions of Odamex to see if they are expected
  *        to be protocol-compatible.
- * 
+ *
  * @param server Packed version of the server.
  * @param client Packed version of the client.
  * @return 0 if they are compatible, -1 if the server is on the older verison
@@ -96,7 +96,7 @@ int VersionCompat(const int server, const int client)
 
 /**
  * @brief Generate a version mismatch message.
- * 
+ *
  * @param server Packed version of the server.
  * @param client Packed version of the client.
  * @param email E-mail address of server host.
@@ -104,7 +104,7 @@ int VersionCompat(const int server, const int client)
 */
 std::string VersionMessage(const int server, const int client, const char* email)
 {
-	std::string rvo, buf;
+	std::string rvo;
 
 	int cmp = VersionCompat(server, client);
 	if (!cmp)
@@ -115,32 +115,27 @@ std::string VersionMessage(const int server, const int client, const char* email
 	int cl_maj, cl_min, cl_pat;
 	BREAKVER(client, cl_maj, cl_min, cl_pat);
 
-	StrFormat(
-	    buf,
+	rvo += fmt::sprintf(
 	    "Your version of Odamex %d.%d.%d does not match the server version %d.%d.%d.\n",
 	    cl_maj, cl_min, cl_pat, sv_maj, sv_min, sv_pat);
-	rvo += buf;
 
 	if (cmp > 0)
 	{
-		StrFormat(buf,
+		rvo += fmt::sprintf(
 		          "Please visit https://odamex.net/ to obtain Odamex %d.%d.%d or "
 		          "newer.\nIf you do not see this version available for download, "
 		          "you are likely attempting to connect to a server running a "
 		          "development version of Odamex.\n",
 		          sv_maj, sv_min, sv_pat);
-		rvo += buf;
 	}
 	else
 	{
-		StrFormat(buf, "Please allow the server admin some time to upgrade.");
-		rvo += buf;
+		rvo += fmt::sprintf("Please allow the server admin some time to upgrade.");
 
 		if (email != NULL)
 		{
-			StrFormat(buf, "  If the problem persists, you can contact them at %s.\n",
+			rvo += fmt::sprintf("  If the problem persists, you can contact them at %s.\n",
 			          email);
-			rvo += buf;
 		}
 		else
 		{
@@ -210,7 +205,7 @@ const char* GitBranch()
 
 /**
  * @brief Return the number of commits since the first commit.
- * 
+ *
  * @detail Two branches that are the same distance from the first commit
  *         can have the same number.
  */
@@ -272,12 +267,12 @@ const char* NiceVersionDetails()
 	else if (!strncmp(GitBranch(), "release", ARRAY_LENGTH(RELEASE_PREFIX) - 1))
 	{
 		// "Release" branch is omitted.
-		StrFormat(version, "g%s-%s%s", GitShortHash(), GitRevCount(), debug);
+		version = fmt::sprintf("g%s-%s%s", GitShortHash(), GitRevCount(), debug);
 	}
 	else
 	{
 		// Other branches are written in.
-		StrFormat(version, "%s, g%s-%s%s", GitBranch(), GitShortHash(), GitRevCount(),
+		version = fmt::sprintf("%s, g%s-%s%s", GitBranch(), GitShortHash(), GitRevCount(),
 		          debug);
 	}
 
@@ -309,7 +304,7 @@ const char* NiceVersion()
 	else
 	{
 		// Put details in parens.
-		StrFormat(version, "%s (%s)", DOTVERSIONSTR, details);
+		version = fmt::sprintf("%s (%s)", DOTVERSIONSTR, details);
 	}
 
 	return version.c_str();

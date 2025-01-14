@@ -37,10 +37,10 @@
 
 #include "w_ident.h"
 
-//static const uint32_t IDENT_NONE = 0; // unused
-static const uint32_t IDENT_COMMERCIAL = BIT(0);
-static const uint32_t IDENT_IWAD = BIT(1);
-static const uint32_t IDENT_DEPRECATED = BIT(2);
+//static constexpr uint32_t IDENT_NONE = 0; // unused
+static constexpr uint32_t IDENT_COMMERCIAL = BIT(0);
+static constexpr uint32_t IDENT_IWAD = BIT(1);
+static constexpr uint32_t IDENT_DEPRECATED = BIT(2);
 
 struct identData_t
 {
@@ -67,7 +67,7 @@ struct identData_t
 
 #define PWAD_NO_WEIGHT 0
 
-static const identData_t identdata[] = {
+static constexpr identData_t identdata[] = {
     // ------------------------------------------------------------------------
     // DOOM2.WAD
     // ------------------------------------------------------------------------
@@ -1164,8 +1164,8 @@ public:
 
 		// [SL] not an offical IWAD.
 		// Check for lumps that are required by vanilla Doom.
-		static const int NUM_CHECKLUMPS = 6;
-		static const char checklumps[NUM_CHECKLUMPS][8] = {
+		static constexpr int NUM_CHECKLUMPS = 6;
+		static constexpr char checklumps[NUM_CHECKLUMPS][8] = {
 		    {'P', 'L', 'A', 'Y', 'P', 'A', 'L'},      // 0
 		    {'C', 'O', 'L', 'O', 'R', 'M', 'A', 'P'}, // 1
 		    {'F', '_', 'S', 'T', 'A', 'R', 'T'},      // 2
@@ -1192,7 +1192,7 @@ public:
 		return file1->mGroupName == file2->mGroupName;
 	}
 
-	const OString identify(const OResFile& file)
+	const OString identify(const OResFile& file) const
 	{
 		const fileIdentifier_t* fileid = lookupByMd5Sum(file.getMD5());
 
@@ -1202,8 +1202,8 @@ public:
 		// Not a registered file.
 		// Try to identify if it's compatible with known IWADs.
 
-		static const int NUM_CHECKLUMPS = 12;
-		static const char checklumps[NUM_CHECKLUMPS][8] = {
+		static constexpr int NUM_CHECKLUMPS = 12;
+		static constexpr char checklumps[NUM_CHECKLUMPS][8] = {
 			{ 'E','1','M','1' },					// 0
 			{ 'E','2','M','1' },					// 1
 			{ 'E','4','M','1' },					// 2
@@ -1380,111 +1380,138 @@ const fileIdentifier_t* W_GameInfo(const OMD5Hash& md5)
 //
 void W_ConfigureGameInfo(const OResFile& iwad)
 {
-	extern gameinfo_t SharewareGameInfo;
-	extern gameinfo_t RegisteredGameInfo;
-	extern gameinfo_t RetailGameInfo;
-	extern gameinfo_t CommercialGameInfo;
-	extern gameinfo_t RetailBFGGameInfo;
-	extern gameinfo_t CommercialBFGGameInfo;
-
 	const OString idname = identtab.identify(iwad);
+
+    gameinfo = gameinfo_t();
 
 	if (idname.find("REKKR") == 0)
     {
 		gamemode = retail;
-		gameinfo = RetailGameInfo;
 		gamemission = doom;
+		gameinfo.flags = GI_MENUHACK_RETAIL | GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 2;
+		gameinfo.titleString = "REKKR";
 	}
 	else if (idname.find("HACX") == 0)
 	{
-		gameinfo = CommercialGameInfo;
 		gamemode = commercial;
 		gamemission = commercial_hacx;
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "HACX";
 	}
 	else if (idname.find(OStringToUpper(OString(PLUTONIA_PREFIX))) == 0)
 	{
-		gameinfo = CommercialGameInfo;
 		gamemode = commercial;
 		gamemission = pack_plut;
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "DOOM 2: Plutonia Experiment";
 	}
 	else if (idname.find(OStringToUpper(OString(TNT_PREFIX))) == 0)
 	{
-		gameinfo = CommercialGameInfo;
 		gamemode = commercial;
 		gamemission = pack_tnt;
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "DOOM 2: TNT - Evilution";
 	}
 	else if (idname.find("CHEX QUEST") == 0)
 	{
 		gamemission = chex;
 		gamemode = retail_chex;
-		gameinfo = RetailGameInfo;
+		gameinfo.flags = GI_MENUHACK_RETAIL | GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 2;
+		gameinfo.titleString = "Chex Quest";
 	}
 	else if (idname.find(OStringToUpper(OString(FREEDOOM1_PREFIX))) == 0)
 	{
 		gamemode = retail;
-		gameinfo = RetailGameInfo;
 		gamemission = retail_freedoom;
+		gameinfo.flags = GI_MENUHACK_RETAIL | GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 2;
+		gameinfo.titleString = "FreeDoom: Phase 1";
 	}
 	else if (idname.find("FREEDOOM") == 0)
 	{
 		gamemode = commercial;
-		gameinfo = CommercialGameInfo;
 		gamemission = commercial_freedoom;
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "FreeDoom: Phase 2";
 	}
 	else if (idname.find(OStringToUpper(OString(FREEDOOM2_PREFIX))) == 0)
 	{
 		gamemode = commercial;
-		gameinfo = CommercialGameInfo;
 		gamemission = commercial_freedoom;
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "FreeDoom: Phase 2";
 	}
 
 	else if (idname.find(OStringToUpper(OString(FREEDM_PREFIX))) == 0)
 	{
 		gamemode = commercial;
-		gameinfo = CommercialGameInfo;
 		gamemission = commercial_freedoom;
-	}
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "FreeDM";
+	}	
 	else if (idname.find(OStringToUpper(OString(DOOMSW_PREFIX))) == 0)
 	{
 		gamemode = shareware;
-		gameinfo = SharewareGameInfo;
 		gamemission = doom;
+		gameinfo.flags = GI_SHAREWARE | GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 1;
+		gameinfo.titleString = "DOOM Shareware";
 	}
 	else if (idname.find(OStringToUpper(OString(UDOOM_PREFIX " BFG"))) == 0)
 	{
 		gamemode = retail_bfg;
-		gameinfo = RetailBFGGameInfo;
 		gamemission = doom;
+		gameinfo.flags = GI_MENUHACK_RETAIL | GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 2;
+		gameinfo.titleString = "The Ultimate DOOM (BFG Edition)";
 	}
 	else if (idname.find(OStringToUpper(OString(UDOOM_PREFIX))) == 0)
 	{
 		gamemode = retail;
-		gameinfo = RetailGameInfo;
 		gamemission = doom;
+		gameinfo.flags = GI_MENUHACK_RETAIL | GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 2;
+		gameinfo.titleString = "The Ultimate DOOM";
 	}
 	else if (idname.find(OStringToUpper(OString(DOOM2_PREFIX " BFG"))) == 0)
 	{
-		gameinfo = CommercialBFGGameInfo;
 		gamemode = commercial_bfg;
 		gamemission = doom2;
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "DOOM 2: Hell on Earth (BFG Edition)";
 	}
 	else if (idname.find(OStringToUpper(OString(DOOM2_PREFIX))) == 0)
 	{
-		gameinfo = CommercialGameInfo;
 		gamemode = commercial;
 		gamemission = doom2;
+		gameinfo.flags = GI_MAPxx | GI_MENUHACK_COMMERCIAL;
+		gameinfo.maxSwitch = 3;
+		gameinfo.titleString = "DOOM 2: Hell on Earth";
 	}
 	else if (idname.find(OStringToUpper(OString(DOOM_PREFIX))) == 0)
 	{
 		gamemode = registered;
-		gameinfo = RegisteredGameInfo;
 		gamemission = doom;
+		gameinfo.flags = GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 2;
+		gameinfo.titleString = "DOOM Registered";
 	}
 	else
 	{
 		gamemode = undetermined;
-		gameinfo = SharewareGameInfo;
 		gamemission = doom;
+		gameinfo.flags = GI_SHAREWARE | GI_NOCRAZYDEATH;
+		gameinfo.maxSwitch = 1;
+		gameinfo.titleString = "Unknown IWAD";
 	}
 }
 

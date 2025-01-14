@@ -91,7 +91,7 @@ class CoinflipVote : public Vote
 {
 public:
 	CoinflipVote() : Vote("coinflip", &sv_callvote_coinflip) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -99,7 +99,7 @@ public:
 		this->votestring = "coinflip";
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		std::string result;
 		CMD_CoinFlip(result);
@@ -115,7 +115,7 @@ private:
 	std::string netname;
 public:
 	ForcespecVote() : Vote("forcespec", &sv_callvote_forcespec) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -145,7 +145,7 @@ public:
 
 		return true;
 	}
-	bool tic()
+	bool tic() override
 	{
 		if (!validplayer(idplayer(this->id)))
 		{
@@ -163,7 +163,7 @@ public:
 		}
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		SV_SetPlayerSpec(idplayer(this->id), true);
 		return true;
@@ -174,7 +174,7 @@ class ForcestartVote : public Vote
 {
 public:
 	ForcestartVote() : Vote("forcestart", &sv_callvote_forcestart) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -188,7 +188,7 @@ public:
 		this->votestring = "forcestart";
 		return true;
 	}
-	bool tic()
+	bool tic() override
 	{
 		if (::levelstate.getState() != LevelState::WARMUP)
 		{
@@ -198,7 +198,7 @@ public:
 
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		AddCommandString("forcestart");
 		return true;
@@ -212,7 +212,7 @@ private:
 	unsigned int fraglimit;
 public:
 	FraglimitVote() : Vote("fraglimit", &sv_callvote_fraglimit) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		unsigned int fraglimit;
 
@@ -249,7 +249,7 @@ public:
 		this->votestring = vote_string.str();
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		sv_fraglimit.Set(this->fraglimit);
 		return true;
@@ -265,7 +265,7 @@ private:
 	std::string reason;
 public:
 	KickVote() : Vote("kick", &sv_callvote_kick) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -300,7 +300,7 @@ public:
 
 		return true;
 	}
-	bool tic()
+	bool tic() override
 	{
 		if (!validplayer(idplayer(this->id)))
 		{
@@ -311,7 +311,7 @@ public:
 		}
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		std::ostringstream buffer;
 		if (this->reason.empty())
@@ -334,7 +334,7 @@ private:
 	byte version;
 public:
 	MapVote() : Vote("map", &sv_callvote_map) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		size_t index;
 
@@ -381,7 +381,7 @@ public:
 		this->votestring = vsbuffer.str();
 		return true;
 	}
-	bool tic()
+	bool tic() override
 	{
 		if (this->version != Maplist::instance().get_version())
 		{
@@ -390,7 +390,7 @@ public:
 		}
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		G_ChangeMap(this->index);
 		return true;
@@ -401,7 +401,7 @@ class NextmapVote : public Vote
 {
 public:
 	NextmapVote() : Vote("nextmap", &sv_callvote_nextmap) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -411,7 +411,7 @@ public:
 		this->votestring = "nextmap";
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		G_ChangeMap();
 		return true;
@@ -422,7 +422,7 @@ class RandcapsVote : public Vote
 {
 public:
 	RandcapsVote() : Vote("randcaps", &sv_callvote_randcaps) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -431,7 +431,7 @@ public:
 		this->votestring = "randcaps";
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		return Pickup_DistributePlayers(sv_teamsinplay, this->error);
 	}
@@ -441,7 +441,7 @@ class RandmapVote : public Vote
 {
 public:
 	RandmapVote() : Vote("randmap", &sv_callvote_randmap) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -458,7 +458,7 @@ public:
 		this->votestring = "randmap";
 		return true;
 	}
-	bool tic()
+	bool tic() override
 	{
 		if (Maplist::instance().empty())
 		{
@@ -467,7 +467,7 @@ public:
 		}
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		return CMD_Randmap(this->error);
 	}
@@ -479,7 +479,7 @@ private:
 	size_t num_players;
 public:
 	RandpickupVote() : Vote("randpickup", &sv_callvote_randpickup) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -509,7 +509,7 @@ public:
 		this->votestring = buffer.str();
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		return Pickup_DistributePlayers(this->num_players, this->error);
 	}
@@ -519,7 +519,7 @@ class RestartVote : public Vote
 {
 public:
 	RestartVote() : Vote("restart", &sv_callvote_restart) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		if (!Vote::setup_check_cvar())
 			return false;
@@ -529,7 +529,7 @@ public:
 		this->votestring = "restart";
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		// When in warmup mode, we would rather not catch players off guard.
 		::levelstate.reset();
@@ -547,7 +547,7 @@ private:
 	unsigned int scorelimit;
 public:
 	ScorelimitVote() : Vote("scorelimit", &sv_callvote_scorelimit) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		unsigned int scorelimit;
 
@@ -591,7 +591,7 @@ public:
 		this->votestring = vote_string.str();
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		sv_scorelimit.Set(this->scorelimit);
 		return true;
@@ -604,7 +604,7 @@ private:
 	float timelimit;
 public:
 	TimelimitVote() : Vote("timelimit", &sv_callvote_timelimit) { };
-	bool setup(const std::vector<std::string> &args, const player_t &player)
+	bool setup(const std::vector<std::string> &args, const player_t &player) override
 	{
 		float timelimit;
 
@@ -648,7 +648,7 @@ public:
 		this->votestring = vote_string.str();
 		return true;
 	}
-	bool exec()
+	bool exec() override
 	{
 		sv_timelimit.Set(this->timelimit);
 		return true;

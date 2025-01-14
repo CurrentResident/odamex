@@ -365,7 +365,7 @@ void I_BaseError(const std::string& errortext)
 	throw CRecoverableError(errortext);
 }
 
-NORETURN void I_BaseFatalError(const std::string& errortext)
+[[noreturn]] void I_BaseFatalError(const std::string& errortext)
 {
 	static BOOL alreadyThrown = false;
 	gameisdead = true;
@@ -489,7 +489,7 @@ std::string I_ConsoleInput (void)
             // Accept return but not unusual characters as input (eg Ctrl-B)
             if ((ch != '\n' && ch != '\r') && (ch < 32 || ch > 126))
                 continue;
-			
+
 			buffer[len++] = ch;
 		}
 

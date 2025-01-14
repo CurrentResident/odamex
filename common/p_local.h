@@ -97,7 +97,8 @@ weaponstate_t P_GetWeaponState(player_t* player);
 //
 void P_FallingDamage (AActor *ent);
 void P_PlayerThink (player_t *player);
-bool P_AreTeammates(player_t &a, player_t &b);
+void P_SetPlayerPowerupStatuses(player_t* player, int powers[NUMPOWERS]);
+bool P_AreTeammates(player_t& a, player_t& b);
 bool P_CanSpy(player_t &viewer, player_t &other, bool demo = false);
 
 //
@@ -413,7 +414,7 @@ class DRotatePoly : public DPolyAction
 	DECLARE_SERIAL (DRotatePoly, DPolyAction)
 public:
 	DRotatePoly (int polyNum);
-	void RunThink ();
+	void RunThink () override;
 protected:
 	friend BOOL EV_RotatePoly (line_t *line, int polyNum, int speed, int byteAngle, int direction, BOOL overRide);
 private:
@@ -425,7 +426,7 @@ class DMovePoly : public DPolyAction
 	DECLARE_SERIAL (DMovePoly, DPolyAction)
 public:
 	DMovePoly (int polyNum);
-	void RunThink ();
+	void RunThink () override;
 protected:
 	DMovePoly ();
 	int m_Angle;
@@ -440,7 +441,7 @@ class DPolyDoor : public DMovePoly
 	DECLARE_SERIAL (DPolyDoor, DMovePoly)
 public:
 	DPolyDoor (int polyNum, podoortype_t type);
-	void RunThink ();
+	void RunThink () override;
 protected:
 	int m_Direction;
 	int m_TotalDist;
