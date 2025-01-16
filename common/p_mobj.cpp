@@ -970,10 +970,14 @@ void AActor::Serialize (FArchive &arc)
 		}
 		spawnpoint.Serialize (arc);
 		baseline.Serialize(arc);
-		if(type >= ::num_mobjinfo_types())
-			I_Error("Unknown object type in saved game");
-		if(sprite >= ::num_spritenum_t_types())
-			I_Error("Unknown sprite in saved game");
+		if (mobjinfo.find(type) == mobjinfo.end())
+		{
+			I_Error("Unknown object type (%d) in saved game", type);
+		}
+		if (sprnames.find(sprite) == sprnames.end())
+		{
+			I_Error("Unknown sprite (%d) in saved game", sprite);
+		}
 		info = mobjinfo[type];
 		touching_sectorlist = NULL;
 

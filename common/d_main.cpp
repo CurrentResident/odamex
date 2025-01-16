@@ -834,6 +834,13 @@ bool D_DoomWadReboot(const OWantFiles& newwadfiles, const OWantFiles& newpatchfi
 	OResFiles oldwadfiles = ::wadfiles;
 	OResFiles oldpatchfiles = ::patchfiles;
 	std::string failmsg;
+
+	
+	// Zone memory manager already reset by D_Shutdown() calling Z_Close()
+	// Z_Init();
+	// Printf("Z_Init: D_DoomWadReboot: Using native allocator with OZone "
+	//       "bookkeeping.\n");
+
 	try
 	{
 
@@ -862,6 +869,7 @@ bool D_DoomWadReboot(const OWantFiles& newwadfiles, const OWantFiles& newpatchfi
 		std::string fatalmsg;
 		try
 		{
+
 			LoadResolvedFiles(oldwadfiles, oldpatchfiles);
 
 			// get skill / episode / map from parms

@@ -621,17 +621,8 @@ void D_Init()
 
 	M_ClearRandom();
 
-	// start the Zone memory manager
-	Z_Init();
-	if (first_time)
-		Printf("Z_Init: Using native allocator with OZone bookkeeping.\n");
-
 	// Load palette and set up colormaps
 	V_Init();
-
-//	if (first_time)
-//		Printf(PRINT_HIGH, "Res_InitTextureManager: Init image resource management.\n");
-//	Res_InitTextureManager();
 
 	// init the renderer
 	if (first_time)
@@ -669,8 +660,6 @@ void D_Init()
 		Printf (PRINT_HIGH, "S_Init: default music volume is %g\n", (float)snd_musicvolume);
 	}
 	S_Init(snd_sfxvolume, snd_musicvolume);
-
-//	R_InitViewBorder();
 
 	// init the status bar
 	if (first_time)
@@ -765,6 +754,10 @@ void D_DoomMain()
 	atterm(C_ShutdownConsole);
 
 	W_SetupFileIdentifiers();
+
+	// start the Zone memory manager
+	Z_Init();
+	Printf("Z_Init: Using native allocator with OZone bookkeeping.\n");
 
 	// [RH] Initialize items. Still only used for the give command. :-(
 	InitItems();
@@ -885,6 +878,7 @@ void D_DoomMain()
 
 	// [SL] Call init routines that need to be reinitialized every time WAD changes
 	atterm(D_Shutdown);
+	// initialize
 	D_Init();
 
 	atterm(I_Endoom);

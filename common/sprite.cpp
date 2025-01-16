@@ -5,24 +5,26 @@
 
 #include "sprite.h"
 #include "doom_obj_container.h"
+#include "z_zone.h"
 
 #include <sstream>
 
 //----------------------------------------------------------------------------------------------
 
-template<>
-inline void DoomObjectContainer<const char*, int32_t>::clear()
-{
-	if (this->container.size() > 0)
-	{
-		for (int i = 0; i < this->container.size(); i++)
-		{
-			char* p = (char*)this->container[i];
-			M_Free(p);
-		}
-	}
-	this->lookup_table.erase(lookup_table.begin(), lookup_table.end());
-}
+//template<>
+//inline void DoomObjectContainer<const char*, int32_t>::clear()
+//{
+//	if (this->container.size() > 0)
+//	{
+//		for (int i = 0; i < this->container.size(); i++)
+//		{
+//			char* p = (char*)this->container[i];
+//			M_Free(p);
+//		}
+//	}
+//	this->container.clear();
+//	this->lookup_table.clear();
+//}
 
 //----------------------------------------------------------------------------------------------
 
@@ -42,7 +44,8 @@ void D_Initialize_sprnames(const char** source, int count, spritenum_t start)
 		spritenum_t idx = start;
 		for (int i = 0; i < count; i++)
 		{
-			sprnames.insert(strdup(source[i]), idx);
+            // [CMB] using Z_StrDup here is causing problems
+			sprnames.insert(Z_StrDup(source[i], PU_STATIC), idx);
             idx = spritenum_t(idx + 1);
 		}
     }

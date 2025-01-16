@@ -155,11 +155,6 @@ void D_Init()
 	// [AM] Init rand() PRNG, needed for non-deterministic maplist shuffling.
 	srand(time(NULL));
 
-	// start the Zone memory manager
-	Z_Init();
-	if (first_time)
-		Printf("Z_Init: Using native allocator with OZone bookkeeping.\n");
-
 	// Load palette and set up colormaps
 	V_InitPalette("PLAYPAL");
 	R_InitColormaps();
@@ -240,6 +235,10 @@ void D_DoomMain()
 
 	W_SetupFileIdentifiers();
 
+	// start the Zone memory manager
+	Z_Init();
+	Printf("Z_Init: Using native allocator with OZone bookkeeping.\n");
+
 	// [RH] Initialize items. Still only used for the give command. :-(
 	InitItems();
 	D_Initialize_States(boomstates, ::NUMSTATES);
@@ -274,8 +273,6 @@ void D_DoomMain()
 		OWantFile::make(file, iwad_filename_cstr, OFILE_WAD);
 		newwadfiles.push_back(file);
 	}
-
-
 
 	D_AddWadCommandLineFiles(newwadfiles);
 	D_AddDehCommandLineFiles(newpatchfiles);

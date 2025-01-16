@@ -641,6 +641,7 @@ void D_UndoDehPatch()
 	M_Free(OrgSprNames);
 
 
+	// [CMB] investigate after using z zone alloc functions
 	sprnames.clear();
 	sprnames.reserve(doomBackup.backupSprnames.size());
 	for (const auto& sprname : doomBackup.backupSprnames)
@@ -1061,7 +1062,7 @@ static int PatchThing(int thingy)
 			m.altspeed = NO_ALTSPEED;
 			return m;
 		};
-		mobjinfo_t* mobj = (mobjinfo_t*) M_Calloc(1, sizeof(mobjinfo_t));
+		mobjinfo_t* mobj = (mobjinfo_t*) Z_Malloc(sizeof(mobjinfo_t), PU_STATIC, NULL);
 		*mobj = mobjinfo_t_default();
 		mobjinfo.insert(mobj, (mobjtype_t) thingNum);
 		// set the type
@@ -1628,7 +1629,7 @@ static int PatchFrame(int frameNum)
 				s.args[7] = 0;
 				return s;
 		};
-		state_t* state = (state_t*) M_Calloc(1, sizeof(state_t));
+		state_t* state = (state_t*) Z_Malloc(sizeof(state_t), PU_STATIC, NULL);
 		*state = state_t_default(frameNum);
 		states.insert(state, frameNum);
 		// set the proper state number
@@ -1828,9 +1829,10 @@ static int PatchSprites(int dummy)
 			{
 				const char* found = sprnames_it->second;
 				char* s = const_cast<char*>(found);
-				free(s);
+				Z_Free(s); // ozone allocated memory
 			}
-			sprnames.insert(strdup(newSprName), (spritenum_t) sprIdx);
+			// [CMB] remember to Z_Free this instead of free(...)
+			sprnames.insert(Z_StrDup(newSprName, PU_STATIC), (spritenum_t) sprIdx);
 	}
 
 	return result;
@@ -2838,12 +2840,11 @@ static void PrintState(int index)
 
 	// Print this state.
 	state_t& state = *it->second;
-	Printf("%4d | s:%s f:%d t:%d a:%s m1:%d m2:%d\n", index, ::sprnames[state.sprite],
+	Printf("%4d | sprite:%s frame:%d tics:%d action:%s m1:%d m2:%d\n", index, ::sprnames[state.sprite],
 	       state.frame, state.tics, ActionPtrString(state.action), state.misc1,
 	       state.misc2);
 }
 
-// [CMB] TODO: format specifier error
 static void PrintMobjinfo(int index)
 {
 	MobjIterator it = mobjinfo.find(index);
@@ -2851,6 +2852,10 @@ static void PrintMobjinfo(int index)
     {
         return;
     }
+
+	auto getstring = [](const char* val) -> const char* {
+		return val == NULL ? "0" : val;
+	};
 
     mobjinfo_t* mob = it->second;
     std::stringstream ss;
@@ -2866,15 +2871,18 @@ static void PrintMobjinfo(int index)
     // activesound, flags, raisestate, droppeditem, flags2
     ss << "activesound: %s, flags: %ul, raisestate: %d, droppeditem: %d, flags2: %ul\n";
     // infighting_group, projectile_group, splash_group, ripsound, altspeed, meleerange
-    ss << "infighting_group: %d, projectile_group: %d, splash_group: %d, ripsound: %d, altspeed: %d, meleerange: %d\n";
+    ss << "infighting_group: %d, projectile_group: %d, splash_group: %d, ripsound: %s, altspeed: %d, meleerange: %d\n";
     // translucency
     ss << "translucency: %d\n";
-    Printf(ss.str().c_str(), index, mob->doomednum, mob->spawnstate, mob->spawnhealth, mob->seestate, mob->seesound,
-                             mob->reactiontime, mob->attacksound, mob->painstate, mob->painchance, mob->painsound,
-                             mob->meleestate, mob->missilestate, mob->deathstate, mob->xdeathstate, mob->deathsound,
-                             mob->speed, mob->radius, mob->height, mob->mass, mob->damage,
-                             mob->activesound, mob->flags, mob->raisestate, mob->droppeditem, mob->flags2,
-                             mob->infighting_group, mob->projectile_group, mob->splash_group, mob->ripsound, mob->altspeed, mob->meleerange, mob->translucency);
+	Printf(ss.str().c_str(), index, mob->doomednum, mob->spawnstate, mob->spawnhealth,
+	       mob->seestate, getstring(mob->seesound), mob->reactiontime,
+	       getstring(mob->attacksound), mob->painstate, mob->painchance,
+	       getstring(mob->painsound), mob->meleestate, mob->missilestate, mob->deathstate,
+	       mob->xdeathstate, getstring(mob->deathsound),
+		   mob->speed, mob->radius, mob->height, mob->mass, mob->damage, getstring(mob->activesound), mob->flags,
+	       mob->raisestate, mob->droppeditem, mob->flags2, mob->infighting_group,
+	       mob->projectile_group, mob->splash_group, getstring(mob->ripsound),
+	       mob->altspeed, mob->meleerange, mob->translucency);
 }
 
 BEGIN_COMMAND(mobinfo)

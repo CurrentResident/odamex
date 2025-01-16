@@ -2,6 +2,7 @@
 
 #include "mobjinfo.h"
 #include "doom_obj_container.h"
+#include "z_zone.h"
 
 void D_ResetMobjInfo(mobjinfo_t* m, int32_t idx);
 void D_ResetMobjInfoSpawnMap(mobjinfo_t* m, int32_t idx);
@@ -43,7 +44,7 @@ void D_Initialize_Mobjinfo(mobjinfo_t* source, int count)
 		{
 			mobjinfo_source = source[i];
 			idx = mobjinfo_source.type;
-			mobjinfo_t* newmobjinfo = (mobjinfo_t*) M_Calloc(1, sizeof(mobjinfo_t));
+			mobjinfo_t* newmobjinfo = (mobjinfo_t*) Z_Malloc(sizeof(mobjinfo_t), PU_STATIC, NULL);
 			*newmobjinfo = mobjinfo_source;
 
 			mobjinfo.insert(newmobjinfo, idx);
