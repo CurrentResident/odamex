@@ -817,6 +817,7 @@ void G_InitLevelLocals()
 	{
 		::level.aircontrol = static_cast<fixed_t>(info.aircontrol * 65536.f);
 	}
+	::level.airsupply = info.airsupply;
 
 	::level.partime = info.partime;
 	::level.cluster = info.cluster;
@@ -926,6 +927,7 @@ void G_InitLevelLocals()
 	::level.intertextsecret = info.intertextsecret;
 	::level.interbackdrop = info.interbackdrop;
 	::level.intermusic = info.intermusic;
+	::level.zintermusic = info.zintermusic;
 
 	::level.bossactions = info.bossactions;
 	::level.label = info.label;

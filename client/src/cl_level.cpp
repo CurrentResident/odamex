@@ -416,6 +416,22 @@ void G_DoCompleted (void)
 		}
 	}
 
+	const WinInfo& win = levelstate.getWinInfo();
+	switch (win.type)
+	{
+		case WinInfo::WIN_EVERYBODY:
+			wminfo.winner = true;
+			break;
+		case WinInfo::WIN_TEAM:
+			wminfo.winner = consoleplayer().userinfo.team == win.id;
+			break;
+		case WinInfo::WIN_PLAYER:
+			wminfo.winner = consoleplayer_id == win.id;
+			break;
+		default:
+			wminfo.winner = false;
+	}
+
 	AM_Stop();
 
 	wminfo.epsd = level.cluster - 1;		// Only used for DOOM I.

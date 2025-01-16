@@ -1161,6 +1161,10 @@ void WI_updateStats()
 			{
 				if (enteranim != nullptr && !enteranim->musiclump.empty())
 					S_ChangeMusic(enteranim->musiclump.c_str(), true);
+				else if (!nextlevel.zintermusic.empty())
+					S_ChangeMusic(nextlevel.zintermusic.c_str(), true);
+				else
+					S_ChangeMusic(gameinfo.intermissionMusic.c_str(), true);
 				// background
 				const char* bg_lump = enteranim == nullptr ? enterpic.c_str() : enteranim->backgroundlump.c_str();
 				const patch_t* bg_patch = W_CachePatch(bg_lump);
@@ -1275,9 +1279,17 @@ void WI_Ticker()
 
 	if (bcnt == 1)
 	{
+		level_pwad_info_t& currentlevel = getLevelInfos().findByName(wbs->current);
+
 		// intermission music
 		if (exitanim != nullptr && !exitanim->musiclump.empty())
 			S_ChangeMusic (exitanim->musiclump.c_str(), true);
+		else if (W_CheckNumForName(wbs->winner ? "D_OWIN" : "D_OLOSE") != -1)
+			S_ChangeMusic (wbs->winner ? "D_OWIN" : "D_OLOSE", true);
+		else if (W_CheckNumForName(wbs->winner ? "D_STWIN" : "D_STLOSE") != -1)
+			S_ChangeMusic (wbs->winner ? "D_STWIN" : "D_STLOSE", true);
+		else if (!currentlevel.zintermusic.empty())
+			S_ChangeMusic (currentlevel.zintermusic.c_str(), true);
 		else
 			S_ChangeMusic (gameinfo.intermissionMusic.c_str(), true);
 	}
@@ -1354,34 +1366,39 @@ void WI_loadData()
 	level_pwad_info_t& currentlevel = levels.findByName(wbs->current);
 	level_pwad_info_t& nextlevel = levels.findByName(wbs->next);
 
+	OLumpName winanim;
+	OLumpName winpic;
+	if (W_CheckNumForName(wbs->winner ? "WINANIM" : "LOSEANIM") != -1)
+		winanim = wbs->winner ? "WINANIM" : "LOSEANIM";
+	else if (W_CheckNumForName(wbs->winner ? "WINERPIC" : "LOSERPIC") != -1)
+		winpic = wbs->winner ? "WINERPIC" : "LOSERPIC";
+
 	animation = new wi_animation_t();
 
-	if (!currentlevel.exitanim.empty())
-	{
+	if (!winanim.empty())
+		exitanim = WI_GetInterlevel(winanim.c_str());
+	else if (!currentlevel.exitanim.empty())
 		exitanim = WI_GetInterlevel(currentlevel.exitanim.c_str());
-	} else if (!currentlevel.exitscript.empty())
-	{
+	else if (!currentlevel.exitscript.empty())
 		exitanim = WI_GetIntermissionScript(currentlevel.exitscript.c_str());
-	}
+
 	if (!nextlevel.enteranim.empty())
-	{
 		enteranim = WI_GetInterlevel(nextlevel.enteranim.c_str());
-	} else if (!nextlevel.enterscript.empty())
-	{
+	else if (!nextlevel.enterscript.empty())
 		enteranim = WI_GetIntermissionScript(nextlevel.enterscript.c_str());
-	}
+
 	WI_initAnimation();
 
-	char name[17];
+	OLumpName name;
 
 	if (exitanim != nullptr)
-		strcpy(name, exitanim->backgroundlump.c_str());
+		name = exitanim->backgroundlump;
+	else if (!winpic.empty())
+		name = winpic;
 	else if (currentlevel.exitpic[0] != '\0')
-		strcpy(name, currentlevel.exitpic.c_str());
-	else if ((gameinfo.flags & GI_MAPxx) || ((gameinfo.flags & GI_MENUHACK_RETAIL) && wbs->epsd >= 3))
-		strcpy(name, "INTERPIC");
+		currentlevel.exitpic;
 	else
-		snprintf(name, 17, "WIMAP%d", wbs->epsd);
+		name = "INTERPIC";
 
 	// background
 	const patch_t* bg_patch = W_CachePatch(name);
@@ -1421,8 +1438,8 @@ void WI_loadData()
 	for (int i = 0; i < 10; i++)
 	{
 		// numbers 0-9
-		snprintf(name, 17, "WINUM%d", i);
-			num[i] = W_CachePatchHandle(name, PU_STATIC);
+		name = fmt::format("WINUM{}", i);
+		num[i] = W_CachePatchHandle(name.c_str(), PU_STATIC);
 	}
 
 	wiminus = W_CachePatchHandle("WIMINUS", PU_STATIC);
@@ -1505,8 +1522,8 @@ void WI_loadData()
 	// [Nes] Classic vanilla lifebars.
 	for (int i = 0; i < 4; i++)
 	{
-		sprintf(name, "STPB%d", i);
-		faceclassic[i] = W_CachePatchHandle(name, PU_STATIC);
+		name = fmt::format("STPB{}", i);
+		faceclassic[i] = W_CachePatchHandle(name.c_str(), PU_STATIC);
 	}
 }
 
