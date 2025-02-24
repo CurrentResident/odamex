@@ -521,23 +521,16 @@ BEGIN_COMMAND (map)
 }
 END_COMMAND (map)
 
-char *CalcMapName(int episode, int level)
+OLumpName CalcMapName(int episode, int level)
 {
-	static char lumpname[9];
-
 	if (gameinfo.flags & GI_MAPxx)
 	{
-		snprintf (lumpname, 9, "MAP%02d", level);
+		return fmt::format("MAP{:02d}", level);
 	}
 	else
 	{
-		lumpname[0] = 'E';
-		lumpname[1] = '0' + episode;
-		lumpname[2] = 'M';
-		lumpname[3] = '0' + level;
-		lumpname[4] = 0;
+		return fmt::format("E{}M{}", episode, level);
 	}
-	return lumpname;
 }
 
 void G_AirControlChanged()

@@ -61,6 +61,7 @@
 #include "sprite.h"
 #include "mobjinfo.h"
 #include "state.h"
+#include "odamex_objects.h"
 
 #ifdef GEKKO
 #include "i_wii.h"
@@ -230,6 +231,23 @@ static char *GetRegistryString(registry_value_t *reg_val)
 
 #endif
 
+//
+// D_Initialize_Doom_Objects()
+// [CMB] Initialize all the doom objects: MobjInfo, SprNames, SoundMap, etc.
+//
+void D_Initialize_Doom_Objects()
+{
+	// [RH] Initialize items. Still only used for the give command. :-(
+	InitItems();
+	D_Initialize_States(boomstates, ::NUMSTATES);
+	D_Initialize_Mobjinfo(doom_mobjinfo, ::NUMMOBJTYPES);
+	D_Initialize_sprnames(doom_sprnames, ::NUMSPRITES, SPR_TROO);
+	D_Initialize_SoundMap(doom_SoundMap, ARRAY_LENGTH(doom_SoundMap));
+	// Initialize all extra frames
+	D_Init_Nightmare_Flags();
+	// Initialize the odamex specific objects
+	D_Initialize_Odamex_Objects();
+}
 
 //
 // D_AddSearchDir
@@ -826,6 +844,7 @@ bool D_DoomWadReboot(const OWantFiles& newwadfiles, const OWantFiles& newpatchfi
 	::lastWadRebootSuccess = false;
 
 	D_Shutdown();
+	D_Initialize_Doom_Objects(); // start from vanilla objects
 
 	gamestate_t oldgamestate = ::gamestate;
 	::gamestate = GS_STARTUP; // prevent console from trying to use nonexistant font
@@ -912,9 +931,13 @@ static void AddCommandLineOptionFiles(OWantFiles& out, const std::string& option
 	DArgs files = Args.GatherFiles(option.c_str());
 	for (size_t i = 0; i < files.NumArgs(); i++)
 	{
-		OWantFile file;
-		OWantFile::make(file, files.GetArg(i), type);
-		out.push_back(file);
+		const char* fileArg = files.GetArg(i);
+		if (!std::string(fileArg).empty())
+		{
+			OWantFile file;
+			OWantFile::make(file, fileArg, type);
+			out.push_back(file);
+		}
 	}
 
 	files.FlushArgs();

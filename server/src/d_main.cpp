@@ -239,16 +239,7 @@ void D_DoomMain()
 	Z_Init();
 	Printf("Z_Init: Using native allocator with OZone bookkeeping.\n");
 
-	// [RH] Initialize items. Still only used for the give command. :-(
-	InitItems();
-	D_Initialize_States(boomstates, ::NUMSTATES);
-    D_Initialize_Mobjinfo(doom_mobjinfo, ::NUMMOBJTYPES);
-	D_Initialize_sprnames(doom_sprnames, ::NUMSPRITES, SPR_TROO);
-	D_Initialize_SoundMap(doom_SoundMap, ARRAY_LENGTH(doom_SoundMap));
-	// Initialize all extra frames
-	D_Init_Nightmare_Flags();
-	// Initialize the odamex specific objects
-	D_Initialize_Odamex_Objects();
+	D_Initialize_Doom_Objects();
 
 	M_FindResponseFile();		// [ML] 23/1/07 - Add Response file support back in
 

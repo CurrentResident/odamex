@@ -53,7 +53,7 @@ static IWindowSurface* finale_surface = NULL;
 // Draw the bunny scroll on 2 surfaces
 // and clip them against the screen
 static IWindowSurface* bunny1_surface = NULL;
-static IWindowSurface* bunny2_surface = NULL; 
+static IWindowSurface* bunny2_surface = NULL;
 
 // Stage of animation:
 //	0 = text, 1 = art screen, 2 = character cast
@@ -80,7 +80,7 @@ finale_lump_t finalelumptype = FINALE_NONE;
 
 void	F_StartCast (void);
 void	F_CastTicker (void);
-BOOL	F_CastResponder (event_t *ev);
+bool	F_CastResponder (event_t *ev);
 void	F_CastDrawer (void);
 
 
@@ -235,7 +235,7 @@ void STACK_ARGS F_ShutdownFinale()
 }
 
 
-BOOL F_Responder (event_t *event)
+bool F_Responder (event_t *event)
 {
 	if (finalestage == 2)
 		return F_CastResponder (event);
@@ -332,14 +332,14 @@ void F_TextWrite ()
 	switch (finalelumptype)
 	{
 	case FINALE_GRAPHIC:
-		lump = W_CheckNumForName(finalelump.c_str(), ns_global);
+		lump = W_CheckNumForName(finalelump, ns_global);
 		if (lump >= 0)
 		{
 			screen->DrawPatchFullScreen(W_CachePatch(lump, PU_CACHE), true);
 		}
 		break;
 	case FINALE_FLAT:
-		lump = W_CheckNumForName(finalelump.c_str(), ns_flats);
+		lump = W_CheckNumForName(finalelump, ns_flats);
 		if (lump >= 0)
 		{
 			// Support high resolution flats
@@ -438,7 +438,6 @@ castinfo_t castorder[] = {
 
 static int 		castnum;
 static int 		casttics;
-static int		castsprite;
 static state_t*	caststate;
 static bool	 	castdeath;
 static int 		castframes;
@@ -476,7 +475,6 @@ void F_StartCast()
 	wipegamestate = GS_FORCEWIPE;
 	castnum = 0;
 	caststate = states[mobjinfo[castorder[castnum].type]->seestate];
-	castsprite = caststate->sprite;
 	casttics = caststate->tics;
 	castdeath = false;
 	finalestage = 2;
@@ -511,7 +509,6 @@ void F_CastTicker()
 			S_Sound (CHAN_VOICE, mobjinfo[castorder[castnum].type]->seesound, 1, atten);
 		}
 		caststate = states[mobjinfo[castorder[castnum].type]->seestate];
-		castsprite = caststate->sprite;
 		castframes = 0;
 	}
 	else
@@ -607,7 +604,7 @@ void F_CastTicker()
 // F_CastResponder
 //
 
-BOOL F_CastResponder (event_t* ev)
+bool F_CastResponder (event_t* ev)
 {
 	if (ev->type != ev_keydown)
 		return false;
@@ -649,7 +646,7 @@ void F_CastDrawer()
 	cast_surface->getDefaultCanvas()->DrawPatch(background_patch, 0, 0);
 
 	// draw the current frame in the middle of the screen
-	const spritedef_t* sprdef = &sprites[castsprite];
+	const spritedef_t* sprdef = &sprites[caststate->sprite];
 	const spriteframe_t* sprframe = &sprdef->spriteframes[caststate->frame & FF_FRAMEMASK];
 
 	int scaled_x = (finale_width - 320) / 2;
@@ -806,7 +803,7 @@ void F_BunnyScroll()
 // Draws an endpic on the finale canvas.
 // If using a normal 320x200 endpic,
 // It will be scaled to fit the viewport.
-// 
+//
 // If using a widescreen endpic, it will
 // be scaled keeping aspect ratio to fill
 // the screen and may be too wide for the
@@ -830,7 +827,7 @@ void F_DrawEndPic(const char* page)
 
 	const int x = (primary_surface->getWidth() - width) / 2;
 	const int y = (primary_surface->getHeight() - height) / 2;
-	
+
 	// draw the background to the surface
 	finale_surface->lock();
 

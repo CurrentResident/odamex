@@ -459,7 +459,7 @@ void D_AdvanceDemo (void)
 //
 void D_DoAdvanceDemo (void)
 {
-	const char *pagename = NULL;
+	OLumpName pagename;
 
 	consoleplayer().playerstate = PST_LIVE;	// not reborn
 	advancedemo = false;
@@ -475,13 +475,17 @@ void D_DoAdvanceDemo (void)
     else
         demosequence = (demosequence+1)%6;
 
+#if defined(_DEBUG)
+	Printf_Bold("D_DoAdvanceDemo:: Checking for DEMO: %d\n", demosequence);
+#endif
+
     switch (demosequence)
     {
         case 0:
             pagetic = gameinfo.titleTime * TICRATE;
 
             gamestate = GS_DEMOSCREEN;
-            pagename = gameinfo.titlePage.c_str();
+		    pagename = gameinfo.titlePage;
 
             currentmusic = gameinfo.titleMusic.c_str();
 
@@ -495,7 +499,7 @@ void D_DoAdvanceDemo (void)
         case 2:
             pagetic = gameinfo.pageTime * TICRATE;
             gamestate = GS_DEMOSCREEN;
-            pagename = gameinfo.creditPages[0].c_str();
+		    pagename = gameinfo.creditPages[0];
 
             break;
         case 3:
@@ -509,7 +513,7 @@ void D_DoAdvanceDemo (void)
             {
                 pagetic = gameinfo.titleTime * TICRATE;
 
-                pagename = gameinfo.titlePage.c_str();
+                pagename = gameinfo.titlePage;
                 currentmusic = gameinfo.titleMusic.c_str();
 
                 S_StartMusic(currentmusic.c_str());
@@ -517,7 +521,7 @@ void D_DoAdvanceDemo (void)
             else
             {
                 pagetic = gameinfo.pageTime * TICRATE;
-                pagename = gameinfo.creditPages[1].c_str();
+			    pagename = gameinfo.creditPages[1];
             }
 
             break;
@@ -528,7 +532,7 @@ void D_DoAdvanceDemo (void)
         case 6:
             pagetic = gameinfo.pageTime * TICRATE;
             gamestate = GS_DEMOSCREEN;
-            pagename = gameinfo.creditPages[1].c_str();
+		    pagename = gameinfo.creditPages[1];
 
             break;
         case 7:
@@ -538,7 +542,7 @@ void D_DoAdvanceDemo (void)
     }
 
     // [Russell] - Still need this toilet humor for now unfortunately
-	if (pagename)
+	if (!pagename.empty())
 	{
 		const patch_t* patch = W_CachePatch(pagename);
 
@@ -759,16 +763,7 @@ void D_DoomMain()
 	Z_Init();
 	Printf("Z_Init: Using native allocator with OZone bookkeeping.\n");
 
-	// [RH] Initialize items. Still only used for the give command. :-(
-	InitItems();
-	D_Initialize_States(boomstates, ::NUMSTATES);
-    D_Initialize_Mobjinfo(doom_mobjinfo, ::NUMMOBJTYPES);
-	D_Initialize_sprnames(doom_sprnames, ::NUMSPRITES, SPR_TROO);
-	D_Initialize_SoundMap(doom_SoundMap, ARRAY_LENGTH(doom_SoundMap));
-	// Initialize all extra frames
-	D_Init_Nightmare_Flags();
-    // Initialize the odamex specific objects
-    D_Initialize_Odamex_Objects();
+	D_Initialize_Doom_Objects();
 
 	M_FindResponseFile();		// [ML] 23/1/07 - Add Response file support back in
 
@@ -920,7 +915,7 @@ void D_DoomMain()
 		g_thingfilter = -1;
 
 	// get skill / episode / map from parms
-	startmap = EpisodeMaps[0].c_str();
+	startmap = EpisodeMaps[0];
 
 	const char* val = Args.CheckValue("-skill");
 	if (val)

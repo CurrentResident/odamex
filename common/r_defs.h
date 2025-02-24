@@ -499,7 +499,7 @@ struct post_t
 	/**
 	 * @brief Return the post's absolute topdelta accounting for tall
 	 *        patches, which treat topdelta as relative.
-	 * 
+	 *
 	 * @param lastAbs Last absolute topdelta.
 	 */
 	int abs(const int lastAbs) const
@@ -517,7 +517,7 @@ struct post_t
 	{
 		return length + 3;
 	}
-	
+
 	/**
 	 * @brief Return a pointer to post data.
 	 */
@@ -726,10 +726,10 @@ struct spriteframe_s
 	bool	rotate;
 
     // Lump to use for view angles 0-15.
-    short	lump[16];
+    int		lump[16];
 
     // Flip bit (1 = flip) to use for view angles 0-15.
-    byte	flip[16];
+    bool	flip[16];
 
 	// [RH] Move some data out of spritewidth, spriteoffset,
 	//		and spritetopoffset arrays.

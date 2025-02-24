@@ -7210,14 +7210,4 @@ void D_Init_Nightmare_Flags(void)
 	mobjinfo[MT_KNIGHT]->projectile_group = PG_BARON;
 }
 
-void D_Init_Odamex_Objects(
-	const DoomObjectContainer<mobjinfo_t>& mobjinfo,
-	const DoomObjectContainer<const char*>& sprnames,
-	const DoomObjectContainer<state_t>& states
-	)
-{
-    // using hard coded values here
-	// [CMB] TODO: should this live in here or in odamex_objects.h?
-}
-
 VERSION_CONTROL (info_cpp, "$Id$")

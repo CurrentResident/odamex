@@ -2,6 +2,7 @@
 #include "m_fixed.h"
 #include "actor.h"
 #include "info.h"
+#include "z_zone.h"
 
 #include "odamex_objects.h"
 
@@ -2270,7 +2271,7 @@ void D_Initialize_Odamex_Objects()
 	// states
 	for (int i = 0; i < size; i++)
 	{
-		state_t* state = (state_t*)M_Calloc(1, sizeof(state_t));
+		state_t* state = (state_t*)Z_Malloc(sizeof(state_t), PU_STATIC, NULL);
 		*state = odastates[i];
 		states.insert(state, state->statenum);
 	}
@@ -2282,7 +2283,7 @@ void D_Initialize_Odamex_Objects()
 	size = odamobjinfo_size();
 	for (int i = 0; i < size; i++)
 	{
-		mobjinfo_t* mobj = (mobjinfo_t*)M_Calloc(1, sizeof(mobjinfo_t));
+		mobjinfo_t* mobj = (mobjinfo_t*)Z_Malloc(sizeof(mobjinfo_t), PU_STATIC, NULL);
 		*mobj = odamobjinfo[i];
 		mobjinfo.insert(mobj, mobj->type);
 

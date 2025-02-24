@@ -36,6 +36,12 @@ extern std::string LOG_FILE;
 //
 void D_DoomMain(void);
 
+//
+// D_Initialize_Doom_Objects()
+// Initialize all the doom objects: MobjInfo, SprNames, SoundMap, etc.
+//
+void D_Initialize_Doom_Objects();
+
 void D_LoadResourceFiles(const OWantFiles& newwadfiles, const OWantFiles& newpatchfiles);
 bool D_DoomWadReboot(const OWantFiles& newwadfiles, const OWantFiles& newpatchfiles);
 

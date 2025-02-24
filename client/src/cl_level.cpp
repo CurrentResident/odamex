@@ -102,7 +102,7 @@ bool isFast = false;
 //
 static OLumpName d_mapname;
 
-void G_DeferedInitNew (const char *mapname)
+void G_DeferedInitNew (const OLumpName& mapname)
 {
 	G_CleanupDemo();
 	d_mapname = mapname;
@@ -605,7 +605,7 @@ void G_DoLoadLevel (int position)
 	//	setting one.
 	skyflatnum = R_FlatNumForName(SKYFLATNAME);
 
-	R_SetDefaultSky(level.skypic.c_str());
+	R_SetDefaultSky(level.skypic);
 
 	R_InitSkiesForLevel();
 
@@ -755,7 +755,7 @@ void G_WorldDone()
 	cluster_info_t& thiscluster = clusters.findByCluster(level.cluster);
 
 	// Sort out default options to pass to F_StartFinale
-	finale_options_t options = { 0, 0, 0, 0 };
+	finale_options_t options = { "", "", "", "" };
 	options.music = !level.intermusic.empty() ? level.intermusic.c_str() : thiscluster.messagemusic.c_str();
 
 	if (!level.interbackdrop.empty())

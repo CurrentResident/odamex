@@ -1537,7 +1537,7 @@ void S_ActivateAmbient(AActor *origin, int ambient)
 	if (!(amb->type & 3) && !amb->periodmin)
 	{
 		const int sndnum = S_FindSound(amb->sound);
-		if (sndnum == 0)
+		if (sndnum == 0 || sndnum == -1)
 			return;
 
 		sfxinfo_t *sfx = &S_sfx[sndnum];

@@ -461,7 +461,7 @@ void D_Initialize_SoundMap(const char** source, int count)
     {
 		for (int i = 0; i < count; i++)
 		{
-			SoundMap.insert(source[i] ? strdup(source[i]) : NULL, i);
+			SoundMap.insert(source[i] ? strdup(source[i]) : nullptr, i);
 		}
     }
 #if defined _DEBUG
@@ -605,10 +605,10 @@ static void BackupData(void)
 	// sounds
 	doomBackup.backupSoundMap.clear();
 	doomBackup.backupSoundMap.reserve(SoundMap.size());
-	for(const std::pair<int32_t, const char*> & it : SoundMap)
+	for(const auto& [idx, mapsound] : SoundMap)
 	{
-		const char* sound = strdup(it.second);
-		doomBackup.backupSoundMap.insert(sound, it.first);
+		const char* sound = mapsound ? strdup(mapsound) : nullptr;
+		doomBackup.backupSoundMap.insert(sound, idx);
 	}
 
 	std::copy(weaponinfo, weaponinfo + ::NUMWEAPONS + 1, doomBackup.backupWeaponInfo);

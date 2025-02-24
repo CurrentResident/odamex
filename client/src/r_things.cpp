@@ -625,13 +625,13 @@ void R_ProjectSprite(AActor *thing, int fakeside)
 		}
 
 		lump = sprframe->lump[rot];
-		flip = static_cast<bool>(sprframe->flip[rot]);
+		flip = sprframe->flip[rot];
 	}
 	else
 	{
 		// use single rotation for all views
 		lump = sprframe->lump[rot = 0];
-		flip = static_cast<bool>(sprframe->flip[0]);
+		flip = sprframe->flip[0];
 	}
 
 	if (sprframe->width[rot] == SPRITE_NEEDS_INFO) 
@@ -736,7 +736,7 @@ void R_DrawPSprite(pspdef_t* psp, unsigned flags)
 	spritedef_t*		sprdef;
 	spriteframe_t*		sprframe;
 	int 				lump;
-	BOOL 				flip;
+	bool 				flip;
 	vissprite_t*		vis;
 	vissprite_t 		avis;
 
@@ -757,7 +757,7 @@ void R_DrawPSprite(pspdef_t* psp, unsigned flags)
 	sprframe = &sprdef->spriteframes[ psp->state->frame & FF_FRAMEMASK ];
 
 	lump = sprframe->lump[0];
-	flip = static_cast<BOOL>(sprframe->flip[0]);
+	flip = sprframe->flip[0];
 
 	if (sprframe->width[0] == SPRITE_NEEDS_INFO)
 		R_CacheSprite (sprdef);	// [RH] speeds up game startup time

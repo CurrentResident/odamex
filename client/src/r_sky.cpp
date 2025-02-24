@@ -502,7 +502,10 @@ void R_InitSkyDefs()
 
 	jsonlumpresult_t result =  M_ParseJSONLump("SKYDEFS", "skydefs", { 1, 0, 0 }, ParseSkydef);
 	if (result != jsonlumpresult_t::SUCCESS && result != jsonlumpresult_t::NOTFOUND)
-		I_Error("R_InitSkyDefs: SKYDEFS JSON error: %s", M_JSONLumpResultToString(result));
+	{
+		I_Error("R_InitSkyDefs: SKYDEFS JSON error: %s",
+		        M_JSONLumpResultToString(result));
+	}
 }
 
 void R_ClearSkyDefs()
@@ -513,19 +516,23 @@ void R_ClearSkyDefs()
 
 void spreadFire(int src, byte* firepixels, int width)
 {
-	byte pixel = firepixels[src];
+	const byte pixel = firepixels[src];
+	const int copyloc0 = src - width;
 	if(pixel == 0) {
-		firepixels[src - width] = 0;
+		if (copyloc0 >= 0)
+			firepixels[copyloc0] = 0;
 	} else {
-		int rand = (int)std::round(M_RandomFloat() * 3.0) & 3;
-		firepixels[(src - rand + 1) - width] = pixel - (rand & 1);
+		const int rand = (int)std::round(M_RandomFloat() * 3.0) & 3;
+		const int copyloc1 = copyloc0 - rand + 1;
+		if (copyloc1 >= 0)
+			firepixels[copyloc1] = pixel - (rand & 1);
 	}
 }
 
 static void R_UpdateFireSky(sky_t* sky, bool init = false)
 {
 	if (gametic % sky->fireticrate != 0 && !init) return;
-	int texnum = sky->background.texnum;
+	const int texnum = sky->background.texnum;
 	texture_t* tex = textures[texnum];
     for (int x = 0 ; x < tex->width; x++)
 	{
@@ -548,7 +555,7 @@ static void R_UpdateFireSky(sky_t* sky, bool init = false)
 void R_InitFireSky(sky_t* sky)
 {
 	int texnum = sky->background.texnum;
-	texture_t* tex = textures[texnum];
+	const texture_t* tex = textures[texnum];
 	sky->firetexturedata = (byte*)Z_Malloc(sizeof(byte) * tex->width * tex->height, PU_LEVEL, nullptr);
     for (int i = 0 ; i < tex->width*tex->height; i++)
 	{
@@ -646,7 +653,7 @@ void R_InitSkiesForLevel()
 	}
 }
 
-void R_SetDefaultSky(const char* sky)
+void R_SetDefaultSky(const OLumpName& sky)
 {
 	sky_t* skydef = R_GetSky(sky, true);
 	// make sure that if mapinfo sets a scroll speed we use that
