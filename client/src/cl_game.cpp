@@ -2033,7 +2033,6 @@ void G_DoPlayDemo(bool justStreamInput)
 			}
 
 			sv_respawnsuper.Set(0.0f);
-			sv_showplayerpowerups.Set(0.0f);
 
 			usergame = false;
 		}

@@ -190,32 +190,6 @@ void SpriteColumnBlaster()
 	R_BlastSpriteColumn(colfunc);
 }
 
-// WARNING
-// The following will break vanilla demos!
-void R_SpawnBerserkPuff(int x, int y, int z)
-{
-	// don't run if menu is open
-	if (menuactive || ConsoleState == c_down || paused)
-		return;
-
-	AActor* puff;
-
-	int ang = P_RandomHitscanAngle(256 * 65535);
-
-	puff = new AActor(x, y, z, MT_PUFF);
-
-	puff->x += FixedMul(((P_RandomDiff() >> 4) * FRACUNIT) - -(16 * FRACUNIT),
-	                    finecosine[ang >> ANGLETOFINESHIFT]);
-	puff->y += FixedMul(((P_RandomDiff() >> 4) * FRACUNIT) - -(16 * FRACUNIT),
-	                    finesine[ang >> ANGLETOFINESHIFT]);
-	puff->z += abs((P_RandomDiff() >> 2) * FRACUNIT);
-	puff->momz = abs((FRACUNIT * P_RandomDiff()) >> 4);
-	puff->tics -= P_Random(puff) & 3;
-
-	if (puff->tics < 1)
-		puff->tics = 1;
-}
-
 EXTERN_CVAR(sv_showplayerpowerups)
 
 //
@@ -294,10 +268,11 @@ void R_DrawVisSprite (vissprite_t *vis, int x1, int x2)
 		else if (vis->statusflags & SF_BERSERK)
 		{
 			// draw a red palette on the vissprite
-			dcol.translation = translationref_t(&::redtable[id][0]);
-
-			if (vis && vis->mo && !(vis->statusflags & SF_INVIS))
-				R_SpawnBerserkPuff(vis->mo->x, vis->mo->y, vis->mo->z);
+			// but only if the fist is out.
+			if (vis->mo && vis->mo->player && vis->mo->player->readyweapon == wp_fist)
+			{
+				dcol.translation = translationref_t(&::redtable[id][0]);
+			}
 		}
 		else if (vis->statusflags & SF_IRONFEET)
 		{
