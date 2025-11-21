@@ -59,8 +59,8 @@ extern bool clientside, serverside;
 // [Nes] - Determines which program the user is running.
 enum baseapp_t
 {
-	client,		// Odamex.exe
-	server		// Odasrv.exe
+	client,     // Odamex.exe
+	server      // Odasrv.exe
 };
 
 extern baseapp_t baseapp;
@@ -92,16 +92,16 @@ extern baseapp_t baseapp;
 #define SERVER_ONLY(expr)
 #endif
 
-// 
+//
 // Environment Platform
-// 
-enum gameplatform_t 
+//
+enum gameplatform_t
 {
 	PF_PC,
 	PF_XBOX,
-	PF_WII,			//	Wii/vWii
-	PF_SWITCH,		// 	Nintendo Switch
-	PF_UNKNOWN,		//	Unknown platform yet
+	PF_WII,         //  Wii/vWii
+	PF_SWITCH,      //  Nintendo Switch
+	PF_UNKNOWN,     //  Unknown platform yet
 };
 
 extern gameplatform_t platform;
@@ -111,33 +111,33 @@ extern gameplatform_t platform;
 //
 
 // Game mode handling - identify IWAD version
-//	to handle IWAD dependend animations etc.
+// to handle IWAD dependend animations etc.
 enum GameMode_t
 {
-  shareware,			// DOOM 1 shareware, E1, M9
-  registered,			// DOOM 1 registered, E3, M27
-  commercial,			// DOOM 2 retail, E1 M34
-						// DOOM 2 german edition not handled
-  retail,				// DOOM 1 retail, E4, M36
-  retail_chex,			// Chex Quest
-  retail_bfg,			// Doom 1 BFG Edition
-  commercial_bfg,		// Doom 2 BFG Edition
-  undetermined			// Well, no IWAD found.
+	shareware,            // DOOM 1 shareware, E1, M9
+	registered,           // DOOM 1 registered, E3, M27
+	commercial,           // DOOM 2 retail, E1 M34
+	                      // DOOM 2 german edition not handled
+	retail,               // DOOM 1 retail, E4, M36
+	retail_chex,          // Chex Quest
+	retail_bfg,           // Doom 1 BFG Edition
+	commercial_bfg,       // Doom 2 BFG Edition
+	undetermined          // Well, no IWAD found.
 };
 
 
 // Mission packs - might be useful for TC stuff?
 enum GameMission_t
 {
-  doom, 				// DOOM 1
-  doom2,				// DOOM 2
-  pack_tnt, 			// TNT mission pack
-  pack_plut,			// Plutonia pack
-  chex,					// Chex Quest
-  retail_freedoom,
-  commercial_freedoom,	// FreeDoom
-  commercial_hacx,		// HACX
-  none
+	doom,                   // DOOM 1
+	doom2,                  // DOOM 2
+	pack_tnt,               // TNT mission pack
+	pack_plut,              // Plutonia pack
+	chex,                   // Chex Quest
+	retail_freedoom,
+	commercial_freedoom,    // FreeDoom
+	commercial_hacx,        // HACX
+	none
 };
 
 // If rangecheck is undefined,
@@ -145,14 +145,14 @@ enum GameMission_t
 #define RANGECHECK
 
 // The maximum number of players, multiplayer/networking.
-#define MAXPLAYERS				255
-#define MAXPLAYERS_VANILLA		4
+#define MAXPLAYERS              255
+#define MAXPLAYERS_VANILLA      4
 
 // Margin of error used when calculating percentages against player numbers.
-#define MPEPSILON				(float)1 / (MAXPLAYERS * 2)
+#define MPEPSILON               (float)1 / (MAXPLAYERS * 2)
 
 // State updates, number of tics / second.
-#define TICRATE 		35
+#define TICRATE         35
 
 #define SPEED(a) ((a) * (FRACUNIT / 8))
 #define TICS(a) (((a)*TICRATE) / 35)
@@ -289,7 +289,7 @@ enum GameMission_t
 #define ZDOOM_PUSH_MASK 0x1000
 
 // Speeds for ceilings/crushers (x/8 units per tic)
-//	(Hexen crushers go up at half the speed that they go down)
+// (Hexen crushers go up at half the speed that they go down)
 #define C_SLOW 8
 #define C_NORMAL 16
 #define C_FAST 32
@@ -347,10 +347,10 @@ enum gamestate_t
 	GS_INTERMISSION,
 	GS_FINALE,
 	GS_DEMOSCREEN,
-	GS_FULLCONSOLE,		// [RH]	Fullscreen console
-	GS_HIDECONSOLE,		// [RH] The menu just did something that should hide fs console
-	GS_STARTUP,			// [RH] Console is fullscreen, and game is just starting
-	GS_CONNECTING,		// denis - replace the old global "tryingtoconnect"
+	GS_FULLCONSOLE,     // [RH] Fullscreen console
+	GS_HIDECONSOLE,     // [RH] The menu just did something that should hide fs console
+	GS_STARTUP,         // [RH] Console is fullscreen, and game is just starting
+	GS_CONNECTING,      // denis - replace the old global "tryingtoconnect"
 	GS_CONNECTED,       // [ML] - For that brief time before GS_LEVEL But after GS_CONNECTING should be done
 
 	GS_FORCEWIPE = -1
@@ -361,7 +361,7 @@ enum gamestate_t
 //
 
 // Gravity
-#define GRAVITY		FRACUNIT
+#define GRAVITY     FRACUNIT
 
 enum skill_t
 {
@@ -390,18 +390,18 @@ enum card_t
 		// GhostlyDeath <August 31, 2008> -- Before this was not = 0 and when
 		// the map is loaded the value is just bitshifted so that the values
 		// that were here were incorrect, keyed generalized doors work now
-        NoKey = 0,
-        RCard,
-        BCard,
-        YCard,
-        RSkull,
-        BSkull,
-        YSkull,
+		NoKey = 0,
+		RCard,
+		BCard,
+		YCard,
+		RSkull,
+		BSkull,
+		YSkull,
 
-        AnyKey = 100,
-        AllKeys = 101,
+		AnyKey = 100,
+		AllKeys = 101,
 
-        CardIsSkull = 128
+		CardIsSkull = 128
 };
 
 enum ItemEquipVal
@@ -423,8 +423,8 @@ inline FArchive &operator>> (FArchive &arc, card_t &i)
 
 
 // The defined weapons,
-//	including a marker indicating
-//	user has not changed weapon.
+//  including a marker indicating
+//  user has not changed weapon.
 enum weapontype_t
 {
 	wp_none = -1,
@@ -462,12 +462,12 @@ inline FArchive &operator>> (FArchive &arc, weapontype_t &i)
 // Ammunition types defined.
 enum ammotype_t
 {
-	am_clip,	// Pistol / chaingun ammo.
-	am_shell,	// Shotgun / double barreled shotgun.
-	am_cell,	// Plasma rifle, BFG.
-	am_misl,	// Missile launcher.
+	am_clip,    // Pistol / chaingun ammo.
+	am_shell,   // Shotgun / double barreled shotgun.
+	am_cell,    // Plasma rifle, BFG.
+	am_misl,    // Missile launcher.
 	NUMAMMO,
-	am_noammo	// Unlimited for chainsaw / fist.
+	am_noammo   // Unlimited for chainsaw / fist.
 
 };
 
@@ -511,16 +511,16 @@ inline FArchive &operator>> (FArchive &arc, powertype_t &i)
 //
 // Power up durations, how many tics till expiration.
 //
-#define INVULNTICS	(30*TICRATE)
-#define INVISTICS	(60*TICRATE)
-#define INFRATICS	(120*TICRATE)
-#define IRONTICS	(60*TICRATE)
+#define INVULNTICS  (30*TICRATE)
+#define INVISTICS   (60*TICRATE)
+#define INFRATICS   (120*TICRATE)
+#define IRONTICS    (60*TICRATE)
 
 // [ML] 1/5/10: Move input defs to doomkeys.h
 #include "doomkeys.h"
 
 // [ML] Default intermission length
-#define DEFINTSECS	10
+#define DEFINTSECS  10
 
 // Amount (dx,dy) vector linedef is shifted right to get scroll amount
 #define SCROLL_SHIFT 5
@@ -531,19 +531,19 @@ inline FArchive &operator>> (FArchive &arc, powertype_t &i)
 // linedefs. More friction can create mud, sludge,
 // magnetized floors, etc. Less friction can create ice.
 
-#define MORE_FRICTION_MOMENTUM	15000	// mud factor based on momentum
-#define ORIG_FRICTION			0xE800	// original value
-#define ORIG_FRICTION_FACTOR	2048	// original value
-#define FRICTION_FLY			0xeb00
+#define MORE_FRICTION_MOMENTUM  15000   // mud factor based on momentum
+#define ORIG_FRICTION           0xE800  // original value
+#define ORIG_FRICTION_FACTOR    2048    // original value
+#define FRICTION_FLY            0xeb00
 
 // Factor to scale scrolling effect into mobj-carrying properties = 3/32.
 // (This is so scrolling floors and objects on them can move at same speed.)
 #define CARRYFACTOR ((fixed_t)(FRACUNIT * .09375))
 
 #ifndef __BIG_ENDIAN__
-#define MAKE_ID(a,b,c,d)	((a)|((b)<<8)|((c)<<16)|((d)<<24))
+#define MAKE_ID(a,b,c,d)    ((a)|((b)<<8)|((c)<<16)|((d)<<24))
 #else
-#define MAKE_ID(a,b,c,d)	((d)|((c)<<8)|((b)<<16)|((a)<<24))
+#define MAKE_ID(a,b,c,d)    ((d)|((c)<<8)|((b)<<16)|((a)<<24))
 #endif
 
 static inline void UNMAKE_ID(char* out, uint32_t id)
@@ -562,17 +562,17 @@ static inline void UNMAKE_ID(char* out, uint32_t id)
 // the desired key.
 //
 // Template parameters:
-//		ClassType -		The class to be searched
-//		KeyType -		The type of the key contained in the class
+//      ClassType -     The class to be searched
+//      KeyType -       The type of the key contained in the class
 //
 // Function parameters:
-//		first -			Pointer to the first element in the array
-//		max -			The number of elements in the array
-//		keyptr -		Pointer to the key member of ClassType
-//		key -			The key value to look for
+//      first -         Pointer to the first element in the array
+//      max -           The number of elements in the array
+//      keyptr -        Pointer to the key member of ClassType
+//      key -           The key value to look for
 //
 // Returns:
-//		A pointer to the element with a matching key or NULL if none found.
+//      A pointer to the element with a matching key or NULL if none found.
 //==========================================================================
 
 template<class ClassType, class KeyType>
@@ -616,17 +616,17 @@ const ClassType *BinarySearch (const ClassType *first, int max,
 // items in the array.
 //
 // Template parameters:
-//		IndexType -		The type used to index the array (int, size_t, etc.)
-//		KeyType -		The type of the key
-//		CompType -		A class with a static DoCompare(IndexType, KeyType) method.
+//      IndexType -     The type used to index the array (int, size_t, etc.)
+//      KeyType -       The type of the key
+//      CompType -      A class with a static DoCompare(IndexType, KeyType) method.
 //
 // Function parameters:
-//		max -			The number of elements in the array
-//		key -			The key value to look for
-//		noIndex -		The value to return if no matching element is found.
+//      max -           The number of elements in the array
+//      key -           The key value to look for
+//      noIndex -       The value to return if no matching element is found.
 //
 // Returns:
-//		The index of the matching element or noIndex.
+//      The index of the matching element or noIndex.
 //==========================================================================
 
 template<class IndexType, class KeyType, class CompType>
