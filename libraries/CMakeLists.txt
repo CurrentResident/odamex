@@ -157,3 +157,7 @@ include(wxWidgets-lib.cmake)
 include(libadlmidi-lib.cmake)
 
 include(cpptrace-lib.cmake)
+
+if (NOT USE_EXTERNAL_DEUTEX)
+  add_subdirectory(deutex)
+endif()

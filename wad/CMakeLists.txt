@@ -6,39 +6,11 @@ file(GLOB_RECURSE ODAWAD_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/lumps/*.lmp
   ${CMAKE_CURRENT_SOURCE_DIR}/sprites/*.gif)
 
-if(USE_INTERNAL_DEUTEX)
-  if(WIN32)
-    # In our case, our "interal" DeuTex is downloaded from github.
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/deutex")
-    file(DOWNLOAD
-      "https://github.com/Doom-Utils/deutex/releases/download/v5.2.3/deutex-5.2.3_w32.zip"
-      "${CMAKE_CURRENT_BINARY_DIR}/deutex-5.2.3_w32.zip"
-      EXPECTED_HASH SHA256=9c07f354fd81384a0e91844b7c152114da1a3566343de846db443de38b82a1ad)
-    execute_process(COMMAND "${CMAKE_COMMAND}" -E tar xf
-      "${CMAKE_CURRENT_BINARY_DIR}/deutex-5.2.3_w32.zip"
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/deutex")
-    find_program(DEUTEX_EXECUTABLE deutex
-      PATHS "${CMAKE_CURRENT_BINARY_DIR}/deutex"
-      NO_DEFAULT_PATH)
-  else()
-    # Check if deutex is unzipped in the source dir and if it is, bring it over
-    if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deutex")
-      file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/deutex"
-        DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-      execute_process(COMMAND sh bootstrap
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/deutex")
-      execute_process(COMMAND sh configure
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/deutex")
-      execute_process(COMMAND make
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/deutex")
-      find_program(DEUTEX_EXECUTABLE deutex
-        PATHS "${CMAKE_CURRENT_BINARY_DIR}/deutex/src"
-        NO_DEFAULT_PATH)
-    endif()
-  endif()
-else()
+if (USE_EXTERNAL_DEUTEX)
   find_program(DEUTEX_EXECUTABLE deutex
     PATHS "/usr/games") # Debian installation location
+elseif(TARGET deutex)
+  set(DEUTEX_EXECUTABLE deutex)
 endif()
 
 # If DeuTex is available, use it to build the WAD.
