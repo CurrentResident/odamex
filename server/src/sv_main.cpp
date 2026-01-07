@@ -63,7 +63,6 @@
 #include "g_gametype.h"
 #include "sv_banlist.h"
 #include "d_main.h"
-#include "m_fileio.h"
 #include "v_textcolors.h"
 #include "p_lnspec.h"
 #include "m_wdlstats.h"
@@ -4090,16 +4089,6 @@ void SV_RunTics()
 	std::string cmd = I_ConsoleInput();
 	if (cmd.length())
 		AddCommandString(cmd);
-
-	if (CON.is_open())
-	{
-		CON.clear();
-		if (!CON.eof())
-		{
-			std::getline(CON, cmd);
-			AddCommandString(cmd);
-		}
-	}
 
 	SV_BanlistTics();
 	SV_UpdateMaster();
