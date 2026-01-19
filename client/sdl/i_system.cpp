@@ -26,6 +26,7 @@
 #include "odamex.h"
 
 #include <limits>
+#include <string>
 
 #include "nonstd/scope.hpp"
 
@@ -107,18 +108,6 @@ ticcmd_t *I_BaseTiccmd(void)
 	return &emptycmd;
 }
 
-/* [Russell] - Modified to accomodate a minimal allowable heap size */
-// These values are in megabytes
-#if defined(GCONSOLE) && !defined(__SWITCH__)
-size_t def_heapsize = 16;
-#else
-size_t def_heapsize = 128;
-#endif
-constexpr size_t min_heapsize = 8;
-
-// The size we got back from I_ZoneBase in megabytes
-size_t got_heapsize = 0;
-
 DWORD LanguageIDs[4];
 
 // Endoom screen is showing
@@ -143,51 +132,6 @@ size_t I_BytesToMegabytes (size_t Bytes)
         return 0;
 
     return (Bytes/1024/1024);
-}
-
-//
-// I_ZoneBase
-//
-// Allocates a portion of system memory for the Zone Memory Allocator, returns
-// the 'size' of what it could allocate in its parameter
-void *I_ZoneBase (size_t *size)
-{
-	void *zone = NULL;
-
-	// User wanted a different default size
-	const char *p = Args.CheckValue ("-heapsize");
-
-	if (p)
-		def_heapsize = atoi(p);
-
-	if (def_heapsize < min_heapsize)
-		def_heapsize = min_heapsize;
-
-	// Set the size
-	*size = I_MegabytesToBytes(def_heapsize);
-
-	// Allocate the def_heapsize, otherwise try to allocate a smaller amount
-	while ((zone == NULL) && (*size >= I_MegabytesToBytes(min_heapsize)))
-	{
-		zone = malloc (*size);
-
-		if (zone != NULL)
-			break;
-
-		*size -= I_MegabytesToBytes(1);
-	}
-
-	// Our heap size we received
-	got_heapsize = I_BytesToMegabytes(*size);
-
-	// Die if the system has insufficient memory
-	if (got_heapsize < min_heapsize)
-		I_FatalError("I_ZoneBase: Insufficient memory available! Minimum size "
-					 "is {} MB but got {} MB instead",
-					 min_heapsize,
-					 got_heapsize);
-
-	return zone;
 }
 
 void I_BeginRead()
@@ -715,111 +659,6 @@ int I_FindNext (long handle, findstate_t *fileinfo) {return 0;}
 int I_FindClose (long handle) {return 0;}
 
 #endif
-
-//
-// I_ConsoleInput
-//
-#ifdef _WIN32
-std::string I_ConsoleInput (void)
-{
-	// denis - todo - implement this properly!!!
-	/* denis - this probably won't work for a gui sdl app. if it does work, please uncomment!
-    static char     text[1024] = {0};
-    static char     buffer[1024] = {0};
-    unsigned int    len = strlen(buffer);
-
-	while(kbhit() && len < sizeof(text))
-	{
-		char ch = (char)getch();
-
-		// input the character
-		if(ch == '\b' && len)
-		{
-			buffer[--len] = 0;
-			// john - backspace hack
-			fwrite(&ch, 1, 1, stdout);
-			ch = ' ';
-			fwrite(&ch, 1, 1, stdout);
-			ch = '\b';
-		}
-		else
-			buffer[len++] = ch;
-		buffer[len] = 0;
-
-		// recalculate length
-		len = strlen(buffer);
-
-		// echo character back to user
-		fwrite(&ch, 1, 1, stdout);
-		fflush(stdout);
-	}
-
-	if(len && buffer[len - 1] == '\n' || buffer[len - 1] == '\r')
-	{
-		// echo newline back to user
-		char ch = '\n';
-		fwrite(&ch, 1, 1, stdout);
-		fflush(stdout);
-
-		strcpy(text, buffer);
-		text[len-1] = 0; // rip off the /n and terminate
-		buffer[0] = 0;
-		len = 0;
-
-		return text;
-	}
-*/
-	return "";
-}
-
-#else
-
-std::string I_ConsoleInput (void)
-{
-	std::string ret;
-	static char	 text[1024] = {0};
-	int			 len;
-
-	fd_set fdr;
-	FD_ZERO(&fdr);
-	FD_SET(0, &fdr);
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
-
-	if (select(1, &fdr, NULL, NULL, &tv) <= 0)
-		return "";
-
-	len = read (0, text + strlen(text), sizeof(text) - strlen(text)); // denis - fixme - make it read until the next linebreak instead
-
-	if (len < 1)
-		return "";
-
-	len = strlen(text);
-
-	if (strlen(text) >= sizeof(text))
-	{
-		if(text[len-1] == '\n' || text[len-1] == '\r')
-			text[len-1] = 0; // rip off the /n and terminate
-
-		ret = text;
-		memset(text, 0, sizeof(text));
-		return ret;
-	}
-
-	if(text[len-1] == '\n' || text[len-1] == '\r')
-	{
-		text[len-1] = 0;
-
-		ret = text;
-		memset(text, 0, sizeof(text));
-		return ret;
-	}
-
-	return "";
-}
-#endif
-
 
 //
 // I_IsHeadless
