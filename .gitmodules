@@ -34,3 +34,9 @@
 [submodule "libraries/cpptrace"]
 	path = libraries/cpptrace
 	url = https://github.com/jeremy-rifkin/cpptrace.git
+[submodule "libraries/sdl"]
+	path = libraries/sdl
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "libraries/sdl_mixer"]
+	path = libraries/sdl_mixer
+	url = https://github.com/libsdl-org/SDL_mixer.git

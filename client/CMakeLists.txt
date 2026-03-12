@@ -1,4 +1,3 @@
-include(OdamexCopyLibs)
 include(OdamexCopyWad)
 include(OdamexTargetSettings)
 
@@ -204,7 +203,7 @@ if(TARGET SDL2::SDL2 OR TARGET SDL::SDL)
     if(TARGET SDL2::SDL2main)
       target_link_libraries(odamex SDL2::SDL2main)
     endif()
-    target_link_libraries(odamex SDL2::mixer)
+    target_link_libraries(odamex SDL2_mixer::SDL2_mixer-static)
   endif()
 
   if(NOT GCONSOLE)
@@ -229,7 +228,7 @@ if(TARGET SDL2::SDL2 OR TARGET SDL::SDL)
     target_link_libraries(odamex ${PORTMIDI_LIBRARY})
   endif()
 
-  target_link_libraries(odamex ZLIB::ZLIB PNG::PNG fmt::fmt minilzo cpptrace::cpptrace libADLMIDI::ADLMIDI_static curl_interface)
+  target_link_libraries(odamex ZLIB::ZLIB PNG::PNG fmt::fmt minilzo cpptrace::cpptrace libADLMIDI::ADLMIDI_static CURL::libcurl)
 
   if(WIN32)
     target_link_libraries(odamex winmm wsock32 shlwapi)
@@ -248,7 +247,6 @@ if(TARGET SDL2::SDL2 OR TARGET SDL::SDL)
     endif()
   endif()
 
-  odamex_copy_libs(odamex)
   odamex_copy_wad(odamex)
 
   set(MACOSX_BUNDLE_BUNDLE_NAME ${CMAKE_PROJECT_NAME})
