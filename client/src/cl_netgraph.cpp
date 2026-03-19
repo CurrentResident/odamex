@@ -40,7 +40,7 @@
 NetGraph::NetGraph(int x, int y) :
 	mX(x), mY(y), mInterpolation(0)
 {
-	mMisprediction.fill(false);
+	mMisprediction.fill(0);
 	mWorldIndexSync.fill(0);
 	mTrafficIn.fill(0);
 	mTrafficOut.fill(0);
@@ -56,7 +56,7 @@ static void SetClamped(std::array<ElementType, N>& io_array, const ElementType& 
     io_array[gametic % N] = std::max(i_min, std::min(i_value, i_max));
 }
 
-void NetGraph::setMisprediction(bool val)
+void NetGraph::setMisprediction(int val)
 {
 	mMisprediction[gametic % NetGraph::MAX_HISTORY_TICS] = val;
 }
@@ -220,24 +220,7 @@ void NetGraph::drawServerQueueDepth(int x, int y)
 
 void NetGraph::drawMispredictions(int x, int y)
 {
-	static constexpr int graphwidth = NetGraph::BAR_WIDTH_MISPREDICTION * NetGraph::MAX_HISTORY_TICS;
-	const int centery = y + NetGraph::BAR_HEIGHT_MISPREDICTION;
-
-	// draw the center line
-	for (size_t i = 0; i < NetGraph::MAX_HISTORY_TICS; i++)
-		NetGraphDrawBar(x, centery, graphwidth, 1, 0);
-
-	for (size_t i = 0; i < NetGraph::MAX_HISTORY_TICS; i++)
-	{
-		const int index = (gametic - (NetGraph::MAX_HISTORY_TICS - i)) % MAX_HISTORY_TICS;
-		static constexpr int width = NetGraph::BAR_WIDTH_MISPREDICTION;
-		static constexpr int height = NetGraph::BAR_HEIGHT_MISPREDICTION;
-		const int startx = x + i * NetGraph::BAR_WIDTH_MISPREDICTION;
-		const int starty = y;
-
-		if (mMisprediction[index])
-			NetGraphDrawBar(startx, starty, width, height, 0xB0);
-	}
+    DrawSimpleBarGraph<BAR_WIDTH_MISPREDICTION, BAR_HEIGHT_MISPREDICTION>(x, y, mMisprediction, 0xA0);
 }
 
 void NetGraph::drawTrafficIn(int x, int y)
@@ -317,7 +300,7 @@ void NetGraph::draw()
 
     const int nowIndex = (gametic - 1) % MAX_HISTORY_TICS;
 
-    screen->DrawText(textcolor, mX + 128, mY, ("Reliable Send Queue: " + std::to_string(mReliableSendDepth[nowIndex])).c_str());
+    screen->DrawText(textcolor, mX + 128, mY, ("Reliable Send PIF: " + std::to_string(mReliableSendDepth[nowIndex])).c_str());
     drawReliableSendDepth(mX + 128, mY + fontheight);
 
     std::string serverQueueNumber;
@@ -325,7 +308,7 @@ void NetGraph::draw()
     {
         serverQueueNumber = std::to_string(mServerQueueDepth[nowIndex]);
     }
-    screen->DrawText(textcolor, mX + 290, mY, ("Server-side Queue: " + serverQueueNumber).c_str());
+    screen->DrawText(textcolor, mX + 290, mY, ("Server-side PIF: " + serverQueueNumber).c_str());
     drawServerQueueDepth(mX + 290, mY + fontheight);
 
 	drawTrafficIn(mX, mY + 128 + fontheight);

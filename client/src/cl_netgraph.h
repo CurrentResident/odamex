@@ -31,7 +31,7 @@ class NetGraph
 public:
 	NetGraph(int x, int y);
 
-	void setMisprediction(bool val);
+	void setMisprediction(int val);
 	void setWorldIndexSync(int val);
 	void setInterpolation(int val);
 	void addTrafficIn(int val);
@@ -66,7 +66,7 @@ private:
 	int		mX;
 	int		mY;
 
-	std::array<bool, NetGraph::MAX_HISTORY_TICS> mMisprediction;
+	std::array<int, NetGraph::MAX_HISTORY_TICS> mMisprediction;
 	std::array<int, NetGraph::MAX_HISTORY_TICS> mWorldIndexSync;
 	std::array<int, NetGraph::MAX_HISTORY_TICS> mTrafficIn;
 	std::array<int, NetGraph::MAX_HISTORY_TICS> mTrafficOut;

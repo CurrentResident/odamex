@@ -255,6 +255,61 @@ static void CL_PredictLocalPlayer(int predtic)
 	player.mo->RunThink();
 }
 
+// From https://doomwiki.org/wiki/Map_unit:
+//
+// 16 units is about 37 cm.  Thus:
+//
+//  1 unit is 2.3125 cm is 23.125 mm
+//
+//  0.0432(..432 repeats) units is 1 mm
+//
+// in 16.16 fixed-point, 1 unit is 65536.
+//
+//                1 mm is 0.0432 units is 2833.9891 (...891 repeats)
+//                1 cm is 0.432  units is 28339.891 (...891 repeats)
+//                1 dm is 4.32   units is 283398.91 (...891 repeats)
+//                1 m  is 43.2   units is 2833989.1 (...891 repeats)
+
+constexpr double  UNITS_PER_MM  = 16.0 / 370.0;
+constexpr fixed_t ONE_MAP_MM    = DOUBLE2FIXED(   1.0 * UNITS_PER_MM);
+constexpr fixed_t ONE_MAP_CM    = DOUBLE2FIXED(  10.0 * UNITS_PER_MM);
+constexpr fixed_t ONE_MAP_DM    = DOUBLE2FIXED( 100.0 * UNITS_PER_MM);
+constexpr fixed_t ONE_MAP_METER = DOUBLE2FIXED(1000.0 * UNITS_PER_MM);
+
+constexpr int64_t ONE_MAP_MM2    = static_cast<int64_t>(ONE_MAP_MM)    * static_cast<int64_t>(ONE_MAP_MM);
+constexpr int64_t ONE_MAP_CM2    = static_cast<int64_t>(ONE_MAP_CM)    * static_cast<int64_t>(ONE_MAP_CM);
+constexpr int64_t ONE_MAP_DM2    = static_cast<int64_t>(ONE_MAP_DM)    * static_cast<int64_t>(ONE_MAP_DM);
+constexpr int64_t ONE_MAP_METER2 = static_cast<int64_t>(ONE_MAP_METER) * static_cast<int64_t>(ONE_MAP_METER);
+
+static int ScoreDistance(const PlayerSnapshot& snap1, const PlayerSnapshot& snap2)
+{
+    // For now, the distance approximation is just for the x-y plane,
+    // which is good enough if all we're doing is trying to get an idea of
+    // "how far away" a misprediction was.
+    const int64_t deltaX = static_cast<int64_t>(snap2.getX()) - static_cast<int64_t>(snap1.getX());
+    const int64_t deltaY = static_cast<int64_t>(snap2.getY()) - static_cast<int64_t>(snap1.getY());
+
+    const int64_t distanceSquared = deltaX * deltaX + deltaY * deltaY;
+
+    if (distanceSquared < ONE_MAP_MM2)
+    {
+        return 1;
+    }
+    if (distanceSquared < ONE_MAP_CM2)
+    {
+        return 2;
+    }
+    if (distanceSquared < ONE_MAP_DM2)
+    {
+        return 3;
+    }
+    if (distanceSquared < ONE_MAP_METER2)
+    {
+        return 4;
+    }
+    return 5;
+}
+
 //
 // CL_PredictWorld
 //
@@ -271,7 +326,7 @@ void CL_PredictWorld(void)
 		return;
 
 	// tenatively tell the netgraph that our prediction was successful
-	netgraph.setMisprediction(false);
+	netgraph.setMisprediction(0);
 
 	if (consoleplayer_id != displayplayer_id)
 		CL_PredictSpying();
@@ -331,7 +386,7 @@ void CL_PredictWorld(void)
 		if (!correct)
 		{
 			// Update the netgraph concerning our prediction's error
-			netgraph.setMisprediction(true);
+			netgraph.setMisprediction(ScoreDistance(correctedprevsnap, prevsnap));
 
 			// Lerp from the our previous position to the correct position
 			PlayerSnapshot lerpedsnap = P_LerpPlayerPosition(prevsnap, correctedprevsnap, cl_prednudge);
