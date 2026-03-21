@@ -3351,8 +3351,8 @@ static void SV_SortMobjsForPlayer(player_t& player)
 	// nearby enemies behave like there's any packet loss.
 
 	// The following block is used for sorting on approximate, relative distance.
-	const int playerMostSignificantX = (playerViewPosition->x >> 16);
-	const int playerMostSignificantY = (playerViewPosition->y >> 16);
+	const int playerMostSignificantX = (playerViewPosition->x >> FRACBITS);
+	const int playerMostSignificantY = (playerViewPosition->y >> FRACBITS);
 
 	for (auto& mobjInfo : player.sortedMobjs)
 	{
@@ -3360,8 +3360,8 @@ static void SV_SortMobjsForPlayer(player_t& player)
 		// P_AproxDistance2 (~200 usec) when looking at 22k mobjs, and we don't need "real"
 		// distance - just comparable values that correlate with distance.
 
-		const int dx = playerMostSignificantX - (mobjInfo.actorPtr->x >> 16);
-		const int dy = playerMostSignificantY - (mobjInfo.actorPtr->y >> 16);
+		const int dx = playerMostSignificantX - (mobjInfo.actorPtr->x >> FRACBITS);
+		const int dy = playerMostSignificantY - (mobjInfo.actorPtr->y >> FRACBITS);
 		mobjInfo.distance = dx*dx + dy*dy;
 	}
 	auto distanceCompare = [](const auto& mo1, const auto& mo2) { return mo1.distance < mo2.distance; };
