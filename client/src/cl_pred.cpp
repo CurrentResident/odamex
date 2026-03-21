@@ -281,7 +281,42 @@ constexpr int64_t ONE_MAP_CM2    = static_cast<int64_t>(ONE_MAP_CM)    * static_
 constexpr int64_t ONE_MAP_DM2    = static_cast<int64_t>(ONE_MAP_DM)    * static_cast<int64_t>(ONE_MAP_DM);
 constexpr int64_t ONE_MAP_METER2 = static_cast<int64_t>(ONE_MAP_METER) * static_cast<int64_t>(ONE_MAP_METER);
 
-static int ScoreDistance(const PlayerSnapshot& snap1, const PlayerSnapshot& snap2)
+class ScoreDistanceLinearTable
+{
+    public:
+        static ScoreDistanceLinearTable& Instance()
+        {
+            static ScoreDistanceLinearTable s_instance;
+            return s_instance;
+        }
+
+        int Units(const PlayerSnapshot& snap1, const PlayerSnapshot& snap2)
+        {
+            const int64_t deltaX = static_cast<int64_t>(snap2.getX()) - static_cast<int64_t>(snap1.getX());
+            const int64_t deltaY = static_cast<int64_t>(snap2.getY()) - static_cast<int64_t>(snap1.getY());
+
+            const int64_t distanceSquared = deltaX * deltaX + deltaY * deltaY;
+
+            const auto iter = std::lower_bound(m_unitsSquared.begin(),
+                                               m_unitsSquared.end(),
+                                               distanceSquared);
+            return static_cast<int>(iter - m_unitsSquared.begin());
+        }
+
+    protected:
+        ScoreDistanceLinearTable()
+        {
+            for (int index = 0; index < m_unitsSquared.size(); ++index)
+            {
+                const fixed_t units = INT2FIXED(index); //cm = FixedMul(INT2FIXED(index), ONE_MAP_CM);
+                m_unitsSquared[index] = static_cast<int64_t>(units) * static_cast<int64_t>(units);
+            }
+        }
+
+        std::array<int64_t, 100> m_unitsSquared;
+};
+
+static int ScoreDistanceROM(const PlayerSnapshot& snap1, const PlayerSnapshot& snap2)
 {
     // For now, the distance approximation is just for the x-y plane,
     // which is good enough if all we're doing is trying to get an idea of
@@ -386,7 +421,8 @@ void CL_PredictWorld(void)
 		if (!correct)
 		{
 			// Update the netgraph concerning our prediction's error
-			netgraph.setMisprediction(ScoreDistance(correctedprevsnap, prevsnap));
+            const int mispredictionAmount = ScoreDistanceLinearTable::Instance().Units(correctedprevsnap, prevsnap);
+			netgraph.setMisprediction(mispredictionAmount);
 
 			// Lerp from the our previous position to the correct position
 			PlayerSnapshot lerpedsnap = P_LerpPlayerPosition(prevsnap, correctedprevsnap, cl_prednudge);
