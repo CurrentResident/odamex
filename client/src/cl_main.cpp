@@ -1909,7 +1909,10 @@ bool CL_Connect()
 	noservermsgs = false;
 	last_received = gametic;
 
-	gamestate = GS_CONNECTED;
+	if(netdemo.isPlaying())
+		gamestate = GS_LEVEL;
+	else
+		gamestate = GS_CONNECTED;
 
 	return true;
 }
