@@ -167,7 +167,7 @@ void writeMinidump(EXCEPTION_POINTERS* exceptionPtrs)
 	                                        MiniDumpIgnoreInaccessibleMemory));
 }
 
-LONG CALLBACK sehCallback(EXCEPTION_POINTERS* e)
+LONG WINAPI sehCallback(EXCEPTION_POINTERS* e)
 {
 	writeMinidump(e);
 	return EXCEPTION_CONTINUE_SEARCH;
@@ -244,7 +244,9 @@ void signalCallback(int sig)
 void I_SetCrashCallbacks()
 {
 	// Structured Exception Handling is how 99% of Windows crashes are handled.
-	SetUnhandledExceptionFilter(sehCallback);
+//	SetUnhandledExceptionFilter(sehCallback);
+
+    AddVectoredExceptionHandler(1, sehCallback);
 
 	// Intercept calls to std::terminate().
 	set_terminate(terminateCallback);
