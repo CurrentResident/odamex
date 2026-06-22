@@ -234,8 +234,6 @@ int main(int argc, char *argv[])
 		// windowed mode. Graphics gets shut down first in case something
 		// goes wrong calling the cleanup functions.
 		call_terms ();
-		// Now let somebody who understands the exception deal with it.
-		throw;
 	}
 #endif
 	return 0;
