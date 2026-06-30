@@ -200,7 +200,7 @@ AActor::AActor()
       iprev(NULL), translation(translationref_t()), translucency(0), waterlevel(0),
       gear(0), onground(false), touching_sectorlist(NULL), deadtic(0), rndindex(0),
       spawnRndindex(0), friend_playerid(0), friend_teamid(TEAM_NONE), pursuecount(0), strafecount(0),
-      netid(0), tid(0), baseline(), baseline_set(false), updatedDuringTic(-1), spawnTic(gametic), bmapnode(this)
+      netid(0), tid(0), baseline(), baseline_set(false), updatedDuringTic(-1), mobjtic(gametic), bmapnode(this)
 {
 	args.fill(0);
 	self.init(this);
@@ -227,7 +227,7 @@ AActor::AActor(const AActor& other)
       deadtic(other.deadtic), rndindex(other.rndindex), spawnRndindex(other.spawnRndindex),
       friend_playerid(other.friend_playerid), friend_teamid(other.friend_teamid),
       pursuecount(other.pursuecount), strafecount(other.strafecount), netid(other.netid), tid(other.tid),
-      baseline_set(false), updatedDuringTic(other.updatedDuringTic), spawnTic(other.spawnTic),
+      baseline_set(false), updatedDuringTic(other.updatedDuringTic), mobjtic(other.mobjtic),
       credibility {other.credibility}, bmapnode(other.bmapnode)
 {
 	memcpy(&baseline, &other.baseline, sizeof(baseline));
@@ -307,7 +307,7 @@ AActor &AActor::operator= (const AActor &other)
     baseline_set = other.baseline_set;
 
     updatedDuringTic = other.updatedDuringTic;
-    spawnTic         = other.spawnTic;
+    mobjtic          = other.mobjtic;
     credibility      = other.credibility;
 
     return *this;
@@ -330,7 +330,7 @@ AActor::AActor(fixed_t ix, fixed_t iy, fixed_t iz, int32_t itype)
       iprev(NULL), translation(translationref_t()), translucency(0), waterlevel(0),
       gear(0), onground(false), touching_sectorlist(NULL), deadtic(0), rndindex(0),
       spawnRndindex(0), friend_playerid(0), friend_teamid(TEAM_NONE), pursuecount(0), strafecount(0),
-      netid(0), tid(0), baseline(), baseline_set(false), updatedDuringTic(-1), spawnTic(gametic),
+      netid(0), tid(0), baseline(), baseline_set(false), updatedDuringTic(-1), mobjtic(gametic),
       bmapnode(this)
 {
 	// Fly!!! fix it in P_RespawnSpecial
@@ -813,11 +813,32 @@ void P_TestActorMovement(AActor *mo, fixed_t tryx, fixed_t tryy, fixed_t tryz,
 	backup.toActor(mo);
 }
 
+struct PostThinkIncrementer
+{
+    int& m_counterRef;
+
+    explicit PostThinkIncrementer(int& io_counterRef) :
+        m_counterRef (io_counterRef)
+    {
+    }
+
+    ~PostThinkIncrementer()
+    {
+        if (not predicting)
+        {
+            ++m_counterRef;
+        }
+    }
+};
+
 //
 // P_MobjThinker
 //
 void AActor::RunThink ()
 {
+	// Use an RAII-style post-incrementer because of all the early returns in this function  :(
+	PostThinkIncrementer mobjticIncrementer {this->mobjtic};
+
 	if(!subsector)
 		return;
 
@@ -1019,7 +1040,7 @@ void AActor::Serialize (FArchive &arc)
 			<< rndindex
 			<< spawnRndindex
 			<< updatedDuringTic
-			<< spawnTic
+			<< mobjtic
 			<< credibility;
 
 		// NOTE(jsd): This is pretty awful right here:
@@ -1107,7 +1128,7 @@ void AActor::Serialize (FArchive &arc)
 			>> rndindex
 			>> spawnRndindex
 			>> updatedDuringTic
-			>> spawnTic
+			>> mobjtic
 			>> credibility;
 
 		tracer.init(tmptracer);
