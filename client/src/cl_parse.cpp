@@ -509,9 +509,8 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 
 	// Read other fields
 
-	uint32_t netid = msg->current().netid();
+	uint32_t netid  = msg->current().netid();
 	mobjtype_t type = static_cast<mobjtype_t>(msg->current().type());
-	statenum_t state = static_cast<statenum_t>(msg->current().statenum());
 
 	if (!mobjinfo.contains(type))
 		return;
@@ -638,9 +637,16 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 			mo->tics = 1;
 	}
 
-    if(state >= S_NULL && states.contains(state))
+	statenum_t statenum = static_cast<statenum_t>(msg->current().statenum());
+
+    if(statenum >= S_NULL && states.contains(statenum))
 	{
-		P_SetMobjState(mo, state);
+		mo->state   = &states[statenum];
+		mo->sprite  = mo->state->sprite;
+		mo->frame   = mo->state->frame;
+
+//		mo->tics    = msg->current().tics();
+		P_SetMobjState(mo, statenum);
 	}
 
 	if (serverside && mo->flags & MF_COUNTKILL)

@@ -2125,12 +2125,7 @@ void A_Tracer (AActor *actor)
 	// denis - demogametic must be 0-based, but from start of entire demo,
 	// not just this level!
 	extern int demostartgametic;
-#ifdef CLIENT_APP
-    extern int world_index;
-    int demogametic = world_index - demostartgametic;
-#else
-	int demogametic = gametic - demostartgametic;
-#endif
+	int demogametic = actor->mobjtic - demostartgametic;
 	if (demogametic & 3)
 		return;
 

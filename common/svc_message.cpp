@@ -449,6 +449,7 @@ odaproto::svc::SpawnMobj SVC_SpawnMobj(const AActor* mo)
 
 	// denis - sending state fixes monster ghosts appearing under doors
 	cur->set_statenum(mo->state->statenum);
+	cur->set_tics    (mo->tics);
 
 	// Special case:  Did we get spawned in earlier on this tic?  If so, there are some instances
 	// where a mobj spawns in via dehacked SpawnObject, but its frames / state sequencing is such
