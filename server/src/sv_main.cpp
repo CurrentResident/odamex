@@ -3106,7 +3106,7 @@ void SV_UpdateMissiles(player_t& player, const std::vector<player_t::ActorDistan
 	                                     mo->target != player.mo and        // Players are not hyperaware of their own missiles.
 	                                     awarenessLevel == AwarenessEnum::ALWAYS_AWARE and
 	                                     sortedMobjIter->distanceSquared < HYPER_AWARENESS_CUTOFF_SQUARED;
-	if (isHyperAware)
+	if (isHyperAware)// and not mo->type == MT_TRACER)
 	{
 		MSG_WriteSVC(player.client.messenger.NetBuf(), SVC_UpdateMobj(*mo));
 	}
@@ -3119,8 +3119,10 @@ void SV_UpdateMissiles(player_t& player, const std::vector<player_t::ActorDistan
 		// Revenant tracers and Mancubus fireballs need to be updated more often (and custom tracers)
 		const bool needsMoreFrequentUpdates = (mo->type == MT_TRACER || mo->type == MT_FATSHOT || mo->flags2 & MF2_SEEKERMISSILE);
 
-		const int  divisor = needsMoreFrequentUpdates ? 5 : 30;
-		const int  phase   = (gametic + mo->netid) % divisor;
+		extern int demostartgametic;
+		const int divisor   = needsMoreFrequentUpdates ? 4 : 30;
+        const int updateTic = mo->type == MT_TRACER ? (mo->mobjtic - 1 - demostartgametic) : (gametic + mo->netid);
+		const int phase     = updateTic % divisor;
 
 		// Does this mobj have a scheduled update now?
 		if (phase == 0)
