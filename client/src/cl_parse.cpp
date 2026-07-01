@@ -641,12 +641,11 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 
     if(statenum >= S_NULL && states.contains(statenum))
 	{
-		mo->state   = &states[statenum];
-		mo->sprite  = mo->state->sprite;
-		mo->frame   = mo->state->frame;
-
-//		mo->tics    = msg->current().tics();
 		P_SetMobjState(mo, statenum);
+
+        const int32_t tics = msg->current().tics();
+		mo->tics = tics ? tics : -1;
+
 	}
 
 	if (serverside && mo->flags & MF_COUNTKILL)
