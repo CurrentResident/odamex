@@ -1893,7 +1893,7 @@ void AM_drawCheatThing(const AActor* t)
 	angle_t rotate_angle = 0;
 	angle_t triangle_angle = tangle;
 
-    const fixed64_t radius = FIXED2FIXED64(t->radius);
+	const fixed64_t radius = FIXED2FIXED64(t->radius);
 
 	if (am_rotate)
 	{
@@ -1956,14 +1956,14 @@ void AM_drawCheatThing(const AActor* t)
 		AM_drawLineCharacter(thinrectangle_guy, radius, rotate_angle, color, p.x, p.y);
 	}
 
-    if (netdebug_automap)
-    {
-        screen->DrawTextStretched(CR_GREY,
-                                  CXMTOF(p.x - radius),
-                                  CYMTOF(p.y + radius) - V_LineHeight() * 2, //INT2FIXED64(16)),
-                                  fmt::sprintf("%d", t->netid).c_str(),
-                                  2, 2);
-    }
+	if (netdebug_automap)
+	{
+		screen->DrawTextStretched(CR_GREY,
+		                          CXMTOF(p.x - radius),
+		                          CYMTOF(p.y + radius) - V_LineHeight() * 2, //INT2FIXED64(16)),
+		                          fmt::sprintf("%d", t->netid).c_str(),
+		                          2, 2);
+	}
 }
 
 void AM_drawThings()
