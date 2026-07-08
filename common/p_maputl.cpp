@@ -789,7 +789,8 @@ bool PIT_AddLineIntercepts (line_t *ld)
 	P_MakeDivline (ld, &dl);
 	frac = P_InterceptVector (&trace, &dl);
 
-	if (frac < 0)
+	// [JT-Oda] Changed the following to treat a 0% intercept as a non-intercept.
+	if (frac <= 0)
 		return true;	// behind source
 
 	// try to early out the check
@@ -864,7 +865,8 @@ bool PIT_AddThingIntercepts (AActor* thing)
 
 	frac = P_InterceptVector (&trace, &dl);
 
-	if (frac < 0)
+	// [JT-Oda] Changed the following to treat a 0% intercept as a non-intercept.
+	if (frac <= 0)
 		return true;			// behind source
 
 	intercept_t intercept;
