@@ -11,6 +11,13 @@ message Noop
 {
 }
 
+// msg_timestamp
+message Timestamp
+{
+	uint32 sender_tic   = 1;
+	uint32 receiver_tic = 2;
+}
+
 message Color
 {
 	int32 r = 1;

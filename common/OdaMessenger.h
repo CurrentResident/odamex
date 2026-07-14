@@ -82,13 +82,14 @@ class OdaMessenger
 		/// Reliable content first, followed by Acks, followed by any remaining non-reliable messages.  The number of packets is
 		/// determined by the number of enqueued messages and constrained by MaxRate (see SetMaxRate()).  If the MaxRate cap is
 		/// hit, Reliable and Ack messages remain enqueued for subsequent SendAll, but all remaining non-reliable messages are
-		/// discarded.
+		/// discarded.  If i_destinationTic is given, then all outbound packets are given a special timestamp message as the very
+		/// first message handled in the payload.
 		///
 		/// Return values:
 		///  ACCEPT - Normal result: Packet(s) were sent as needed without hitting a cap.
 		///  DEFER  - Packet(s) may have been sent, but a cap has been enountered.
 		///  ABORT  - Critical error sending: Time to drop the connection.
-		MessageResultEnum SendAll(int i_currentTic, const netadr_t& i_dest);
+		MessageResultEnum SendAll(int i_currentTic, const netadr_t& i_dest, int i_destinationTic = -1);
 
 		/// Retransmit the oldest reliable packets that were previously sent and are older than RetransmitDelay
 		/// (see Get/Set methods) but haven't yet been acknowledged.

@@ -30,7 +30,6 @@ message PlayerState
 	Player player = 1;
 }
 
-
 // svc_moveplayer
 message MovePlayer
 {
@@ -151,7 +150,6 @@ enum MobjModeEnum
 	MOBJ_XDEATH  = 6;
 	MOBJ_RAISE   = 7;
 }
-
 
 // svc_updatemobj
 message UpdateMobj

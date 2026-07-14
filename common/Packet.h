@@ -40,6 +40,8 @@ class Packet
 
 		void Compress();
 
+		void SetTimestampFlag() { m_header.flags |= SVF_TIMESTAMP; }
+
 		// Sender functions.
 		//
 		// These actually ultimately put the packet onto the wire.  After a call to

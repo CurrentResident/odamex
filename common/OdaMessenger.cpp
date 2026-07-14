@@ -23,6 +23,8 @@
 
 #include "i_net.h"
 
+#include "common.pb.h"
+
 EXTERN_CVAR (log_packetdebug)
 
 //  -------------- Receiving functions --------------
@@ -160,7 +162,7 @@ size_t OdaMessenger::PackAsUnreliable(Packet& io_packet, const buf_t& messageBuf
 	return io_packet.AddUnreliableMessage(messageBuf);
 }
 
-MessageResultEnum OdaMessenger::SendAll(int i_currentTic, const netadr_t& i_dest)
+MessageResultEnum OdaMessenger::SendAll(int i_currentTic, const netadr_t& i_dest, int i_destinationTic)
 {
 	// Once a second, recalculate the budget to incorporate any changes made to maxRate.
 	const int ticPhase = i_currentTic % TICRATE;
@@ -186,7 +188,7 @@ MessageResultEnum OdaMessenger::SendAll(int i_currentTic, const netadr_t& i_dest
 		Clear();
 	}
 
-	// Phase zero:  Detect if the client has become dangerously non-responsive,
+	// Phase zero:  Detect if the other end has become dangerously non-responsive,
 	//              and abort if so.
 	if (m_criticalSequenceTimeoutInTics > 0)
 	{
@@ -200,10 +202,28 @@ MessageResultEnum OdaMessenger::SendAll(int i_currentTic, const netadr_t& i_dest
 		}
 	}
 
+    const bool addTimestamps = i_destinationTic >= 0;
+
+    buf_t timestampBuffer {24};     // More than enough for a single timestamp message.
+    if (addTimestamps)
+    {
+        odaproto::Timestamp timestamp;
+        timestamp.set_sender_tic    (i_currentTic);
+        timestamp.set_receiver_tic  (i_destinationTic);
+
+        MSG_WriteSVCBuffer(& timestampBuffer, timestamp);
+    }
+
 	// First phase - send high-priority non-reliables (acks, servertic, player updates)
 	size_t bytesSentBestEffort = 0;
 	while (m_outgoingHighNonReliableQueue.SizeInMessages() > 0 and m_byteBudget > 0)
 	{
+        if (addTimestamps)
+        {
+            PackAsUnreliable(m_highPacket, timestampBuffer);
+            m_highPacket.SetTimestampFlag();
+        }
+
 		m_outgoingHighNonReliableQueue.Pack([this](const buf_t& buf) { return PackAsUnreliable(m_highPacket, buf); });
 
 		const size_t sendSize = m_highPacket.Send(i_currentTic, m_sender, i_dest);
@@ -215,6 +235,12 @@ MessageResultEnum OdaMessenger::SendAll(int i_currentTic, const netadr_t& i_dest
 	m_bytesSentWithReliability = 0;
 	while (m_outgoingReliableQueue.SizeInMessages() > 0 and m_byteBudget > 0)
 	{
+        if (addTimestamps)
+        {
+            PackAsReliable(m_packet, timestampBuffer);
+            m_packet.SetTimestampFlag();
+        }
+
 		m_outgoingReliableQueue.Pack([this](const buf_t& messageBuf) { return PackAsReliable(m_packet, messageBuf); });
 
 		// Now cover the case where we have leftover space enough for an unreliable portion.
@@ -232,6 +258,12 @@ MessageResultEnum OdaMessenger::SendAll(int i_currentTic, const netadr_t& i_dest
 		{
 			break;
 		}
+
+        if (addTimestamps)
+        {
+            PackAsUnreliable(m_packet, timestampBuffer);
+            m_packet.SetTimestampFlag();
+        }
 
 		if (m_recordingIsEnabled)
 		{

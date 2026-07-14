@@ -55,9 +55,7 @@
 #include "doomfunc.h"
 
 BEGIN_DISABLE_WARNING_GNU("-Wold-style-cast")
-BEGIN_DISABLE_WARNING_GNU("-Wold-style-cast")
 #include "minilzo.h"
-END_DISABLE_WARNING_GNU
 END_DISABLE_WARNING_GNU
 
 /**
@@ -69,15 +67,18 @@ enum clientBuf_e
 	CLBUF_NET,
 };
 
-/**
- * @brief Compression is enabled for this packet
- */
-#define SVF_COMPRESSED BIT(0)
+/// Compression is enabled for this packet
+#define SVF_COMPRESSED 0x01
 
-/**
- * @brief Unused flags - if any of these are set, we have a problem.
- */
-#define SVF_UNUSED_MASK BIT_MASK(1, 7)
+/// The header is immediately followed by a msg_timestamp.
+/// If the message has a reliable payload, it is considered part of that payload.
+/// If the message has no reliable payload, it is considered part of the best-effort payload.
+/// If the message has both kinds of payloads, the msg_timestamp is considered part of the reliable
+/// payload, but it must be processed as the first message for both reliable and best-effort processing.
+#define SVF_TIMESTAMP 0x02
+
+/// Unused flags - if any of these are set, we have a problem.
+#define SVF_UNUSED_MASK 0xFC
 
 /**
  * @brief svc_*: Transmit all possible data.
