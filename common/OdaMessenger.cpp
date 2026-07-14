@@ -84,9 +84,46 @@ MessageResultEnum OdaMessenger::Receive(buf_t& io_rawBuf)
 			ack.WriteLong(header.sequence);
 		}
 	}
+
 	if (io_rawBuf.BytesLeftToRead() > 0)
 	{
 		m_quickTurnaroundReceiveBuffer = &io_rawBuf;
+
+        // Special case:  Did this packet have both a reliable payload and a timestamp?
+        //                We need to make sure that very first the non-reliable
+        //                "next message" is the same timestamp message.  Note that the
+        //                message itself lives in the reliable section, but we need to
+        //                present it as also non-reliable.
+        //
+        //                We do this by setting the quick-turnaround buffer to 
+        if (header.reliableSize and header.flags & SVF_TIMESTAMP)
+        {
+			m_quickTurnaroundNextPosition = io_rawBuf.TellRead();
+            m_quickTurnaroundNextSize     = io_rawBuf.size();
+
+            io_rawBuf.SeekRead(PacketHeaderType::PACKET_HEADER_SIZE, buf_t::BT_START);
+            const msg_t firstMessageID = static_cast<msg_t>(io_rawBuf.ReadUnVarint());
+            if (firstMessageID == msg_timestamp)
+            {
+                io_rawBuf.setcursize(io_rawBuf.ReadUnVarint());
+                io_rawBuf.SeekRead(PacketHeaderType::PACKET_HEADER_SIZE, buf_t::BT_START);
+            }
+            else
+            {
+                if (firstMessageID < MSG_DEFINITION_COUNT)
+                {
+					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!", msg_info[firstMessageID].getName());
+                }
+                else
+                {
+					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!", firstMessageID);
+                }
+                io_rawBuf.SeekRead(m_quickTurnaroundNextPosition, buf_t::BT_START);
+                m_quickTurnaroundNextPosition = 0;
+                m_quickTurnaroundNextSize     = 0;
+            }
+        }
+
 		return MessageResultEnum::ACCEPT;
 	}
 
@@ -103,8 +140,22 @@ bool OdaMessenger::NextReceivedPacket(buf_t& io_rawBuf)
 	if (m_quickTurnaroundReceiveBuffer)
 	{
 		io_rawBuf.swap(*m_quickTurnaroundReceiveBuffer);
+
+        if (io_rawBuf.BytesLeftToRead() != 0)
+        {
+            return true;
+        }
+        if (m_quickTurnaroundNextPosition != 0 and m_quickTurnaroundNextSize != 0)
+        {
+            io_rawBuf.setcursize(m_quickTurnaroundNextSize);
+            io_rawBuf.SeekRead(m_quickTurnaroundNextPosition, buf_t::BT_START);
+            m_quickTurnaroundNextPosition = 0;
+            m_quickTurnaroundNextSize     = 0;
+            return true;
+        }
+		m_quickTurnaroundNextPosition  = 0;
+		m_quickTurnaroundNextSize      = 0;
 		m_quickTurnaroundReceiveBuffer = nullptr;
-		return true;
 	}
 	return m_receiver.NextPacket(io_rawBuf) >= 0;
 }
