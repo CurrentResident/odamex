@@ -82,8 +82,8 @@ struct PlaySoundType
 
 odaproto::svc::Disconnect SVC_Disconnect(const char* message = NULL);
 odaproto::svc::PlayerInfo SVC_PlayerInfo(const player_t& player);
-odaproto::svc::MovePlayer SVC_MovePlayer(const player_t& player, const int tic);
-odaproto::svc::UpdateLocalPlayer SVC_UpdateLocalPlayer(const AActor& mo, const int tic);
+odaproto::svc::MovePlayer SVC_MovePlayer(const player_t& player);
+odaproto::svc::UpdateLocalPlayer SVC_UpdateLocalPlayer(const AActor& mo);
 odaproto::svc::LevelLocals SVC_LevelLocals(const level_locals_t& locals, uint32_t flags);
 odaproto::svc::PingRequest SVC_PingRequest();
 odaproto::svc::UpdatePing SVC_UpdatePing(const player_t& player);
@@ -98,7 +98,7 @@ odaproto::svc::RemoveMobj SVC_RemoveMobj(const AActor& mobj);
 odaproto::svc::UserInfo SVC_UserInfo(const player_t& player, int64_t time);
 odaproto::svc::UpdateMobj SVC_UpdateMobj(const AActor& mobj);
 odaproto::svc::UpdateMobjWithMode SVC_UpdateMobjWithMode(const AActor& mobj);
-odaproto::svc::SpawnPlayer SVC_SpawnPlayer(const player_t& player, int tic);
+odaproto::svc::SpawnPlayer SVC_SpawnPlayer(const player_t& player);
 odaproto::svc::DamagePlayer SVC_DamagePlayer(const player_t& player, const AActor *inflictor, int health, int armor, int destinationClientTicOfValidity);
 odaproto::svc::KillMobj SVC_KillMobj(const AActor* source, const AActor* target, const AActor* inflictor,
                                      int mod, bool joinkill);
@@ -132,7 +132,7 @@ odaproto::svc::SecretEvent SVC_SecretEvent(const player_t& player, const sector_
 odaproto::svc::ServerSettings SVC_ServerSettings(const cvar_t& var);
 odaproto::svc::ConnectClient SVC_ConnectClient(const player_t& player);
 odaproto::svc::MidPrint SVC_MidPrint(const std::string& message, const int time);
-odaproto::svc::ServerGametic SVC_ServerGametic(const int tic, const int unackedCount, const int throttle);
+odaproto::svc::ServerGametic SVC_ServerGametic(const int unackedCount, const int throttle);
 odaproto::svc::IntTimeLeft SVC_IntTimeLeft(const unsigned int timeleft);
 odaproto::svc::RailTrail SVC_RailTrail(const v3double_t& start, const v3double_t& end);
 odaproto::svc::LineUpdate SVC_LineUpdate(const line_t& line);

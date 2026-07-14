@@ -1464,7 +1464,7 @@ bool SV_ApplyAwareness(player_t& player, AActor* mo, AwarenessEnum awarenessLeve
 		}
 		else
 		{
-			MSG_WriteSVC(player.client.messenger.ReliableBuf(), SVC_SpawnPlayer(*mo->player, gametic));
+			MSG_WriteSVC(player.client.messenger.ReliableBuf(), SVC_SpawnPlayer(*mo->player));
 		}
 		return true;
 	}
@@ -1827,8 +1827,7 @@ void SV_UpdateMovingSectors(player_t &player)
 //
 void SV_SendGametic(client_t& client)
 {
-	MSG_WriteSVC(client.messenger.HighBuf(), SVC_ServerGametic(gametic,
-	                                                           client.messenger.GetPendingAckCount(),
+	MSG_WriteSVC(client.messenger.HighBuf(), SVC_ServerGametic(client.messenger.GetPendingAckCount(),
 	                                                           client.messenger.GetReliableOverloadCount()));
 }
 
@@ -3637,7 +3636,7 @@ void SV_WriteCommandsForPlayer(player_t& player)
 		if(not SV_IsPlayerAllowedToSee(player, otherPlayer.mo))
 			continue;
 
-		MSG_WriteSVC(player.client.messenger.HighBuf(), SVC_MovePlayer(otherPlayer, player.tic));
+		MSG_WriteSVC(player.client.messenger.HighBuf(), SVC_MovePlayer(otherPlayer));
 	}
 
 	SV_SendMonitoredInventoryChanges(player);
@@ -3911,7 +3910,7 @@ void SV_UpdateConsolePlayer(player_t &player)
 	if (not player.spectator)
 	{
 		// client player will update his position if packets were missed
-		MSG_WriteSVC(cl->messenger.HighBuf(), SVC_UpdateLocalPlayer(*mo, player.tic));
+		MSG_WriteSVC(cl->messenger.HighBuf(), SVC_UpdateLocalPlayer(*mo));
 	}
 
 	SV_UpdateMovingSectors(player);

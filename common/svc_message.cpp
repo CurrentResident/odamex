@@ -216,7 +216,7 @@ odaproto::svc::PlayerPsprites SVC_PlayerPsprites(const player_t& player)
 /**
  * @brief Change the location of a player.
  */
-odaproto::svc::MovePlayer SVC_MovePlayer(const player_t& player, const int tic)
+odaproto::svc::MovePlayer SVC_MovePlayer(const player_t& player)
 {
 	odaproto::svc::MovePlayer msg;
 
@@ -224,9 +224,9 @@ odaproto::svc::MovePlayer SVC_MovePlayer(const player_t& player, const int tic)
 
 	msg.set_playerid(player.id); // player number
 
-	// [SL] 2011-09-14 - the most recently processed ticcmd from the
-	// client we're sending this message to.
-	msg.set_tic(tic);
+	// This message used to include the client-tic of the most recently processed
+	// ticcmd for the destination client, but that value is now provided in the
+	// once-per-packet msg_timestamp.
 
 	odaproto::Vec3* pos = act->mutable_pos();
 	pos->set_x(player.mo->x);
@@ -266,15 +266,16 @@ odaproto::svc::MovePlayer SVC_MovePlayer(const player_t& player, const int tic)
 /**
  * @brief Send the local player position for a client.
  */
-odaproto::svc::UpdateLocalPlayer SVC_UpdateLocalPlayer(const AActor& mo, const int tic)
+odaproto::svc::UpdateLocalPlayer SVC_UpdateLocalPlayer(const AActor& mo)
 {
 	odaproto::svc::UpdateLocalPlayer msg;
 
 	// client player will update his position if packets were missed
 	odaproto::Actor* act = msg.mutable_actor();
 
-	// client-tic of the most recently processed ticcmd for this client
-	msg.set_tic(tic);
+	// This message used to include the client-tic of the most recently processed
+	// ticcmd for this client, but that value is now provided in the once-per-packet
+	// msg_timestamp.
 
 	odaproto::Vec3* pos = act->mutable_pos();
 	pos->set_x(mo.x);
@@ -707,13 +708,11 @@ odaproto::svc::UpdateMobjWithMode SVC_UpdateMobjWithMode(const AActor& mobj)
 
 EXTERN_CVAR(sv_sharekeys);
 
-odaproto::svc::SpawnPlayer SVC_SpawnPlayer(const player_t& player, int tic)
+odaproto::svc::SpawnPlayer SVC_SpawnPlayer(const player_t& player)
 {
 	odaproto::svc::SpawnPlayer msg;
 
 	msg.set_pid(player.id);
-	msg.set_player_tic(player.tic);
-	msg.set_server_tic(tic);
 
 	odaproto::Actor* act = msg.mutable_actor();
 	if (player.mo)
@@ -1320,11 +1319,10 @@ odaproto::svc::MidPrint SVC_MidPrint(const std::string& message, const int time)
 	return msg;
 }
 
-odaproto::svc::ServerGametic SVC_ServerGametic(const int tic, const int unackedCount, const int throttle)
+odaproto::svc::ServerGametic SVC_ServerGametic(const int unackedCount, const int throttle)
 {
 	odaproto::svc::ServerGametic msg;
 
-	msg.set_tic(tic);
 	msg.set_reliable_messages_in_flight(unackedCount);
 	msg.set_throttle(throttle);
 

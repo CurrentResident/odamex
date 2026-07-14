@@ -33,18 +33,16 @@ message PlayerState
 // svc_moveplayer
 message MovePlayer
 {
-	int32           tic      = 1;
-	int32           frame    = 2;
-	uint32          playerid = 3;
-	repeated int32  powers   = 4;
-	Actor           actor    = 5;
+	int32           frame    = 1;
+	uint32          playerid = 2;
+	repeated int32  powers   = 3;
+	Actor           actor    = 4;
 }
 
 // svc_updatelocalplayer
 message UpdateLocalPlayer
 {
-	int32 tic = 1;
-	Actor actor = 2;
+	Actor actor = 1;
 }
 
 // svc_levellocals
@@ -573,9 +571,8 @@ message MidPrint
 // The message's name says "gametic" but really it's an infrastructural sampling of real-time status.
 message ServerGametic
 {
-	int32  tic                         = 1;
-	uint32 reliable_messages_in_flight = 2;
-	uint32 throttle                    = 3;
+	uint32 reliable_messages_in_flight = 1;
+	uint32 throttle                    = 2;
 }
 
 // svc_inttimeleft

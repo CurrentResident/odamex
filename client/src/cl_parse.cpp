@@ -370,7 +370,7 @@ static void CL_MovePlayer(const odaproto::svc::MovePlayer* msg)
 	::last_player_update = gametic;
 
 	// [SL] 2012-02-21 - Save the position information to a snapshot
-	const int snaptime = ::last_svgametic;
+	const int snaptime = effectiveServerTic;
 	PlayerSnapshot newsnap(snaptime);
 	newsnap.setAuthoritative(true);
 
@@ -395,10 +395,6 @@ static void CL_MovePlayer(const odaproto::svc::MovePlayer* msg)
 static void CL_UpdateLocalPlayer(const odaproto::svc::UpdateLocalPlayer* msg)
 {
 	player_t& p = consoleplayer();
-
-	// The server has processed the ticcmd that the local client sent
-	// during the the tic referenced below
-	p.tic = msg->tic();
 
 	fixed_t x = msg->actor().pos().x();
 	fixed_t y = msg->actor().pos().y();
@@ -1344,7 +1340,7 @@ static void CL_SpawnPlayer(const odaproto::svc::SpawnPlayer* msg)
 		// Any intervening updates to important state will come in subsequent
 		// reliable, well-ordered messages.
 		rollerState.Clear();
-		for (int32_t tic = msg->player_tic(); tic <= gametic; ++tic)
+		for (int32_t tic = effectiveClientTic; tic <= gametic; ++tic)
 		{
 			rollerState.Record(tic, p);
 		}
@@ -1371,7 +1367,7 @@ static void CL_SpawnPlayer(const odaproto::svc::SpawnPlayer* msg)
 			::level.behavior->StartTypedScripts(SCRIPT_Enter, p.mo);
 	}
 
-	const int snaptime = msg->server_tic();
+	const int snaptime = effectiveServerTic;
 	PlayerSnapshot newsnap(snaptime, p);
 	newsnap.setAuthoritative(true);
 	newsnap.setContinuous(false);
@@ -2374,13 +2370,7 @@ static void CL_MidPrint(const odaproto::svc::MidPrint* msg)
 // [SL] 2011-05-11
 static void CL_ServerGametic(const odaproto::svc::ServerGametic* msg)
 {
-	::last_svgametic = msg->tic();
-
 	netgraph.addServerSideMetrics(msg->reliable_messages_in_flight(), msg->throttle());
-
-#ifdef _WORLD_INDEX_DEBUG_
-	PrintFmt(PRINT_HIGH, "Gametic {}, received world index {}\n", gametic, last_svgametic);
-#endif // _WORLD_INDEX_DEBUG_
 }
 
 //
@@ -3417,6 +3407,21 @@ static void CL_Timestamp(const odaproto::Timestamp* msg)
 {
 	effectiveServerTic = msg->sender_tic();
 	effectiveClientTic = msg->receiver_tic();
+
+	player_t& p = consoleplayer();
+
+	if (p.tic < effectiveClientTic)
+	{
+		p.tic = effectiveClientTic;
+	}
+
+    if (::last_svgametic < effectiveServerTic)
+    {
+        ::last_svgametic = effectiveServerTic;
+    }
+#ifdef _WORLD_INDEX_DEBUG_
+	PrintFmt(PRINT_HIGH, "Gametic {}, received world index {}\n", gametic, last_svgametic);
+#endif // _WORLD_INDEX_DEBUG_
 }
 
 //-----------------------------------------------------------------------------
