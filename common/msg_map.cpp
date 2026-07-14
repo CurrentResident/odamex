@@ -58,7 +58,8 @@ static void MapProto(const msg_t header, const google::protobuf::Descriptor* des
  */
 static void InitMap()
 {
-	MapProto(msg_noop, odaproto::Noop::descriptor());
+	MapProto(msg_noop,      odaproto::Noop::descriptor());
+	MapProto(msg_timestamp, odaproto::Timestamp::descriptor());
 
 	MapProto(svc_disconnect, odaproto::svc::Disconnect::descriptor());
 	MapProto(svc_playerinfo, odaproto::svc::PlayerInfo::descriptor());

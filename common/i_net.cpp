@@ -963,9 +963,12 @@ float MSG_ReadFloat(void)
 //
 static void InitNetMessageFormats()
 {
-	// Server Messages.
+	// Lower-level protocol messages.
 	MSG_INFO(msg_noop);
+	MSG_INFO(msg_ack);
+	MSG_INFO(msg_timestamp);
 
+	// Server Messages.
 	MSG_INFO(svc_disconnect);
 	MSG_INFO(svc_playerinfo);
 	MSG_INFO(svc_moveplayer);
@@ -1046,6 +1049,7 @@ static void InitNetMessageFormats()
 	MSG_INFO(svc_configureavatar);
 	MSG_INFO(svc_wakeupmobj);
 
+	// Client messages
 	MSG_INFO(clc_playerinput);
 	MSG_INFO(clc_netdemocap);
 	MSG_INFO(clc_netdemostop);

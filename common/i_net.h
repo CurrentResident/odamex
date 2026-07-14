@@ -213,6 +213,7 @@ enum msg_t
 {
 	msg_noop,
 	msg_ack,
+	msg_timestamp,
 
 	clc_netdemocap,         // netdemos - NullPoint
 	clc_netdemostop,        // netdemos - NullPoint
