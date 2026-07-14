@@ -1605,7 +1605,7 @@ int SV_UpdateHiddenMobj(player_t& pl, AActor *mo, int updated, AwarenessEnum new
 
 MessageResultEnum SV_SendPacket(player_t &pl)
 {
-	return pl.client.messenger.SendAll(gametic, pl.client.address);
+	return pl.client.messenger.SendAll(gametic, pl.client.address, pl.tic);
 }
 
 void SV_BroadcastNoiseAlert(const sector_t& sector)
@@ -2464,7 +2464,7 @@ void SV_DisconnectClient(player_t &who)
 	// We do this so that we don't have to wait for the next tic before we get
 	// the message out and we put the messenger into the dead-end collection with a
 	// pending Ack count > 0.
-	who.client.messenger.SendAll(gametic, who.client.address);
+	who.client.messenger.SendAll(gametic, who.client.address, who.tic);
 	SV_DepartMessenger(who.client);
 
 	Maplist_Disconnect(who);
