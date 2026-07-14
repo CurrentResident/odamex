@@ -396,6 +396,9 @@ static void CL_UpdateLocalPlayer(const odaproto::svc::UpdateLocalPlayer* msg)
 {
 	player_t& p = consoleplayer();
 
+	// Record the tic of our PlayerInput that the server's output for this message incorporates.
+	p.tic = effectiveClientTic;
+
 	fixed_t x = msg->actor().pos().x();
 	fixed_t y = msg->actor().pos().y();
 	fixed_t z = msg->actor().pos().z();
@@ -3407,13 +3410,6 @@ static void CL_Timestamp(const odaproto::Timestamp* msg)
 {
 	effectiveServerTic = msg->sender_tic();
 	effectiveClientTic = msg->receiver_tic();
-
-	player_t& p = consoleplayer();
-
-	if (p.tic < effectiveClientTic)
-	{
-		p.tic = effectiveClientTic;
-	}
 
     ::last_svgametic = effectiveServerTic;
 
