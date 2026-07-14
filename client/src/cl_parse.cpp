@@ -1389,9 +1389,8 @@ static void CL_DamagePlayer(const odaproto::svc::DamagePlayer* msg)
 	//const int armorDamage = msg->armor_damage(); // unused for now...
 	const int       health       = msg->player_health();
 	const int       armorpoints  = msg->player_armorpoints();
-	const int       oldTic       = msg->client_tic();
 
-	AActor* actor = P_FindThingById(netid);
+	AActor* actor    = P_FindThingById(netid);
 	AActor* attacker = P_FindThingById(attackerid);
 
 	if (!actor || !actor->player)
@@ -1404,6 +1403,7 @@ static void CL_DamagePlayer(const odaproto::svc::DamagePlayer* msg)
 
 	if (player.id == consoleplayer_id)
 	{
+		const int oldTic = effectiveClientTic;
 		rollerState.ResolveHealth      (oldTic, health,      player);
 		rollerState.ResolveArmorpoints (oldTic, armorpoints, player);
 	}

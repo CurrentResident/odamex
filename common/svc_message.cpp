@@ -740,7 +740,7 @@ odaproto::svc::SpawnPlayer SVC_SpawnPlayer(const player_t& player)
 	return msg;
 }
 
-odaproto::svc::DamagePlayer SVC_DamagePlayer(const player_t& player, const AActor* inflictor, int health, int armor, int destinationClientTicOfValidity)
+odaproto::svc::DamagePlayer SVC_DamagePlayer(const player_t& player, const AActor* inflictor, int health, int armor)
 {
 	odaproto::svc::DamagePlayer msg;
 
@@ -750,7 +750,6 @@ odaproto::svc::DamagePlayer SVC_DamagePlayer(const player_t& player, const AActo
 	msg.set_armor_damage      (armor);
 	msg.set_player_health     (player.health);
 	msg.set_player_armorpoints(player.armorpoints);
-	msg.set_client_tic        (destinationClientTicOfValidity);
 
 	return msg;
 }
