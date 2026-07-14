@@ -333,8 +333,6 @@ message MovingSectorElevator
 	sfixed32 ceil_dest          = 7;
 	sfixed32 floor_dest         = 8;
 	int32 ceil_speed            = 9; // Speed might be fixed_t, but it's also centered on 0.
-
-    optional int32 server_tic   = 10;
 }
 
 // svc_movingsectorpillar
@@ -353,8 +351,6 @@ message MovingSectorPillar
 	sfixed32 floor_dest         = 8;
 	sfixed32 ceil_dest          = 9;
 	bool ceil_crush             = 10;
-
-    optional int32 server_tic   = 11;
 }
 
 // svc_movingsectorceiling
@@ -394,8 +390,6 @@ message MovingSectorDoor
 	int32 ceil_counter          = 7;
 	int32 ceil_status           = 8;
 	sint32 ceil_line            = 9; // Default is -1
-
-    optional int32 server_tic   = 10;
 }
 
 // svc_movingsectorfloor
@@ -421,8 +415,6 @@ message MovingSectorFloor
 	int32 floor_change          = 17;
 	sint32 floor_line           = 18; // Default is -1
 	int32 floor_new_special     = 19;
-
-    optional int32 server_tic   = 20;
 }
 
 // svc_movingsectorplat
@@ -443,8 +435,6 @@ message MovingSectorPlat
 	int32 floor_tag             = 12;
 	sfixed32 floor_lip          = 13;
 	sfixed32 floor_offset       = 14;
-
-    optional int32 server_tic   = 15;
 }
 
 // svc_playsound

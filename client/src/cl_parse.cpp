@@ -278,6 +278,8 @@ static void CL_PlayerInfo(const odaproto::svc::PlayerInfo* msg)
 	// Until then, we just flatly apply the PlayerInfo to the player.
 	if (::hasReceivedFullUpdate)
 	{
+		// Please note that we use a tic embedded in this message because it contains and references
+		// data that pre-dates the effectiveClientTic.
 		const int oldTic = playerInfo.client_tic();
 
 		const RollerResolveEnum result = rollerState.Resolve(oldTic, playerState, player);
@@ -539,6 +541,9 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 		mo->special1 = mo->z - mo->floorz;
 		mo->LinkToWorld();
 	}
+
+	// Please note that the timebase tic can easily be an arbitary timepoint in the past,
+	// not the most-recent effective value.
 	mo->baseline         = base;
 	mo->updatedDuringTic = gametic;
 	mo->mobjtic          = msg->timebase_tic();
@@ -1721,7 +1726,7 @@ static void CL_MovingSectorElevator(const odaproto::svc::MovingSectorElevator* m
 	if (!::sectors || sectornum < 0 || sectornum >= ::numsectors)
 		return;
 
-    const int serverTic = msg->has_server_tic() ? msg->server_tic() : ::last_svgametic;
+	const int serverTic = effectiveServerTic;
 	SectorSnapshot snap(serverTic);
 
 	// Elevators
@@ -1755,7 +1760,7 @@ static void CL_MovingSectorPillar(const odaproto::svc::MovingSectorPillar* msg)
 	if (!::sectors || sectornum < 0 || sectornum >= ::numsectors)
 		return;
 
-    const int serverTic = msg->has_server_tic() ? msg->server_tic() : ::last_svgametic;
+	const int serverTic = effectiveServerTic;
 	SectorSnapshot snap(serverTic);
 
 		// Pillars
@@ -1789,7 +1794,7 @@ static void CL_MovingSectorCeiling(const odaproto::svc::MovingSectorCeiling* msg
 	if (!::sectors || sectornum < 0 || sectornum >= ::numsectors)
 		return;
 
-    const int serverTic = msg->has_server_tic() ? msg->server_tic() : ::last_svgametic;
+	const int serverTic = effectiveServerTic;
 	SectorSnapshot snap(serverTic);
 
 	// Ceilings / Crushers
@@ -1821,7 +1826,7 @@ static void CL_MovingSectorDoor(const odaproto::svc::MovingSectorDoor* msg)
 	if (!::sectors || sectornum < 0 || sectornum >= ::numsectors)
 		return;
 
-    const int serverTic = msg->has_server_tic() ? msg->server_tic() : ::last_svgametic;
+	const int serverTic = effectiveServerTic;
 	SectorSnapshot snap(serverTic);
 
 	// Doors
@@ -1854,7 +1859,7 @@ static void CL_MovingSectorFloor(const odaproto::svc::MovingSectorFloor* msg)
 	if (!::sectors || sectornum < 0 || sectornum >= ::numsectors)
 		return;
 
-    const int serverTic = msg->has_server_tic() ? msg->server_tic() : ::last_svgametic;
+	const int serverTic = effectiveServerTic;
 	SectorSnapshot snap(serverTic);
 
 	// Floors/Stairbuilders
@@ -1896,7 +1901,7 @@ static void CL_MovingSectorPlat(const odaproto::svc::MovingSectorPlat* msg)
 	if (!::sectors || sectornum < 0 || sectornum >= ::numsectors)
 		return;
 
-    const int serverTic = msg->has_server_tic() ? msg->server_tic() : ::last_svgametic;
+	const int serverTic = effectiveServerTic;
 	SectorSnapshot snap(serverTic);
 
 	// Platforms/Lifts
