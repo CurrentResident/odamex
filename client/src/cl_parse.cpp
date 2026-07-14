@@ -3415,10 +3415,8 @@ static void CL_Timestamp(const odaproto::Timestamp* msg)
 		p.tic = effectiveClientTic;
 	}
 
-    if (::last_svgametic < effectiveServerTic)
-    {
-        ::last_svgametic = effectiveServerTic;
-    }
+    ::last_svgametic = effectiveServerTic;
+
 #ifdef _WORLD_INDEX_DEBUG_
 	PrintFmt(PRINT_HIGH, "Gametic {}, received world index {}\n", gametic, last_svgametic);
 #endif // _WORLD_INDEX_DEBUG_
