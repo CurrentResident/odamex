@@ -348,7 +348,7 @@ static void CL_MovePlayer(const odaproto::svc::MovePlayer* msg)
 
 	// Mark the gametic this update arrived in for prediction code
 	p.tic = gametic;
-	p.mo->updatedDuringTic = gametic;
+	p.mo->updatedDuringTic = effectiveClientTic;
 
 	// GhostlyDeath -- Servers will never send updates on spectators
 	if (p.spectator && (&p != &consoleplayer()))
@@ -545,7 +545,7 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 	// Please note that the timebase tic can easily be an arbitary timepoint in the past,
 	// not the most-recent effective value.
 	mo->baseline         = base;
-	mo->updatedDuringTic = gametic;
+	mo->updatedDuringTic = effectiveClientTic;
 	mo->mobjtic          = msg->timebase_tic();
 
 	P_SetThingId(mo, netid);
@@ -1111,7 +1111,19 @@ static AActor* CL_UpdateMobj(const odaproto::svc::UpdateMobj* msg)
 	if (not mo)
 		return mo;
 
-	mo->updatedDuringTic = gametic;
+	// Plain old update mobjs should *never* go backwards.
+	// The only time when it's okay to go backwards is if we have an update
+	// "from the future" owing to network jitter or a dropped reliable packet
+	// that needs to be retransmitted, thus "breaking loose" a sequence of
+	// reliable packets that need to go and perform some critical reliable
+	// updates.  In that case, the mobj can wind up slightly behind, but will
+	// be corrected in its next periodic updatemobj.
+	if (effectiveClientTic < mo->updatedDuringTic)
+	{
+		return nullptr;
+	}
+
+	mo->updatedDuringTic = effectiveClientTic;
 
 	uint32_t flags = msg->flags();
 
@@ -1284,7 +1296,7 @@ static void CL_SpawnPlayer(const odaproto::svc::SpawnPlayer* msg)
 
 	mobj->momx = mobj->momy = mobj->momz = 0;
 
-	mobj->updatedDuringTic = gametic;
+	mobj->updatedDuringTic = effectiveClientTic;
 	mobj->credibility.Lionize();
 
 	// set color translations for player sprites
@@ -1500,7 +1512,7 @@ static void CL_KillMobj(const odaproto::svc::KillMobj* msg)
 		target->momy = msg->target_mom().y();
 		target->momz = msg->target_mom().z();
 
-		target->updatedDuringTic = gametic;
+		target->updatedDuringTic = effectiveClientTic;
 	}
 
 	target->health = health;
@@ -1543,7 +1555,7 @@ static void CL_RaiseMobj(const odaproto::svc::RaiseMobj* msg)
 	corpsehit->momy = msg->corpse().mom().y();
 	corpsehit->momz = msg->corpse().mom().z();
 
-	corpsehit->updatedDuringTic = gametic;
+	corpsehit->updatedDuringTic = effectiveClientTic;
 
 	mobjinfo_t* info = corpsehit->info;
 
