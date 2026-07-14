@@ -57,6 +57,8 @@ MessageResultEnum OdaMessenger::Receive(buf_t& io_rawBuf)
 	const size_t fullSize               = io_rawBuf.size();
 	const size_t startOfReliableData    = io_rawBuf.TellRead();
 
+	m_immediateReceiveBuffer.clear();
+
 	// Do some sanity checking.
 	//
 	// No need to check startOfReliableData because that and fullSize are direct results of packet reception
@@ -83,46 +85,49 @@ MessageResultEnum OdaMessenger::Receive(buf_t& io_rawBuf)
 			ack.WriteUnVarint(msg_ack);
 			ack.WriteLong(header.sequence);
 		}
+
+		// If we have both a reliable and best-effort payload, make sure we replicate the timestamp
+		// message to the best effort receive buffer.
+		if (io_rawBuf.BytesLeftToRead() > 0 and header.flags & SVF_TIMESTAMP)
+		{
+			const size_t startOfBestEffortData = io_rawBuf.TellRead();
+			io_rawBuf.SeekRead(startOfReliableData, buf_t::BT_START);
+
+			const msg_t  firstMessageID   = static_cast<msg_t>(io_rawBuf.ReadUnVarint());
+			const size_t firstMessageSize = io_rawBuf.ReadUnVarint();
+
+			if (firstMessageID == msg_timestamp)
+			{
+				m_immediateReceiveBuffer.WriteUnVarint(firstMessageID);
+				m_immediateReceiveBuffer.WriteUnVarint(firstMessageSize);
+				m_immediateReceiveBuffer.WriteChunk   (io_rawBuf.ReadChunk(firstMessageSize), firstMessageSize);
+			}
+			else
+			{
+				if (firstMessageID < MSG_DEFINITION_COUNT)
+				{
+					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!  Skipping to {} of {}...\n",
+					                        msg_info[firstMessageID].getName(),
+					                        startOfBestEffortData,
+					                        fullSize);
+				}
+				else
+				{
+					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!  Skipping to {} of {}...\n",
+					                        firstMessageID,
+					                        startOfBestEffortData,
+					                        fullSize);
+				}
+			}
+			io_rawBuf.SeekRead(startOfBestEffortData, buf_t::BT_START);
+		}
 	}
 
-	if (io_rawBuf.BytesLeftToRead() > 0)
+	const size_t sizeOfBestEffortData = io_rawBuf.BytesLeftToRead();
+
+	if (sizeOfBestEffortData > 0)
 	{
-		m_quickTurnaroundReceiveBuffer = &io_rawBuf;
-
-        // Special case:  Did this packet have both a reliable payload and a timestamp?
-        //                We need to make sure that very first the non-reliable
-        //                "next message" is the same timestamp message.  Note that the
-        //                message itself lives in the reliable section, but we need to
-        //                present it as also non-reliable.
-        //
-        //                We do this by setting the quick-turnaround buffer to 
-        if (header.reliableSize and header.flags & SVF_TIMESTAMP)
-        {
-			m_quickTurnaroundNextPosition = io_rawBuf.TellRead();
-            m_quickTurnaroundNextSize     = io_rawBuf.size();
-
-            io_rawBuf.SeekRead(PacketHeaderType::PACKET_HEADER_SIZE, buf_t::BT_START);
-            const msg_t firstMessageID = static_cast<msg_t>(io_rawBuf.ReadUnVarint());
-            if (firstMessageID == msg_timestamp)
-            {
-                io_rawBuf.setcursize(io_rawBuf.ReadUnVarint());
-                io_rawBuf.SeekRead(PacketHeaderType::PACKET_HEADER_SIZE, buf_t::BT_START);
-            }
-            else
-            {
-                if (firstMessageID < MSG_DEFINITION_COUNT)
-                {
-					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!  Skipping...", msg_info[firstMessageID].getName());
-                }
-                else
-                {
-					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!  Skipping...", firstMessageID);
-                }
-                io_rawBuf.SeekRead(m_quickTurnaroundNextPosition, buf_t::BT_START);
-                m_quickTurnaroundNextPosition = 0;
-                m_quickTurnaroundNextSize     = 0;
-            }
-        }
+		m_immediateReceiveBuffer.WriteChunk(io_rawBuf.ReadChunk(sizeOfBestEffortData), io_rawBuf.BytesLeftToRead());
 
 		return MessageResultEnum::ACCEPT;
 	}
@@ -137,25 +142,11 @@ bool OdaMessenger::NextReceivedPacket(buf_t& io_rawBuf)
 		return false;
 	}
 
-	if (m_quickTurnaroundReceiveBuffer)
+	if (m_immediateReceiveBuffer.BytesLeftToRead() > 0)
 	{
-		io_rawBuf.swap(*m_quickTurnaroundReceiveBuffer);
+		io_rawBuf.swap(m_immediateReceiveBuffer);
 
-        if (io_rawBuf.BytesLeftToRead() != 0)
-        {
-            return true;
-        }
-        if (m_quickTurnaroundNextPosition != 0 and m_quickTurnaroundNextSize != 0)
-        {
-            io_rawBuf.setcursize(m_quickTurnaroundNextSize);
-            io_rawBuf.SeekRead(m_quickTurnaroundNextPosition, buf_t::BT_START);
-            m_quickTurnaroundNextPosition = 0;
-            m_quickTurnaroundNextSize     = 0;
-            return true;
-        }
-		m_quickTurnaroundNextPosition  = 0;
-		m_quickTurnaroundNextSize      = 0;
-		m_quickTurnaroundReceiveBuffer = nullptr;
+		return true;
 	}
 	return m_receiver.NextPacket(io_rawBuf) >= 0;
 }
@@ -305,41 +296,17 @@ MessageResultEnum OdaMessenger::SendAll(int i_currentTic, const netadr_t& i_dest
 	// Okay, done with the "really important" stuff.  Now onto purely best-effort unreliable packets.
 	while (m_outgoingNonReliableQueue.SizeInMessages() > 0 and m_byteBudget > 0)
 	{
-		if (static_cast<int>(m_packet.Size() + m_outgoingNonReliableQueue.Front().size()) > m_byteBudget)
-		{
-			break;
-		}
-
         if (addTimestamps)
         {
             PackAsUnreliable(m_packet, timestampBuffer);
             m_packet.SetTimestampFlag();
         }
 
-		if (m_recordingIsEnabled)
-		{
-			Record(m_outgoingNonReliableQueue.Front());
-		}
+		m_outgoingNonReliableQueue.Pack([this](const buf_t& messageBuf) { return PackAsUnreliable(m_packet, messageBuf); });
 
-		if (m_packet.AddUnreliableMessage(m_outgoingNonReliableQueue.Front()))
-		{
-			m_outgoingNonReliableQueue.Pop();
-		}
-		else
-		{
-			if (m_packet.SizeOfReliablePortion() == 0)
-			{
-				const size_t bestEffortBytes = m_packet.Send(i_currentTic, m_sender, i_dest);
-				bytesSentBestEffort         += bestEffortBytes;
-				m_byteBudget                -= static_cast<int>(bestEffortBytes);
-			}
-			else
-			{
-				const size_t reliableBytes = m_packet.Send(i_currentTic, m_sender, i_dest);
-				m_bytesSentWithReliability  += reliableBytes;
-				m_byteBudget                -= static_cast<int>(reliableBytes);
-			}
-		}
+		const size_t bestEffortBytes = m_packet.Send(i_currentTic, m_sender, i_dest);
+		bytesSentBestEffort         += bestEffortBytes;
+		m_byteBudget                -= static_cast<int>(bestEffortBytes);
 	}
 
 	m_outgoingNonReliableQueue.Clear();

@@ -180,9 +180,7 @@ class OdaMessenger
 		MessageQueue m_outgoingNonReliableQueue;
 		MessageQueue m_outgoingHighNonReliableQueue;
 
-		buf_t* m_quickTurnaroundReceiveBuffer { nullptr };
-		size_t m_quickTurnaroundNextPosition  { 0 };        // If zero, assume quickTurnaround is in the right spot.
-		size_t m_quickTurnaroundNextSize      { 0 };        // If zero, assume quickTurnaround is in the right spot.
+		buf_t  m_immediateReceiveBuffer       { MAX_UDP_PACKET };
 
 		int m_maxPacketsPerRetransmission   { DEFAULT_RETRANSMISSIONS_PER_TIC };
 		int m_retransmitDelayInTics         { 0 };
