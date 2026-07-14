@@ -112,11 +112,11 @@ MessageResultEnum OdaMessenger::Receive(buf_t& io_rawBuf)
             {
                 if (firstMessageID < MSG_DEFINITION_COUNT)
                 {
-					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!", msg_info[firstMessageID].getName());
+					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!  Skipping...", msg_info[firstMessageID].getName());
                 }
                 else
                 {
-					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!", firstMessageID);
+					PrintFmt(PRINT_WARNING, "Expected msg_timestamp, got {} instead!  Skipping...", firstMessageID);
                 }
                 io_rawBuf.SeekRead(m_quickTurnaroundNextPosition, buf_t::BT_START);
                 m_quickTurnaroundNextPosition = 0;

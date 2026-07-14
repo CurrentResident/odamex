@@ -121,6 +121,19 @@ void P_PlayerLeavesGame(player_t* player);
 void P_SetPsprite(player_t& player, int position, int32_t stnum);
 void P_SetButtonTexture(line_t* line, short texture);
 
+// The following are the tic values indicating the effective tic at the time of
+// a message's validity.  The server tic is the server's gametic at the time of
+// the message's creation, and the client tic is the tic associated with the
+// client's input that was integrated into the processing and messages from the
+// server during the indicated server tic.  Essentially a statement of,
+// "here's the results of the inputs that you provided back on your 'client tic'."
+//
+// It is based on the assumption that a msg_timestamp will be seen as the first
+// message of all packet payloads.
+
+static int effectiveServerTic;
+static int effectiveClientTic;
+
 /**
  * @brief Unpack a bitfield into an array of booleans.
  */
@@ -3400,6 +3413,12 @@ static void CL_NetDemoLoadSnap(const odaproto::clc::NetDemoLoadSnap* msg)
 	AddCommandString("netprevmap");
 }
 
+static void CL_Timestamp(const odaproto::Timestamp* msg)
+{
+	effectiveServerTic = msg->sender_tic();
+	effectiveClientTic = msg->receiver_tic();
+}
+
 //-----------------------------------------------------------------------------
 // Everything below this line is not a message parsing funciton.
 //-----------------------------------------------------------------------------
@@ -3497,7 +3516,9 @@ parseError_e CL_ProcessCommand(const ParseResultType& parsedCommand)
 			return PERR_OK;
 
 		/* clang-format off */
-		SV_MSG(msg_noop, CL_Noop, odaproto::Noop);
+		SV_MSG(msg_noop,      CL_Noop,      odaproto::Noop);
+		SV_MSG(msg_timestamp, CL_Timestamp, odaproto::Timestamp);
+
 		SV_MSG(svc_disconnect, CL_Disconnect, odaproto::svc::Disconnect);
 		SV_MSG(svc_playerinfo, CL_PlayerInfo, odaproto::svc::PlayerInfo);
 		SV_MSG(svc_moveplayer, CL_MovePlayer, odaproto::svc::MovePlayer);
