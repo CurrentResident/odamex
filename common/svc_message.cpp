@@ -1148,7 +1148,6 @@ odaproto::svc::TouchSpecial SVC_TouchSpecial(const player_t& player, const AActo
 	odaproto::svc::TouchSpecial msg;
 
 	msg.set_netid(mo.netid);
-	msg.set_player_tic(player.tic);
 
 	return msg;
 }
