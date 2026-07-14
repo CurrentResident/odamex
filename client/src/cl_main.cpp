@@ -2077,7 +2077,7 @@ MessageResultEnum CL_AcceptNetMessage()
 	return MessageResultEnum::DEFER;
 }
 
-MessageResultEnum CL_ProcessCurrentReliableMessages()
+MessageResultEnum CL_ProcessCurrentAvailableMessages()
 {
 	auto result = CL_AcceptNetMessage();
 	while (result == MessageResultEnum::ACCEPT)
