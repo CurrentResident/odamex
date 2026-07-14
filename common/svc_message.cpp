@@ -149,7 +149,6 @@ odaproto::svc::PlayerAmmo SVC_PlayerAmmo(const player_t& player)
 {
 	odaproto::svc::PlayerAmmo msg;
 
-	msg.set_player_tic(player.tic);
 	msg.mutable_ammo()->Add(player.ammo.begin(),
 	                        player.ammo.end());
 
@@ -160,7 +159,6 @@ odaproto::svc::PlayerMaxAmmo SVC_PlayerMaxAmmo(const player_t& player)
 {
 	odaproto::svc::PlayerMaxAmmo msg;
 
-	msg.set_player_tic(player.tic);
 	msg.mutable_maxammo()->Add(player.maxammo.begin(),
 	                           player.maxammo.end());
 
@@ -171,7 +169,6 @@ odaproto::svc::PlayerWeaponOwned SVC_PlayerWeaponOwned(const player_t& player)
 {
 	odaproto::svc::PlayerWeaponOwned msg;
 
-	msg.set_player_tic(player.tic);
 	msg.mutable_weaponowned()->Add(player.weaponowned.begin(),
 	                               player.weaponowned.end());
 
@@ -182,7 +179,6 @@ odaproto::svc::PlayerWeaponSelection SVC_PlayerWeaponSelection(const player_t& p
 {
 	odaproto::svc::PlayerWeaponSelection msg;
 
-	msg.set_player_tic(player.tic);
 	msg.set_readyweapon(player.readyweapon);
 	msg.set_pendingweapon(player.pendingweapon);
 
@@ -193,7 +189,6 @@ odaproto::svc::PlayerPowers SVC_PlayerPowers(const player_t& player)
 {
 	odaproto::svc::PlayerPowers msg;
 
-	msg.set_player_tic(player.tic);
 	msg.mutable_powers()->Add(player.powers.begin(),
 	                          player.powers.end());
 
@@ -204,7 +199,6 @@ odaproto::svc::PlayerPsprites SVC_PlayerPsprites(const player_t& player)
 {
 	odaproto::svc::PlayerPsprites msg;
 
-	msg.set_player_tic(player.tic);
 	for (const auto& psprite : player.psprites)
 	{
 		FillPsprite(*msg.add_psprites(), psprite);
