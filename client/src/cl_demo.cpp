@@ -873,7 +873,7 @@ void NetDemo::capture(const std::basic_string<byte>& buffer)
 void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 {
 	// Server sends launcher info
-	MSG_WriteLong   (netbuffer, PROTO_CHALLENGE);
+	MSG_WriteLong   (netbuffer, MSG_CHALLENGE);
 	MSG_WriteLong   (netbuffer, 0);     // server_token
 
 	// get sv_hostname and write it
