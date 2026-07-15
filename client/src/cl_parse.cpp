@@ -131,8 +131,8 @@ void P_SetButtonTexture(line_t* line, short texture);
 // It is based on the assumption that a msg_timestamp will be seen as the first
 // message of all packet payloads.
 
-static int effectiveServerTic;
-static int effectiveClientTic;
+int effectiveServerTic;
+int effectiveClientTic;
 
 /**
  * @brief Unpack a bitfield into an array of booleans.
@@ -347,8 +347,9 @@ static void CL_MovePlayer(const odaproto::svc::MovePlayer* msg)
 		return;
 
 	// Mark the gametic this update arrived in for prediction code
-	p.tic = gametic;
-	p.mo->updatedDuringTic = effectiveClientTic;
+	p.tic                           = gametic;
+	p.mo->updatedDuringLocalTic     = gametic;
+	p.mo->updatedDuringEffectiveTic = effectiveClientTic;
 
 	// GhostlyDeath -- Servers will never send updates on spectators
 	if (p.spectator && (&p != &consoleplayer()))
@@ -544,9 +545,10 @@ static void CL_SpawnMobj(const odaproto::svc::SpawnMobj* msg)
 
 	// Please note that the timebase tic can easily be an arbitary timepoint in the past,
 	// not the most-recent effective value.
-	mo->baseline         = base;
-	mo->updatedDuringTic = effectiveClientTic;
-	mo->mobjtic          = msg->timebase_tic();
+	mo->baseline                    = base;
+	mo->updatedDuringLocalTic       = gametic;
+	mo->updatedDuringEffectiveTic   = effectiveClientTic;
+	mo->mobjtic                     = msg->timebase_tic();
 
 	P_SetThingId(mo, netid);
 
@@ -1118,12 +1120,13 @@ static AActor* CL_UpdateMobj(const odaproto::svc::UpdateMobj* msg)
 	// reliable packets that need to go and perform some critical reliable
 	// updates.  In that case, the mobj can wind up slightly behind, but will
 	// be corrected in its next periodic updatemobj.
-	if (effectiveClientTic < mo->updatedDuringTic)
+	if (effectiveClientTic < mo->updatedDuringEffectiveTic)
 	{
 		return nullptr;
 	}
 
-	mo->updatedDuringTic = effectiveClientTic;
+	mo->updatedDuringLocalTic     = gametic;
+	mo->updatedDuringEffectiveTic = effectiveClientTic;
 
 	uint32_t flags = msg->flags();
 
@@ -1264,6 +1267,7 @@ static void CL_UpdateMobjWithMode(const odaproto::svc::UpdateMobjWithMode* msg)
 			default:
 				break;
 		}
+        P_SetMobjState(mo, msg->state());
 	}
 }
 
@@ -1296,7 +1300,9 @@ static void CL_SpawnPlayer(const odaproto::svc::SpawnPlayer* msg)
 
 	mobj->momx = mobj->momy = mobj->momz = 0;
 
-	mobj->updatedDuringTic = effectiveClientTic;
+	mobj->updatedDuringLocalTic     = gametic;
+	mobj->updatedDuringEffectiveTic = effectiveClientTic;
+
 	mobj->credibility.Lionize();
 
 	// set color translations for player sprites
@@ -1512,7 +1518,8 @@ static void CL_KillMobj(const odaproto::svc::KillMobj* msg)
 		target->momy = msg->target_mom().y();
 		target->momz = msg->target_mom().z();
 
-		target->updatedDuringTic = effectiveClientTic;
+		target->updatedDuringLocalTic     = gametic;
+		target->updatedDuringEffectiveTic = effectiveClientTic;
 	}
 
 	target->health = health;
@@ -1555,7 +1562,8 @@ static void CL_RaiseMobj(const odaproto::svc::RaiseMobj* msg)
 	corpsehit->momy = msg->corpse().mom().y();
 	corpsehit->momz = msg->corpse().mom().z();
 
-	corpsehit->updatedDuringTic = effectiveClientTic;
+	corpsehit->updatedDuringLocalTic     = gametic;
+	corpsehit->updatedDuringEffectiveTic = effectiveClientTic;
 
 	mobjinfo_t* info = corpsehit->info;
 

@@ -161,6 +161,7 @@ message UpdateMobjWithMode
 {
 	UpdateMobj   update = 1;
 	MobjModeEnum mode   = 2;
+	uint32       state  = 3;
 }
 
 // svc_spawnplayer
