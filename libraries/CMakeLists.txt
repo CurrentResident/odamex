@@ -43,6 +43,7 @@ if (BUILD_TESTS)
 
 endif()
 
+
 if (BUILD_CLIENT OR BUILD_LAUNCHER OR BUILD_SERVER)
 
     # ======================================
@@ -82,9 +83,7 @@ if (BUILD_CLIENT OR BUILD_LAUNCHER OR BUILD_SERVER)
         endif()
     endif()
 
-endif()
-
-if (BUILD_CLIENT OR BUILD_LAUNCHER)
+    if (BUILD_CLIENT OR BUILD_LAUNCHER)
 
     # ======================================
     # PNG
@@ -102,15 +101,104 @@ if (BUILD_CLIENT OR BUILD_LAUNCHER)
         set (PNG_STATIC  ON)
         set (PNG_TESTS  OFF)
 
+        set (SKIP_INSTALL_CONFIG_FILE ON)
+
         if (APPLE)
             set (PNG_HARDWARE_OPTIMIZATIONS OFF)    # Disable NEON
         endif()
+
+        FetchContent_MakeAvailable(PNG)
+
+        if (TARGET png_static AND NOT TARGET PNG::PNG)
+            add_library(PNG::PNG ALIAS png_static)
+        endif()
+
+        set(PNG_LIBRARIES       PNG::PNG)
+        set(PNG_INCLUDE_DIRS    "${FETCHCONTENT_SOURCE_DIR_PNG}")
+
     else()
         find_package(PNG)
         if(TARGET PNG::PNG)
             set_target_properties(PNG::PNG PROPERTIES IMPORTED_GLOBAL True)
         endif()
     endif()
+    endif()
+
+    if (BUILD_CLIENT)
+        # ======================================
+        # FLTK
+        # ======================================
+        if (USE_INTERNAL_FLTK)
+            set(FETCHCONTENT_SOURCE_DIR_FLTK "${CMAKE_CURRENT_SOURCE_DIR}/fltk")
+            FetchContent_Declare(
+                FLTK
+                URL "${FETCHCONTENT_SOURCE_DIR_FLTK}"
+                OVERRIDE_FIND_PACKAGE
+                )
+            list(APPEND FETCH_CONTENT_PACKAGES FLTK)
+
+            set(FLTK_USE_SYSTEM_LIBJPEG OFF)
+            set(FLTK_USE_SYSTEM_LIBPNG  ON)
+            set(FLTK_USE_SYSTEM_ZLIB    ON)
+
+            set(FLTK_OPTION_PRINT_SUPPORT   OFF)
+            set(FLTK_BUILD_GL               OFF)
+            set(FLTK_USE_PANGO              OFF)
+            set(FLTK_GRAPHICS_CAIRO         OFF)
+            set(FLTK_OPTION_CAIRO_WINDOW    OFF)
+            set(FLTK_OPTION_CAIRO_EXT       OFF)
+            set(FLTK_BUILD_TEST             OFF)
+
+            if(APPLE)
+                if(NOT USE_INTERNAL_PNG)
+                    set(FLTK_USE_SYSTEM_LIBPNG  ON)
+                endif()
+                if(NOT USE_INTERNAL_ZLIB)
+                    set(FLTK_USE_SYSTEM_ZLIB    ON)
+                endif()
+            elseif(UNIX AND NOT APPLE)
+                set(FLTK_USE_SYSTEM_LIBDECOR    OFF)
+                set(FLTK_USE_LIBDECOR_GTK       OFF)
+            endif()
+
+            FetchContent_MakeAvailable(FLTK)
+
+        else()
+            find_package(FLTK CONFIG)
+                if (NOT TARGET fltk::fltk)
+                    find_package(FLTK REQUIRED)
+                endif()
+        endif()
+    endif()
+
+    # ======================================
+    # zstd
+    # ======================================
+    if (USE_INTERNAL_ZSTD)
+        set (FETCHCONTENT_SOURCE_DIR_ZSTD "${CMAKE_CURRENT_SOURCE_DIR}/zstd/build/cmake")
+        FetchContent_Declare(
+            zstd
+            URL "${FETCHCONTENT_SOURCE_DIR_ZSTD}"
+            OVERRIDE_FIND_PACKAGE
+            )
+
+        set (ZSTD_BUILD_PROGRAMS OFF)
+        set (ZSTD_BUILD_STATIC    ON)
+        set (ZSTD_BUILD_SHARED   OFF)
+
+        FetchContent_MakeAvailable(zstd)
+
+        if (TARGET libzstd_static)
+            message ("----------------=========================------------------")
+        else()
+            message ("??????????????????????????????????????????????????????????")
+        endif()
+
+    endif()
+
+endif()
+
+if (BUILD_CLIENT OR BUILD_LAUNCHER)
 
     # ======================================
     # CURL
@@ -306,46 +394,6 @@ if (BUILD_CLIENT OR BUILD_SERVER)
 
     if (BUILD_CLIENT)
 
-        # ======================================
-        # FLTK
-        # ======================================
-        if (USE_INTERNAL_FLTK)
-            set(FETCHCONTENT_SOURCE_DIR_FLTK "${CMAKE_CURRENT_SOURCE_DIR}/fltk")
-            FetchContent_Declare(
-                FLTK
-                URL "${FETCHCONTENT_SOURCE_DIR_FLTK}"
-                OVERRIDE_FIND_PACKAGE
-                )
-            list(APPEND FETCH_CONTENT_PACKAGES FLTK)
-
-            set(FLTK_USE_SYSTEM_LIBJPEG OFF)
-            set(FLTK_USE_SYSTEM_LIBPNG  OFF)
-            set(FLTK_USE_SYSTEM_ZLIB    OFF)
-            set(FLTK_OPTION_PRINT_SUPPORT   OFF)
-            set(FLTK_BUILD_GL               OFF)
-            set(FLTK_USE_PANGO              OFF)
-            set(FLTK_GRAPHICS_CAIRO         OFF)
-            set(FLTK_OPTION_CAIRO_WINDOW    OFF)
-            set(FLTK_OPTION_CAIRO_EXT       OFF)
-            set(FLTK_BUILD_TEST             OFF)
-
-            if(APPLE)
-                if(NOT USE_INTERNAL_PNG)
-                    set(FLTK_USE_SYSTEM_LIBPNG  ON)
-                endif()
-                if(NOT USE_INTERNAL_ZLIB)
-                    set(FLTK_USE_SYSTEM_ZLIB    ON)
-                endif()
-            elseif(UNIX AND NOT APPLE)
-                set(FLTK_USE_SYSTEM_LIBDECOR    OFF)
-                set(FLTK_USE_LIBDECOR_GTK       OFF)
-            endif()
-        else()
-            find_package(FLTK CONFIG)
-                if (NOT TARGET fltk::fltk)
-                    find_package(FLTK REQUIRED)
-                endif()
-        endif()
 
         # ======================================
         # libADLMidi
@@ -390,15 +438,6 @@ if (FETCH_CONTENT_PACKAGES)
 
         set(CURL_INCLUDE_DIRS   "${FETCHCONTENT_SOURCE_DIR_CURL}/include")
         set(CURL_LIBRARIES      CURL::libcurl)
-    endif()
-
-    if (USE_INTERNAL_PNG)
-        if (TARGET png_static AND NOT TARGET PNG::PNG)
-            add_library(PNG::PNG ALIAS png_static)
-        endif()
-
-        set(PNG_LIBRARIES       PNG::PNG)
-        set(PNG_INCLUDE_DIRS    "${FETCHCONTENT_SOURCE_DIR_PNG}")
     endif()
 
 endif()
