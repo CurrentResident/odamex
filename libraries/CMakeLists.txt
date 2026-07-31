@@ -43,7 +43,7 @@ if (BUILD_TESTS)
 
 endif()
 
-if (BUILD_CLIENT OR BUILD_SERVER)
+if (BUILD_CLIENT OR BUILD_LAUNCHER OR BUILD_SERVER)
 
     # ======================================
     # zlib
@@ -81,6 +81,112 @@ if (BUILD_CLIENT OR BUILD_SERVER)
             set_target_properties(ZLIB::ZLIB PROPERTIES IMPORTED_GLOBAL True)
         endif()
     endif()
+
+endif()
+
+if (BUILD_CLIENT OR BUILD_LAUNCHER)
+
+    # ======================================
+    # PNG
+    # ======================================
+    if (USE_INTERNAL_PNG)
+        set(FETCHCONTENT_SOURCE_DIR_PNG "${CMAKE_CURRENT_SOURCE_DIR}/libpng")
+        FetchContent_Declare(
+            PNG
+            URL "${FETCHCONTENT_SOURCE_DIR_PNG}"
+            OVERRIDE_FIND_PACKAGE
+            )
+        list(APPEND FETCH_CONTENT_PACKAGES PNG)
+
+        set (PNG_SHARED OFF)
+        set (PNG_STATIC  ON)
+        set (PNG_TESTS  OFF)
+
+        if (APPLE)
+            set (PNG_HARDWARE_OPTIMIZATIONS OFF)    # Disable NEON
+        endif()
+    else()
+        find_package(PNG)
+        if(TARGET PNG::PNG)
+            set_target_properties(PNG::PNG PROPERTIES IMPORTED_GLOBAL True)
+        endif()
+    endif()
+
+    # ======================================
+    # CURL
+    # ======================================
+    if (USE_INTERNAL_CURL)
+        set(FETCHCONTENT_SOURCE_DIR_CURL "${CMAKE_CURRENT_SOURCE_DIR}/curl")
+        FetchContent_Declare(
+            CURL
+            URL "${FETCHCONTENT_SOURCE_DIR_CURL}"
+            OVERRIDE_FIND_PACKAGE
+            )
+        list(APPEND FETCH_CONTENT_PACKAGES CURL)
+
+        set(BUILD_SHARED_LIBS       OFF)
+        set(BUILD_STATIC_LIBS       ON)
+        set(CURL_DISABLE_INSTALL    ON)
+        set(BUILD_CURL_EXE          OFF)
+        set(BUILD_EXAMPLES          OFF)
+        set(BUILD_LIBCURL_DOCS      OFF)
+        set(BUILD_MISC_DOCS         OFF)
+        set(ENABLE_CURL_MANUAL      OFF)
+        set(BUILD_TESTING           OFF)
+        set(CURL_USE_LIBPSL         OFF)
+        set(CURL_USE_LIBSSH2        OFF)
+        set(CURL_ZLIB               OFF)
+        set(HTTP_ONLY               ON)
+
+        if (WIN32)
+            set(CURL_USE_SCHANNEL   ON)
+        endif()
+
+        set(CURL_ENABLE_EXPORT_TARGET OFF)
+    else()
+        find_package(CURL)
+        if (TARGET CURL::libcurl)
+            # Apparently in flatpak builds, this "official" libcurl somehow winds up being an alias.
+            get_target_property(curl_is_alias_of CURL::libcurl ALIASED_TARGET)
+            if (NOT curl_is_alias_of)
+                set_target_properties(CURL::libcurl PROPERTIES IMPORTED_GLOBAL True)
+            endif()
+        endif()
+    endif()
+
+    # ======================================
+    # SDL
+    # ======================================
+    set(FETCHCONTENT_SOURCE_DIR_SDL "${CMAKE_CURRENT_SOURCE_DIR}/sdl")
+    FetchContent_Declare(
+        SDL2
+        URL "${FETCHCONTENT_SOURCE_DIR_SDL}"
+        OVERRIDE_FIND_PACKAGE
+        )
+    list(APPEND FETCH_CONTENT_PACKAGES SDL2)
+
+    set (SDL_SHARED             OFF)
+    set (SDL_STATIC             ON)
+    set (SDL2_DISABLE_INSTALL   ON)
+    set (SDL2_DISABLE_UNINSTALL ON)
+
+    # ======================================
+    # SDL_mixer
+    # ======================================
+    set(FETCHCONTENT_SOURCE_DIR_SDL_MIXER "${CMAKE_CURRENT_SOURCE_DIR}/sdl_mixer")
+    FetchContent_Declare(
+        SDL2_mixer
+        URL "${FETCHCONTENT_SOURCE_DIR_SDL_MIXER}"
+        OVERRIDE_FIND_PACKAGE
+        )
+    list(APPEND FETCH_CONTENT_PACKAGES SDL2_mixer)
+
+    set (SDL2MIXER_VENDORED      ON)
+    set (BUILD_SHARED_LIBS      OFF)
+    set (SDL2MIXER_DEPS_SHARED  OFF)
+endif()
+
+if (BUILD_CLIENT OR BUILD_SERVER)
 
     # ======================================
     # fmt
@@ -201,74 +307,6 @@ if (BUILD_CLIENT OR BUILD_SERVER)
     if (BUILD_CLIENT)
 
         # ======================================
-        # PNG
-        # ======================================
-        if (USE_INTERNAL_PNG)
-            set(FETCHCONTENT_SOURCE_DIR_PNG "${CMAKE_CURRENT_SOURCE_DIR}/libpng")
-            FetchContent_Declare(
-                PNG
-                URL "${FETCHCONTENT_SOURCE_DIR_PNG}"
-                OVERRIDE_FIND_PACKAGE
-                )
-            list(APPEND FETCH_CONTENT_PACKAGES PNG)
-
-            set (PNG_SHARED OFF)
-            set (PNG_STATIC  ON)
-            set (PNG_TESTS  OFF)
-
-            if (APPLE)
-                set (PNG_HARDWARE_OPTIMIZATIONS OFF)    # Disable NEON
-            endif()
-        else()
-            find_package(PNG)
-            if(TARGET PNG::PNG)
-                set_target_properties(PNG::PNG PROPERTIES IMPORTED_GLOBAL True)
-            endif()
-        endif()
-
-        # ======================================
-        # CURL
-        # ======================================
-        if (USE_INTERNAL_CURL)
-            set(FETCHCONTENT_SOURCE_DIR_CURL "${CMAKE_CURRENT_SOURCE_DIR}/curl")
-            FetchContent_Declare(
-                CURL
-                URL "${FETCHCONTENT_SOURCE_DIR_CURL}"
-                OVERRIDE_FIND_PACKAGE
-                )
-            list(APPEND FETCH_CONTENT_PACKAGES CURL)
-
-            set(BUILD_SHARED_LIBS       OFF)
-            set(BUILD_STATIC_LIBS       ON)
-            set(CURL_DISABLE_INSTALL    ON)
-            set(BUILD_CURL_EXE          OFF)
-            set(BUILD_EXAMPLES          OFF)
-            set(BUILD_LIBCURL_DOCS      OFF)
-            set(BUILD_MISC_DOCS         OFF)
-            set(ENABLE_CURL_MANUAL      OFF)
-            set(BUILD_TESTING           OFF)
-            set(CURL_USE_LIBPSL         OFF)
-            set(CURL_USE_LIBSSH2        OFF)
-            set(CURL_ZLIB               OFF)
-            set(HTTP_ONLY               ON)
-
-            if (WIN32)
-                set(CURL_USE_SCHANNEL   ON)
-            endif()
-
-            set(CURL_ENABLE_EXPORT_TARGET OFF)
-        else()
-            find_package(CURL)
-            if (TARGET CURL::libcurl)
-                # Apparently in flatpak builds, this "official" libcurl somehow winds up being an alias.
-                get_target_property(curl_is_alias_of CURL::libcurl ALIASED_TARGET)
-                if (NOT curl_is_alias_of)
-                    set_target_properties(CURL::libcurl PROPERTIES IMPORTED_GLOBAL True)
-                endif()
-            endif()
-        endif()
-
-        # ======================================
         # FLTK
         # ======================================
         if (USE_INTERNAL_FLTK)
@@ -327,34 +365,6 @@ if (BUILD_CLIENT OR BUILD_SERVER)
             endif()
         endif()
 
-        # ======================================
-        # SDL
-        # ======================================
-        set(FETCHCONTENT_SOURCE_DIR_SDL "${CMAKE_CURRENT_SOURCE_DIR}/sdl")
-        FetchContent_Declare(
-            SDL2
-            URL "${FETCHCONTENT_SOURCE_DIR_SDL}"
-            OVERRIDE_FIND_PACKAGE
-            )
-        list(APPEND FETCH_CONTENT_PACKAGES SDL2)
-
-        set (SDL_SHARED OFF)
-        set (SDL_STATIC ON)
-
-        # ======================================
-        # SDL_mixer
-        # ======================================
-        set(FETCHCONTENT_SOURCE_DIR_SDL_MIXER "${CMAKE_CURRENT_SOURCE_DIR}/sdl_mixer")
-        FetchContent_Declare(
-            SDL2_mixer
-            URL "${FETCHCONTENT_SOURCE_DIR_SDL_MIXER}"
-            OVERRIDE_FIND_PACKAGE
-            )
-        list(APPEND FETCH_CONTENT_PACKAGES SDL2_mixer)
-
-        set (SDL2MIXER_VENDORED      ON)
-        set (BUILD_SHARED_LIBS      OFF)
-        set (SDL2MIXER_DEPS_SHARED  OFF)
     endif()
 endif()
 
@@ -366,22 +376,30 @@ if (FETCH_CONTENT_PACKAGES)
     FetchContent_MakeAvailable(${FETCH_CONTENT_PACKAGES})
 
     # Some immediate fixups are needed to make wxWidgets happy.
+    #
+    # These are essentially because wxWidgets uses an older, variable-based
+    # style of depending on the libraries that it needs.
+
     set(SDL2_LIBRARY        SDL2::SDL2)
     set(SDL2_INCLUDE_DIR    "${FETCHCONTENT_SOURCE_DIR_SDL}/include")
 
-    if (TARGET libcurl_static AND NOT TARGET CURL::libcurl)
-        add_library(CURL::libcurl ALIAS libcurl_static)
+    if (USE_INTERNAL_CURL)
+        if (TARGET libcurl_static AND NOT TARGET CURL::libcurl)
+            add_library(CURL::libcurl ALIAS libcurl_static)
+        endif()
+
+        set(CURL_INCLUDE_DIRS   "${FETCHCONTENT_SOURCE_DIR_CURL}/include")
+        set(CURL_LIBRARIES      CURL::libcurl)
     endif()
 
-    set(CURL_INCLUDE_DIRS   "${FETCHCONTENT_SOURCE_DIR_CURL}/include")
-    set(CURL_LIBRARIES      CURL::libcurl)
+    if (USE_INTERNAL_PNG)
+        if (TARGET png_static AND NOT TARGET PNG::PNG)
+            add_library(PNG::PNG ALIAS png_static)
+        endif()
 
-    if (TARGET png_static AND NOT TARGET PNG::PNG)
-        add_library(PNG::PNG ALIAS png_static)
+        set(PNG_LIBRARIES       PNG::PNG)
+        set(PNG_INCLUDE_DIRS    "${FETCHCONTENT_SOURCE_DIR_PNG}")
     endif()
-
-    set(PNG_LIBRARIES       PNG::PNG)
-    set(PNG_INCLUDE_DIRS    "${FETCHCONTENT_SOURCE_DIR_PNG}")
 
 endif()
 
