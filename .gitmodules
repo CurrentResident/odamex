@@ -46,3 +46,6 @@
 [submodule "libraries/libdwarf-lite"]
 	path = libraries/libdwarf-lite
 	url = https://github.com/jeremy-rifkin/libdwarf-lite.git
+[submodule "libraries/zstd"]
+	path = libraries/zstd
+	url = https://github.com/facebook/zstd.git
