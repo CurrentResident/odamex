@@ -42,7 +42,10 @@ class OdaMessenger
 		// With theoretical defaults:
 		//      800 KBps * 5 sec = 4000 KB backed-up retransmits max
 		//      4000 KB * 256 players = 1024000 KB total ~= 1.05 GB in memory at absolute worst
-		constexpr static int DEFAULT_CRITICAL_SEQUENCE_TIMEOUT_IN_TICS =  5 * TICRATE;
+		//
+		//      ... and 5 seconds is too short/borderline in some cases, particularly large wad load!
+		//      Double it to 10 sec (~2.1 GB absolute worst case) for safety.
+		constexpr static int DEFAULT_CRITICAL_SEQUENCE_TIMEOUT_IN_TICS = 10 * TICRATE;
 
 		//  -------------- Receiving functions --------------
 
