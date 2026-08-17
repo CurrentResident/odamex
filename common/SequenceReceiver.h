@@ -65,6 +65,10 @@ class SequenceReceiver
 		// out-of-order.
 		int NextPacket(buf_t& io_bufferRef);
 
+		// Returns the Current Sequence Number.
+		[[ nodiscard ]]
+		int GetCurrentSequence() const { return m_currentSequence; }
+
 	protected:
 
 		struct PacketQueue
@@ -84,5 +88,8 @@ class SequenceReceiver
 
 		ReceiveTableType m_receiveTable;
 
-		int m_currentSequence;  // Index of the place to store the next received packet.
+		int m_currentSequence;  // The Reliable sequence number that we WANT to receive and do not proceed further
+		                        // into the sequence of packets until we receive it and handle all packets with
+		                        // that sequence number (reliable and/or best-effort) via NextPacket().  Advances
+		                        // only when all packets with that number are returned via NextPacket().
 };

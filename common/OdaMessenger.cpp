@@ -114,8 +114,10 @@ MessageResultEnum OdaMessenger::Receive(buf_t& io_rawBuf)
 		const int  realSequence     = header.reliableSize ? header.sequence : -header.sequence;
 		const bool isHighPriority   = header.flags & PacketHeaderType::FLAG_HIGH_PRIORITY;
 		const bool isNormalPriority = not isHighPriority;
-		const bool isHighTooOld     = isHighPriority   and realSequence >= 0 and realSequence < m_currentReceivedPacketSequenceNumber;
-		const bool isNormalTooNew   = isNormalPriority and realSequence > m_currentReceivedPacketSequenceNumber;
+
+		const int  mostRecentFinalizedSequence = m_receiver.GetCurrentSequence() - 1;
+		const bool isHighTooOld                = isHighPriority   and 0 <= realSequence and realSequence < mostRecentFinalizedSequence;
+		const bool isNormalTooNew              = isNormalPriority and mostRecentFinalizedSequence < realSequence;
 
 		if (bestEffortSize > m_immediateReceiveBuffer.maxsize())
 		{
