@@ -141,6 +141,7 @@ static void InitMap()
 
 	MapProto(svc_configureavatar, odaproto::svc::ConfigureAvatar::descriptor());
 	MapProto(svc_wakeupmobj,      odaproto::svc::WakeupMobj::descriptor());
+	MapProto(svc_playwakeupsound, odaproto::svc::PlayWakeupSound::descriptor());
 
 	MapProto(clc_playerinput,    odaproto::clc::PlayerInput::descriptor());
 	MapProto(clc_disconnectme,   odaproto::clc::DisconnectMe::descriptor());

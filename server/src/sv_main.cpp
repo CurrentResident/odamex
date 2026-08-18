@@ -3208,7 +3208,7 @@ void SV_UpdateMobjReliable(AActor* mo)
 	ImmediateUpdateMobj(*mo, TransportEnum::RELIABLE);
 }
 
-void SV_WakeupMobj(const AActor* mo, bool mustPlaySeeSound)
+void SV_WakeupMobj(const AActor* mo)
 {
 	for (auto& player : players)
 	{
@@ -3221,7 +3221,27 @@ void SV_WakeupMobj(const AActor* mo, bool mustPlaySeeSound)
 					break;
 
 				default:
-					MSG_WriteSVC(player.client.messenger.ReliableBuf(), SVC_WakeupMobj(mo, mustPlaySeeSound));
+					MSG_WriteSVC(player.client.messenger.ReliableBuf(), SVC_WakeupMobj(mo));
+					break;
+			}
+		}
+	}
+}
+
+void SV_PlayWakeupSound(const AActor* mo)
+{
+	for (auto& player : players)
+	{
+		if (SV_IsPlayerAllowedToSee(player, mo) and player.ingame())
+		{
+			switch (mo->playersAware.Get(player.id))
+			{
+				case AwarenessEnum::NOT_AWARE:     [[ fallthrough ]];
+				case AwarenessEnum::BARELY_AWARE:
+					break;
+
+				default:
+					MSG_WriteSVC(player.client.messenger.ReliableBuf(), SVC_PlayWakeupSound(mo));
 					break;
 			}
 		}

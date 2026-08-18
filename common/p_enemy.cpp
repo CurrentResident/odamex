@@ -119,13 +119,14 @@ void A_Fall (AActor *actor);
 
 
 void SV_BroadcastNoiseAlert(const sector_t& sector);
+void SV_PlayWakeupSound(const AActor* mo);
 void SV_SendRaiseMobj(const AActor* source, const AActor* corpse);
 void SV_Sound(const AActor* mo, byte channel, const char* name, byte attenuation);
 void SV_SpawnMobj(AActor* mobj);
 void SV_UpdateMobj(AActor* mo);
 void SV_UpdateMobjBestEffort(AActor* mo);
 void SV_UpdateMonsterRespawnCount();
-void SV_WakeupMobj(const AActor* mo, bool mustPlaySeeSound);
+void SV_WakeupMobj(const AActor* mo);
 
 extern bool isFast;
 
@@ -1693,6 +1694,11 @@ bool P_PlayWakeupSound(AActor* actor)
 		else
 			S_Sound (actor, CHAN_VOICE, sound, 1, ATTN_NORM);
 
+		if (serverside and not clientside)
+		{
+			SV_PlayWakeupSound(actor);
+		}
+
 		return true;
 	}
 	return false;
@@ -1765,8 +1771,6 @@ void A_Look (AActor *actor)
 	// go into chase state
 	seeyou:
 
-	bool mustPlaySeeSound = false;
-
 	// GhostlyDeath -- Can't see spectators
 	if (actor->target->player && actor->target->player->spectator)
 	{
@@ -1781,12 +1785,12 @@ void A_Look (AActor *actor)
 	}
 	else
 	{
-		mustPlaySeeSound = P_PlayWakeupSound(actor);
+		P_PlayWakeupSound(actor);
 	}
 
 	if (actor->target)
 	{
-		SV_WakeupMobj(actor, mustPlaySeeSound);
+		SV_WakeupMobj(actor);
 
 		P_SetMobjState(actor, actor->info->seestate);
 	}

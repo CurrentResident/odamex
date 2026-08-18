@@ -89,6 +89,7 @@ void SV_BroadcastSector(int sectornum) {}
 void SV_CTFEvent(team_t f, flag_score_t event, player_t &who) {}
 void SV_ExplodeMissile(AActor *mo) {}
 ItemEquipVal SV_FlagTouch (player_t &player, team_t f, bool firstgrab) { return IEV_NotEquipped; }
+void SV_PlayWakeupSound(const AActor* mo) {}
 void SV_PreservePlayer(player_t &player) {}
 void SV_SendDestroyActor(const AActor *mo) {}
 void SV_SendDamageMobj(AActor *target, int pain) {}
@@ -107,7 +108,7 @@ void SV_UpdateMobjBestEffort(AActor* mo) {}
 void SV_UpdateMobjReliable(AActor* mo) {}
 void SV_UpdateMobjState(const AActor* mo) {}
 void SV_UpdateMonsterRespawnCount() {}
-void SV_WakeupMobj(const AActor* mo, bool mustPlaySeeSound) {};
+void SV_WakeupMobj(const AActor* mo) {};
 
 void CTF_RememberFlagPos(const mapthing2_t& mthing) {}
 void CTF_SpawnFlag(team_t f) {}

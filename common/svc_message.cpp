@@ -1530,12 +1530,11 @@ odaproto::svc::LineSideUpdate SVC_LineSideUpdate(const line_t& line, const int s
 	return msg;
 }
 
-odaproto::svc::WakeupMobj SVC_WakeupMobj(const AActor* mo, bool mustPlaySeeSound)
+odaproto::svc::WakeupMobj SVC_WakeupMobj(const AActor* mo)
 {
 	odaproto::svc::WakeupMobj msg;
 
 	msg.set_netid(mo->netid);
-	msg.set_seesound(mustPlaySeeSound);
 	msg.set_angle(mo->angle);
 	if (mo->goal)
 	{
@@ -1548,9 +1547,19 @@ odaproto::svc::WakeupMobj SVC_WakeupMobj(const AActor* mo, bool mustPlaySeeSound
 	msg.set_reactiontime(mo->reactiontime);
 	msg.set_special(mo->special);
 	msg.set_strafecount(mo->strafecount);
-	msg.set_targetid(mo->target->netid);
+	if (mo->target)
+	{
+		msg.set_targetid(mo->target->netid);
+	}
 	msg.set_threshold(mo->threshold);
 
+	return msg;
+}
+
+odaproto::svc::PlayWakeupSound SVC_PlayWakeupSound(const AActor* mo)
+{
+	odaproto::svc::PlayWakeupSound msg;
+	msg.set_netid(mo->netid);
 	return msg;
 }
 

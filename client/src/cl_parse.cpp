@@ -2816,17 +2816,20 @@ static void CL_WakeupMobj(const odaproto::svc::WakeupMobj* msg)
 		mo->goal = AActor::AActorPtr();
 	}
 
-	mo->angle = msg->angle();
-	mo->lastlook = msg->lastlook();
-	mo->movecount = msg->movecount();
-	mo->movedir = msg->movedir();
+	mo->angle       = msg->angle();
+	mo->lastlook    = msg->lastlook();
+	mo->movecount   = msg->movecount();
+	mo->movedir     = msg->movedir();
 	mo->pursuecount = msg->pursuecount();
-	mo->reactiontime = msg->reactiontime();
-	mo->special      = msg->special();
-	mo->strafecount  = msg->strafecount();
-	mo->threshold    = msg->threshold();
+	mo->reactiontime= msg->reactiontime();
+	mo->special     = msg->special();
+	mo->strafecount = msg->strafecount();
+	mo->threshold   = msg->threshold();
+}
 
-	if (msg->seesound())
+static void CL_PlayWakeupSound(const odaproto::svc::PlayWakeupSound* msg)
+{
+	if (AActor* mo = P_FindThingById(msg->netid()))
 	{
 		P_PlayWakeupSound(mo);
 	}
@@ -3615,6 +3618,7 @@ parseError_e CL_ProcessCommand(const ParseResultType& parsedCommand)
 		SV_MSG(svc_sectorproperties, CL_SectorProperties, odaproto::svc::SectorProperties);
 		SV_MSG(svc_linesideupdate, CL_LineSideUpdate, odaproto::svc::LineSideUpdate);
 		SV_MSG(svc_wakeupmobj, CL_WakeupMobj, odaproto::svc::WakeupMobj);
+		SV_MSG(svc_playwakeupsound, CL_PlayWakeupSound, odaproto::svc::PlayWakeupSound);
 		SV_MSG(svc_mobjstate, CL_SetMobjState, odaproto::svc::MobjState);
 		SV_MSG(svc_damagemobj, CL_DamageMobj, odaproto::svc::DamageMobj);
 		SV_MSG(svc_executelinespecial, CL_ExecuteLineSpecial, odaproto::svc::ExecuteLineSpecial);

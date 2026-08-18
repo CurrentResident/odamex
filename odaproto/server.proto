@@ -695,6 +695,11 @@ message WakeupMobj
     uint32  threshold   = 13;
 }
 
+message PlayWakeupSound
+{
+	uint32 netid = 1;
+}
+
 // svc_damagemobj
 message DamageMobj
 {
