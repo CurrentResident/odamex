@@ -680,19 +680,19 @@ message MobjState
 
 message WakeupMobj
 {
-    uint32  netid       =  1;
-    bool    seesound    =  2;
-    fixed32 angle       =  3;
-    uint32  goalid      =  4;
-    uint32  lastlook    =  5;
-    int32   movecount   =  6;
-    uint32  movedir     =  7;
-    uint32  pursuecount =  8;
-    int32   reactiontime=  9;
-    uint32  special     = 10;
-    uint32  strafecount = 11;
-    uint32  targetid    = 12;
-    uint32  threshold   = 13;
+	uint32  netid       =  1;
+	bool    seesound    =  2;
+	fixed32 angle       =  3;
+	uint32  goalid      =  4;
+	uint32  lastlook    =  5;
+	int32   movecount   =  6;
+	uint32  movedir     =  7;
+	uint32  pursuecount =  8;
+	int32   reactiontime=  9;
+	uint32  special     = 10;
+	uint32  strafecount = 11;
+	uint32  targetid    = 12;
+	uint32  threshold   = 13;
 }
 
 message PlayWakeupSound

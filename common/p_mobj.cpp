@@ -74,6 +74,7 @@ void SV_SpawnMobj(AActor *mobj);
 void SV_SendDestroyActor(const AActor *);
 void SV_ExplodeMissile(AActor *);
 void SV_UpdateMonsterRespawnCount();
+void SV_WakeupMobj(const AActor* mo);
 
 EXTERN_CVAR(sv_freelook)
 EXTERN_CVAR(sv_itemsrespawn)
@@ -1544,6 +1545,17 @@ SetMobStateResultEnum P_SetMobjState(AActor *mobj, int32_t state, bool cl_update
 		{
 			if (mobj->mode != newMode.value())
 			{
+				// The wakeup message isn't necessarily a full-on "wakeup."  It's more about
+				// making sure extra data gets over from the mobj that it needs to be able
+				// to more accurately predict whatever's going to follow the SPAWN state /
+				// A_Look, whether that be SEE, PAIN, or anything else.  It's important that
+				// it get to the client _before_ the UpdateMobjState because the latter will
+				// trigger action functions immediately, and we want the data to be accurate
+				// before that happens.
+				if (mobj->mode == MobjModeEnum::SPAWN)
+				{
+					SV_WakeupMobj(mobj);
+				}
 				mobj->mode = newMode.value();
 				cl_update = true;
 			}

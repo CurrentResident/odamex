@@ -126,7 +126,6 @@ void SV_SpawnMobj(AActor* mobj);
 void SV_UpdateMobj(AActor* mo);
 void SV_UpdateMobjBestEffort(AActor* mo);
 void SV_UpdateMonsterRespawnCount();
-void SV_WakeupMobj(const AActor* mo);
 
 extern bool isFast;
 
@@ -1729,7 +1728,7 @@ void A_Look (AActor *actor)
 		actor->reactiontime = actor->args[2] * TICRATE + level.time;
 	}
 
-	actor->threshold = 0;		// any shot will wake up
+	actor->threshold = 0;       // any shot will wake up
 	AActor* targ = actor->subsector->sector->soundtarget;
 
 	if (targ && targ->player && (targ->player->cheats & CF_NOTARGET))
@@ -1790,8 +1789,6 @@ void A_Look (AActor *actor)
 
 	if (actor->target)
 	{
-		SV_WakeupMobj(actor);
-
 		P_SetMobjState(actor, actor->info->seestate);
 	}
 }
