@@ -1537,29 +1537,36 @@ SetMobStateResultEnum P_SetMobjState(AActor *mobj, int32_t state, bool cl_update
 			return SetMobStateResultEnum::DESTROYED;
 		}
 
-		st = &states[state];
-
 		// If we're transitioning the mobj into an entirely new top-level mode,
 		// make sure we inform the clients about it.
-		if (const auto newMode = IdentifyMode(*mobj, state))
+		//
+		// We don't do this for player or player-like mobjs because those transitions
+		// are a totally different beast.
+
+		if (not P_IsPlayerOrAvatar(*mobj))
 		{
-			if (mobj->mode != newMode.value())
+			if (const auto newMode = IdentifyMode(*mobj, state))
 			{
-				// The wakeup message isn't necessarily a full-on "wakeup."  It's more about
-				// making sure extra data gets over from the mobj that it needs to be able
-				// to more accurately predict whatever's going to follow the SPAWN state /
-				// A_Look, whether that be SEE, PAIN, or anything else.  It's important that
-				// it get to the client _before_ the UpdateMobjState because the latter will
-				// trigger action functions immediately, and we want the data to be accurate
-				// before that happens.
-				if (mobj->mode == MobjModeEnum::SPAWN)
+				if (mobj->mode != newMode.value())
 				{
-					SV_WakeupMobj(mobj);
+					// The wakeup message isn't necessarily a full-on "wakeup."  It's more about
+					// making sure extra data gets over from the mobj that it needs to be able
+					// to more accurately predict whatever's going to follow the SPAWN state /
+					// A_Look, whether that be SEE, PAIN, or anything else.  It's important that
+					// it get to the client _before_ the UpdateMobjState because the latter will
+					// trigger action functions immediately, and we want the data to be accurate
+					// before that happens.
+					if (mobj->mode == MobjModeEnum::SPAWN)
+					{
+						SV_WakeupMobj(mobj);
+					}
+					mobj->mode = newMode.value();
+					cl_update = true;
 				}
-				mobj->mode = newMode.value();
-				cl_update = true;
 			}
 		}
+
+		st = &states[state];
 
 		mobj->state = st;
 		mobj->tics = st->tics;
