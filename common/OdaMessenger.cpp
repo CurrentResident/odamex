@@ -191,7 +191,7 @@ MessageResultEnum OdaMessenger::Receive(buf_t& io_rawBuf)
 #else // ... we're not deferring best-effort packet reception.  Do it immediately!
 
 		m_immediateReceiveBuffer.WriteChunk(io_rawBuf.ReadChunk(bestEffortSize), bestEffortSize);
-		m_immediateReceiveSequenceNumber = header.sequence;
+		m_immediateReceiveSequenceNumber = header.reliableSize ? header.sequence : -header.sequence;
 		return MessageResultEnum::ACCEPT;
 
 #endif
