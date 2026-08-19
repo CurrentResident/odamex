@@ -100,7 +100,7 @@ void D_DoAdvanceDemo();
 
 void D_DoomLoop();
 
-extern int testingmode;
+extern dtime_t testingmode;
 extern bool gameisdead;
 extern bool M_DemoNoPlay;	// [RH] if true, then skip any demos in the loop
 extern DThinker ThinkerCap;
@@ -190,7 +190,7 @@ void D_ProcessEvents (void)
 	// [RH] If testing mode, do not accept input until test is over
 	if (testingmode)
 	{
-		if (static_cast <dtime_t>(testingmode) <= I_MSTime() * TICRATE / 1000)
+		if (testingmode <= I_MSTime() * TICRATE / MSECS_PER_SEC)
 			M_RestoreVideoMode();
 		else
 			M_ModeFlashTestText();
@@ -546,7 +546,7 @@ void D_DoAdvanceDemo (void)
     // [Russell] - Still need this toilet humor for now unfortunately
 	if (!pagename.empty())
 	{
-		const patch_t* patch = W_CachePatch(pagename);
+		const patch_t* patch = W_CachePatch(W_CheckWidescreenPatch(pagename));
 
 		page_width = patch->width();
 		page_height = patch->height() + (patch->height() / 5);

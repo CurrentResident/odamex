@@ -1126,13 +1126,10 @@ void M_ChooseSkill(int choice)
 	}
 	else if (SkillInfos[choice].must_confirm)
 	{
-		const char* must_confirm_text = SkillInfos[choice].must_confirm_text.c_str();
+		static std::string must_confirm_text;
+		must_confirm_text = GStrings.maybeLookup(SkillInfos[choice].must_confirm_text);
 
-		if (must_confirm_text[0] == '$')
-			M_StartMessage(GStrings(OStringToUpper(must_confirm_text + 1)),
-		               M_VerifyNightmare, true);
-		else
-			M_StartMessage(must_confirm_text, M_VerifyNightmare, true);
+		M_StartMessage(must_confirm_text.c_str(), M_VerifyNightmare, true);
 
 		skillchoice = choice;
 
@@ -1176,7 +1173,7 @@ void M_Expansion(int choice)
 //
 void M_DrawReadThis1()
 {
-	const patch_t *p = W_CachePatch(gameinfo.infoPage[0]);
+	const patch_t *p = W_CachePatch(W_CheckWidescreenPatch(gameinfo.infoPage[0]));
 	screen->DrawPatchFullScreen(p, false);
 }
 
@@ -1185,7 +1182,7 @@ void M_DrawReadThis1()
 //
 void M_DrawReadThis2()
 {
-	const patch_t *p = W_CachePatch(gameinfo.infoPage[1]);
+	const patch_t *p = W_CachePatch(W_CheckWidescreenPatch(gameinfo.infoPage[1]));
 	screen->DrawPatchFullScreen(p, false);
 }
 
@@ -1194,7 +1191,7 @@ void M_DrawReadThis2()
 //
 void M_DrawReadThis3()
 {
-	const patch_t *p = W_CachePatch(gameinfo.infoPage[2]);
+	const patch_t *p = W_CachePatch(W_CheckWidescreenPatch(gameinfo.infoPage[2]));
 	screen->DrawPatchFullScreen(p, false);
 }
 

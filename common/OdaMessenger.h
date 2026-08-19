@@ -47,10 +47,9 @@ class OdaMessenger
 		//      4000 KB * 256 players = 1024000 KB total ~= 1.05 GB in memory at absolute worst
 		constexpr static int DEFAULT_CRITICAL_SEQUENCE_TIMEOUT_IN_TICS =  5 * TICRATE;
 
-		explicit OdaMessenger(std::unique_ptr<std::pmr::unsynchronized_pool_resource>&& i_poolPtr)
-			: m_pool     { std::move(i_poolPtr) }
-			, m_sender   { DEFAULT_RELIABILITY_QUEUE_SIZE, std::pmr::polymorphic_allocator<SequenceQueueEntryType> {m_pool.get()}}
-			, m_receiver { DEFAULT_RELIABILITY_QUEUE_SIZE, std::pmr::polymorphic_allocator<SequenceQueueEntryType> {m_pool.get()}}
+		explicit OdaMessenger(std::unique_ptr<std::pmr::unsynchronized_pool_resource>& i_poolPtr)
+			: m_sender   { DEFAULT_RELIABILITY_QUEUE_SIZE, std::pmr::polymorphic_allocator<SequenceQueueEntryType> {i_poolPtr.get()}}
+			, m_receiver { DEFAULT_RELIABILITY_QUEUE_SIZE, std::pmr::polymorphic_allocator<SequenceQueueEntryType> {i_poolPtr.get()}}
 		{
 		}
 
@@ -60,7 +59,7 @@ class OdaMessenger
 		OdaMessenger(OdaMessenger&&)            = default;
 		OdaMessenger& operator=(OdaMessenger&&) = default;
 
-		std::unique_ptr<std::pmr::unsynchronized_pool_resource>&& MovePool() { return std::move(m_pool); }
+		void SetBitBucket(bool i_isBitBucket) { m_isBitBucket = i_isBitBucket; }
 
 		//  -------------- Receiving functions --------------
 
@@ -188,8 +187,6 @@ class OdaMessenger
 
 		int SendOldPacket(const SequenceQueueEntryType& queueEntry, const netadr_t& i_dest);
 
-		std::unique_ptr<std::pmr::unsynchronized_pool_resource> m_pool;
-
 		SequenceSender   m_sender;
 		SequenceReceiver m_receiver;
 
@@ -219,6 +216,9 @@ class OdaMessenger
 
 		std::basic_string<byte> m_recordingBuffer;
 		bool                    m_recordingIsEnabled { false };
+
+		bool m_isBitBucket { false };   ///< Set this true to always discard all data.
+		                                ///< Use it to make a transient "stub" messenger for disconnecting clients.
 
 		// Metrics
 		size_t  m_bytesSentWithReliability      {  0 };
