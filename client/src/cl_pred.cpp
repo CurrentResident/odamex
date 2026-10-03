@@ -142,7 +142,7 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
 			SectorSnapshot snap = mgr->getSnapshot(snapBasisServerTic);
 
             // Double-check to make sure it's REALLY from the server and not extrapolated/etc.
-            if (snap.isValid() and snap.isAuthoritative())
+            if (snap.isValid() and snap.isAuthoritative() and snap.getTime() == snapBasisServerTic)
             {
                 bool ceilingdone = P_CeilingSnapshotDone(&snap);
                 bool floordone = P_FloorSnapshotDone(&snap);
@@ -513,10 +513,6 @@ bool CL_PredictWorld()
 
         for (; tic < gametic; ++tic)
         {
-            if (cl_predictsectors)
-                //CL_PredictSectors(tic);
-                CL_PredictSectors2(s_predictingSectors);
-
             if (inputTicsToSkip > 0)
             {
                 --inputTicsToSkip;
@@ -543,6 +539,10 @@ bool CL_PredictWorld()
                 predicting = true;
             }
         }
+            if (cl_predictsectors)
+                //CL_PredictSectors(tic);
+                CL_PredictSectors2(s_predictingSectors);
+
 
         // If the player didn't just spawn or teleport, nudge the player from
         // his position last tic to this new corrected position.  This smooths the
@@ -707,16 +707,6 @@ bool CL_PredictWorld()
 
 #endif
 
-    // Dead reckon gametic.
-
-	if (not mobjsHaveBeenPredicted)
-	{
-		mobjsHaveBeenPredicted = true;
-		predicting = false;
-		DThinker::RunThinkers();
-		predicting = true;
-	}
-
 #if 0
 	// If the player didn't just spawn or teleport, nudge the player from
 	// his position last tic to this new corrected position.  This smooths the
@@ -754,10 +744,20 @@ bool CL_PredictWorld()
 	predicting = false;
 
 	// Run thinkers for current gametic
+	CL_PredictLocalPlayer(gametic);
+
+    // Dead reckon gametic.
+
+	if (not mobjsHaveBeenPredicted)
+	{
+		mobjsHaveBeenPredicted = true;
+		predicting = false;
+		DThinker::RunThinkers();
+		predicting = true;
+	}
 	if (cl_predictsectors)
 		//CL_PredictSectors(gametic);
 		CL_PredictAllSectors();
-	CL_PredictLocalPlayer(gametic);
 
 	return mobjsHaveBeenPredicted;
 }
