@@ -466,28 +466,39 @@ bool CL_PredictWorld()
 
     if (snapBasisServerTic != 0)
     {
-        s_predictionTic      = p.tic + 1;
+        PrintFmt("gt {}, echo {}, p.tic {}, latestservertic {}\n",
+                gametic,
+                lastEchoedTic,
+                p.tic,
+                snapBasisServerTic);
+
         s_predictionInputTic = p.tic         + 1;
         if (s_previousSnapBasisServerTic == 0)
         {
+            s_previousSnapBasisServerTic = snapBasisServerTic;
+            s_predictionTic      = lastEchoedTic + 1;
             PrintFmt(PRINT_HIGH, "Seeded predTic {}, predInputTic {}\n", s_predictionTic, s_predictionInputTic);
         }
-        s_previousSnapBasisServerTic = lastEchoedTic;
+        else
+        {
+            s_predictionTic += (snapBasisServerTic - s_previousSnapBasisServerTic);
+        }
+        s_previousSnapBasisServerTic = snapBasisServerTic;
 
-        int         remainingInputsThisPass = gametic - s_predictionInputTic;
-        const int   remainingTicsThisPass   = gametic - s_predictionTic;
+        int         remainingInputsThisPass     = gametic - s_predictionInputTic;
+        int   remainingSectorTicsThisPass = gametic - s_predictionTic;
 
         int inputTic = s_predictionInputTic;
-        int tic      = s_predictionTic;
+        //int tic      = s_predictionTic;
 
-        int inputTicsToSkip = remainingTicsThisPass - remainingInputsThisPass;
-        if (remainingTicsThisPass > remainingInputsThisPass)
+        int inputTicsToSkip = remainingSectorTicsThisPass - remainingInputsThisPass;
+        if (remainingSectorTicsThisPass > remainingInputsThisPass)
         {
             // This should never happen.  The input tic (player.tic) should never get ahead of the
             // client gametic (lastEchoed gametic from server).
             PrintFmt(PRINT_WARNING, "Out of inputs!!!!  gt {}, tics to pred {}, inputs to consume {}\n",
                     gametic,
-                    remainingTicsThisPass,
+                    remainingSectorTicsThisPass,
                     remainingInputsThisPass);
 
         }
@@ -498,6 +509,52 @@ bool CL_PredictWorld()
         PlayerSnapshot snap = p.snapshots.getSnapshot(snapBasisServerTic);
         snap.toPlayer(p);
 
+        while (remainingInputsThisPass > remainingSectorTicsThisPass)
+        {
+            if (CL_PredictLocalPlayer (inputTic))
+            {
+                playerWasPredicted = true;
+            }
+            ++inputTic;
+            --remainingInputsThisPass;
+        }
+
+        //int remainingSectorTics = gametic - (lastEchoedTic + 1);
+
+        while (remainingSectorTicsThisPass > 0 and remainingInputsThisPass > 0)
+        {
+            if (remainingInputsThisPass > 0)
+            {
+                --remainingInputsThisPass;
+                if (CL_PredictLocalPlayer (inputTic))
+                {
+                    playerWasPredicted = true;
+                }
+                ++inputTic;
+            }
+
+            if (not mobjsHaveBeenPredicted)
+            {
+                mobjsHaveBeenPredicted = true;
+
+                // We're doing our genuine thinker step now, and it should almost always
+                // be on the tic following the latest from the server.  This ensures that
+                // mobj actions that reference the player's position are working from the
+                // player state that the server almost certainly had when it ran the tic
+                // for real.
+                predicting = false;
+                DThinker::RunThinkers();
+                predicting = true;
+            }
+            if (remainingSectorTicsThisPass > 0)
+            {
+                --remainingSectorTicsThisPass;
+                if (cl_predictsectors)
+                    CL_PredictSectors2(s_predictingSectors);
+            }
+        }
+
+#if 0
         // Flatten the oldest relevant inputs into the player state before proceeding with the
         // other tics.  We do that because we want the true most recent input to go in on the
         // final gametic step.
@@ -513,10 +570,6 @@ bool CL_PredictWorld()
 
         for (; tic < gametic; ++tic)
         {
-            if (cl_predictsectors)
-                //CL_PredictSectors(tic);
-                CL_PredictSectors2(s_predictingSectors);
-
             if (inputTicsToSkip > 0)
             {
                 --inputTicsToSkip;
@@ -529,6 +582,10 @@ bool CL_PredictWorld()
                 }
                 ++inputTic;
             }
+            if (cl_predictsectors)
+                //CL_PredictSectors(tic);
+                CL_PredictSectors2(s_predictingSectors);
+
             if (not mobjsHaveBeenPredicted)
             {
                 mobjsHaveBeenPredicted = true;
@@ -543,7 +600,7 @@ bool CL_PredictWorld()
                 predicting = true;
             }
         }
-
+#endif
         // If the player didn't just spawn or teleport, nudge the player from
         // his position last tic to this new corrected position.  This smooths the
         // view when there's a misprediction.
@@ -754,10 +811,10 @@ bool CL_PredictWorld()
 	predicting = false;
 
 	// Run thinkers for current gametic
+	CL_PredictLocalPlayer(gametic);
 	if (cl_predictsectors)
 		//CL_PredictSectors(gametic);
 		CL_PredictAllSectors();
-	CL_PredictLocalPlayer(gametic);
 
 	return mobjsHaveBeenPredicted;
 }
