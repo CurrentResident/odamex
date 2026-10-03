@@ -466,7 +466,7 @@ bool CL_PredictWorld()
 
     if (snapBasisServerTic != 0)
     {
-        s_predictionTic      = lastEchoedTic + 1;
+        s_predictionTic      = p.tic + 1;
         s_predictionInputTic = p.tic         + 1;
         if (s_previousSnapBasisServerTic == 0)
         {
@@ -547,7 +547,7 @@ bool CL_PredictWorld()
         // If the player didn't just spawn or teleport, nudge the player from
         // his position last tic to this new corrected position.  This smooths the
         // view when there's a misprediction.
-        if (playerWasPredicted and snap.isContinuous())
+        if ( snap.isContinuous())
         {
             PlayerSnapshot correctedCurrentSnap(p.tic, p);
 
