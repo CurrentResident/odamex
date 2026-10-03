@@ -447,28 +447,27 @@ bool CL_PredictWorld()
 
     if (snapBasisServerTic != 0)
     {
-        if (s_previousSnapBasisServerTic == 0 and snapBasisServerTic)
+        if (s_previousSnapBasisServerTic != 0)
+        {
+            // New data from the server?
+            const int deltaPredictionTic = lastEchoedTic - s_previousSnapBasisServerTic;
+            s_predictionTic   += deltaPredictionTic;
+
+            if (deltaPredictionTic)
+            {
+                //deltaClientTic = lastEchoedTic - s_previousEchoedTic;
+                s_predictionInputTic = p.tic + 1;
+            }
+        }
+        else
         {
             // This is the first prediction-eligible tic.
             // Whatever the server saw as our effective gametic is where we start predicting.
             s_predictionTic      = lastEchoedTic + 1;
             s_predictionInputTic = p.tic         + 1;
-
-            s_previousSnapBasisServerTic = snapBasisServerTic;
+            PrintFmt(PRINT_HIGH, "Seeded predTic {}, predInputTic {}\n", s_predictionTic, s_predictionInputTic);
         }
-
-        // New data from the server?
-        const int deltaPredictionTic = snapBasisServerTic - s_previousSnapBasisServerTic;
-        s_predictionTic   += deltaPredictionTic;
-
-        s_previousSnapBasisServerTic = snapBasisServerTic;
-
-        if (deltaPredictionTic)
-        {
-            //deltaClientTic = lastEchoedTic - s_previousEchoedTic;
-
-            s_predictionInputTic = p.tic + 1;
-        }
+        s_previousSnapBasisServerTic = lastEchoedTic;
 
         int         remainingInputsThisPass = gametic - s_predictionInputTic;
         const int   remainingTicsThisPass   = gametic - s_predictionTic;
@@ -476,9 +475,14 @@ bool CL_PredictWorld()
         int inputTic = s_predictionInputTic;
         int tic      = s_predictionTic;
 
+        int inputTicsToSkip = remainingTicsThisPass - remainingInputsThisPass;
         if (remainingTicsThisPass > remainingInputsThisPass)
         {
-            PrintFmt(PRINT_WARNING, "Out of inputs!!!!\n");
+            PrintFmt(PRINT_WARNING, "Out of inputs!!!!  gt {}, tics to pred {}, inputs to consume {}\n",
+                    gametic,
+                    remainingTicsThisPass,
+                    remainingInputsThisPass);
+
         }
 
         // Move sectors to the last position received from the server
@@ -501,16 +505,24 @@ bool CL_PredictWorld()
             --remainingInputsThisPass;
         }
 
-        for (; tic < gametic; ++tic, ++inputTic)
+        for (; tic < gametic; ++tic)
         {
             if (cl_predictsectors)
                 CL_PredictSectors(s_predictingSectors);
 
-            if (CL_PredictLocalPlayer(inputTic))
+            if (inputTicsToSkip > 0)
             {
-                playerWasPredicted = true;
+                --inputTicsToSkip;
             }
-            if (playerWasPredicted and not mobjsHaveBeenPredicted)
+            else
+            {
+                if (CL_PredictLocalPlayer(inputTic))
+                {
+                    playerWasPredicted = true;
+                }
+                ++inputTic;
+            }
+            if (not mobjsHaveBeenPredicted)
             {
                 mobjsHaveBeenPredicted = true;
 
