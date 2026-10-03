@@ -180,6 +180,25 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
 // CL_PredictSectors
 //
 //
+void CL_PredictSectors(int predtic)
+{
+	for (const auto& movsector : movingsectors)
+	{
+		sector_t *sector = movsector.sector;
+
+		// If we haven't started receiving updates for this sector from the server,
+		// we only need to run the thinker for the current tic, not any past tics
+		// since the sector hasn't been reset to a previous update snapshot
+		if (predtic < gametic && !CL_SectorHasSnapshots(sector))
+			continue;
+
+		if (sector && sector->ceilingdata && movsector.moving_ceiling)
+			sector->ceilingdata->RunThink();
+		if (sector && sector->floordata && movsector.moving_floor)
+			sector->floordata->RunThink();
+    }
+}
+
 void CL_PredictSector(const movingsector_t& movsector)
 {
 	sector_t *sector = movsector.sector;
@@ -190,7 +209,7 @@ void CL_PredictSector(const movingsector_t& movsector)
 		sector->floordata->RunThink();
 }
 
-void CL_PredictSectors(const ActivePredictingSectorsVector& io_predictingSectors)
+void CL_PredictSectors2(const ActivePredictingSectorsVector& io_predictingSectors)
 {
     for (auto& iter : io_predictingSectors)
     {
@@ -447,24 +466,10 @@ bool CL_PredictWorld()
 
     if (snapBasisServerTic != 0)
     {
-        if (s_previousSnapBasisServerTic != 0)
+        s_predictionTic      = lastEchoedTic + 1;
+        s_predictionInputTic = p.tic         + 1;
+        if (s_previousSnapBasisServerTic == 0)
         {
-            // New data from the server?
-            const int deltaPredictionTic = lastEchoedTic - s_previousSnapBasisServerTic;
-            s_predictionTic   += deltaPredictionTic;
-
-            if (deltaPredictionTic)
-            {
-                //deltaClientTic = lastEchoedTic - s_previousEchoedTic;
-                s_predictionInputTic = p.tic + 1;
-            }
-        }
-        else
-        {
-            // This is the first prediction-eligible tic.
-            // Whatever the server saw as our effective gametic is where we start predicting.
-            s_predictionTic      = lastEchoedTic + 1;
-            s_predictionInputTic = p.tic         + 1;
             PrintFmt(PRINT_HIGH, "Seeded predTic {}, predInputTic {}\n", s_predictionTic, s_predictionInputTic);
         }
         s_previousSnapBasisServerTic = lastEchoedTic;
@@ -478,13 +483,14 @@ bool CL_PredictWorld()
         int inputTicsToSkip = remainingTicsThisPass - remainingInputsThisPass;
         if (remainingTicsThisPass > remainingInputsThisPass)
         {
+            // This should never happen.  The input tic (player.tic) should never get ahead of the
+            // client gametic (lastEchoed gametic from server).
             PrintFmt(PRINT_WARNING, "Out of inputs!!!!  gt {}, tics to pred {}, inputs to consume {}\n",
                     gametic,
                     remainingTicsThisPass,
                     remainingInputsThisPass);
 
         }
-
         // Move sectors to the last position received from the server
         if (cl_predictsectors)
             CL_ResetSectors(snapBasisServerTic, s_predictingSectors);
@@ -508,7 +514,8 @@ bool CL_PredictWorld()
         for (; tic < gametic; ++tic)
         {
             if (cl_predictsectors)
-                CL_PredictSectors(s_predictingSectors);
+                //CL_PredictSectors(tic);
+                CL_PredictSectors2(s_predictingSectors);
 
             if (inputTicsToSkip > 0)
             {
@@ -748,6 +755,7 @@ bool CL_PredictWorld()
 
 	// Run thinkers for current gametic
 	if (cl_predictsectors)
+		//CL_PredictSectors(gametic);
 		CL_PredictAllSectors();
 	CL_PredictLocalPlayer(gametic);
 
