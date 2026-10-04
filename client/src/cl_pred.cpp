@@ -462,7 +462,8 @@ bool CL_PredictWorld()
     PlayerSnapshot currentSnap(p.tic, p);
     s_savedLocalSnaps[currentLocalSnapshotIndex] = currentSnap;
 
-	int snapBasisServerTic = p.snapshots.getMostRecentTime();
+	//int snapBasisServerTic = p.snapshots.getMostRecentTime();
+	int snapBasisServerTic = world_index;
 
     if (snapBasisServerTic != 0)
     {
@@ -473,6 +474,12 @@ bool CL_PredictWorld()
             PrintFmt(PRINT_HIGH, "Seeded predTic {}, predInputTic {}\n", s_predictionTic, s_predictionInputTic);
         }
         s_previousSnapBasisServerTic = lastEchoedTic;
+
+        DPrintFmt("gt {}, echo {}, ptic {}, snapbasis {}\n",
+                gametic,
+                lastEchoedTic,
+                p.tic,
+                snapBasisServerTic);
 
         int         remainingInputsThisPass = gametic - s_predictionInputTic;
         const int   remainingTicsThisPass   = gametic - s_predictionTic;
