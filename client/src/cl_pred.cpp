@@ -538,10 +538,10 @@ bool CL_PredictWorld()
                 DThinker::RunThinkers();
                 predicting = true;
             }
-        }
             if (cl_predictsectors)
                 //CL_PredictSectors(tic);
                 CL_PredictSectors2(s_predictingSectors);
+        }
 
 
         // If the player didn't just spawn or teleport, nudge the player from
