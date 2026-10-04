@@ -474,32 +474,27 @@ bool CL_PredictWorld()
     s_savedLocalSnaps[currentLocalSnapshotIndex] = currentSnap;
 
 //	int snapBasisServerTic = p.snapshots.getMostRecentTime();
-	int snapBasisServerTic = world_index + cl_interp;
+	int snapBasisServerTic = world_index - 1;// + cl_interp;            // -1 because it was incremented this tic!
 
     const bool sectorsAreReady = snapBasisServerTic != 0
                                  and (not cl_predictsectors
                                       or CL_ResetSectors(snapBasisServerTic, s_predictingSectors));
 
+    if (not sectorsAreReady)
+    {
+        PrintFmt("NO GO on {}\n", snapBasisServerTic);
+    }
+
     if (sectorsAreReady)
     {
-        const int origPlayerTic = p.tic;
-        PlayerSnapshot snap = p.snapshots.getSnapshot(snapBasisServerTic);
-        snap.toPlayer(p);
-
-        DPrintFmt("gt {}, echo {}, orig ptic {}, ptic {}, snapbasis {}\n",
-                gametic,
-                lastEchoedTic,
-                origPlayerTic,
-                p.tic,
-                snapBasisServerTic);
 
         // REMEMBER WHEN YOU GET BACK TO THIS FROM THE BREWERY:
         //
         //      This is 100% all about replicating what happened on the server.
         //      The sector motion is 100% going to advance even if the server doesn't respond.
 
-        s_predictionTic      = p.tic + 1;
-        s_predictionInputTic = p.tic         + 1;
+        s_predictionTic      = p.tic;// + 1;
+        s_predictionInputTic = p.tic;//        + 1;
         if (s_previousSnapBasisServerTic == 0)
         {
             //s_predictionTic      = lastEchoedTic + 1;
@@ -523,8 +518,18 @@ bool CL_PredictWorld()
                     gametic,
                     remainingTicsThisPass,
                     remainingInputsThisPass);
-
         }
+
+        const int origPlayerTic = p.tic;
+        PlayerSnapshot snap = p.snapshots.getSnapshot(snapBasisServerTic);
+        snap.toPlayer(p);
+
+        DPrintFmt("gt {}, echo {}, orig ptic {}, ptic {}, snapbasis {}\n",
+                gametic,
+                lastEchoedTic,
+                origPlayerTic,
+                p.tic,
+                snapBasisServerTic);
 
         // Flatten the oldest relevant inputs into the player state before proceeding with the
         // other tics.  We do that because we want the true most recent input to go in on the
