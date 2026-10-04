@@ -33,6 +33,7 @@
 
 #include "p_snapshot.h"
 
+EXTERN_CVAR (cl_interp)
 EXTERN_CVAR (cl_prednudge)
 EXTERN_CVAR (cl_predictsectors)
 EXTERN_CVAR (co_boomphys)
@@ -119,10 +120,14 @@ bool CL_SectorHasSnapshots(sector_t *sector)
 // Also performs cleanup on the list of predicting sectors when
 // sectors have finished their movement.
 //
-void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_predictingSectors)
+// Returns true if moving sectors were reset to the specific requested snapshot or if there are
+// no moving sectors.  False otherwise.
+bool CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_predictingSectors)
 {
 	std::list<movingsector_t>::iterator itr;
 	itr = movingsectors.begin();
+
+	bool snapshotsAreMissing = false;
 
 	// Iterate through all predicted sectors
 	while (itr != movingsectors.end())
@@ -139,7 +144,7 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
 
 		if (mgr && !mgr->empty())
 		{
-			SectorSnapshot snap = mgr->getSnapshot(snapBasisServerTic);
+			SectorSnapshot snap = mgr->getExactSnapshot(snapBasisServerTic);
 
             // Double-check to make sure it's REALLY from the server and not extrapolated/etc.
             if (snap.isValid() and snap.isAuthoritative() and snap.getTime() == snapBasisServerTic)
@@ -151,11 +156,16 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
                     snapfinished = true;
                 else
                 {
+                    //DPrintFmt("rs: tic {}, height {}\n", snap.getTime(), snap.getFloorHeight());
                     // snapshots have been received for this sector recently, so
                     // reset this sector to the most recent snapshot from the server
                     snap.toSector(sector);
                     io_predictingSectors.push_back(itr);
                 }
+            }
+            else
+            {
+                snapshotsAreMissing = true;
             }
 		}
 		else
@@ -174,6 +184,7 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
 			++itr;
 		}
 	}
+	return not snapshotsAreMissing;
 }
 
 //
@@ -462,17 +473,40 @@ bool CL_PredictWorld()
     PlayerSnapshot currentSnap(p.tic, p);
     s_savedLocalSnaps[currentLocalSnapshotIndex] = currentSnap;
 
-	int snapBasisServerTic = p.snapshots.getMostRecentTime();
+//	int snapBasisServerTic = p.snapshots.getMostRecentTime();
+	int snapBasisServerTic = world_index + cl_interp;
 
-    if (snapBasisServerTic != 0)
+    const bool sectorsAreReady = snapBasisServerTic != 0
+                                 and (not cl_predictsectors
+                                      or CL_ResetSectors(snapBasisServerTic, s_predictingSectors));
+
+    if (sectorsAreReady)
     {
+        const int origPlayerTic = p.tic;
+        PlayerSnapshot snap = p.snapshots.getSnapshot(snapBasisServerTic);
+        snap.toPlayer(p);
+
+        DPrintFmt("gt {}, echo {}, orig ptic {}, ptic {}, snapbasis {}\n",
+                gametic,
+                lastEchoedTic,
+                origPlayerTic,
+                p.tic,
+                snapBasisServerTic);
+
+        // REMEMBER WHEN YOU GET BACK TO THIS FROM THE BREWERY:
+        //
+        //      This is 100% all about replicating what happened on the server.
+        //      The sector motion is 100% going to advance even if the server doesn't respond.
+
         s_predictionTic      = p.tic + 1;
         s_predictionInputTic = p.tic         + 1;
         if (s_previousSnapBasisServerTic == 0)
         {
+            //s_predictionTic      = lastEchoedTic + 1;
             PrintFmt(PRINT_HIGH, "Seeded predTic {}, predInputTic {}\n", s_predictionTic, s_predictionInputTic);
         }
-        s_previousSnapBasisServerTic = lastEchoedTic;
+        s_previousEchoedTic          = lastEchoedTic;
+        s_previousSnapBasisServerTic = snapBasisServerTic;
 
         int         remainingInputsThisPass = gametic - s_predictionInputTic;
         const int   remainingTicsThisPass   = gametic - s_predictionTic;
@@ -491,12 +525,6 @@ bool CL_PredictWorld()
                     remainingInputsThisPass);
 
         }
-        // Move sectors to the last position received from the server
-        if (cl_predictsectors)
-            CL_ResetSectors(snapBasisServerTic, s_predictingSectors);
-
-        PlayerSnapshot snap = p.snapshots.getSnapshot(snapBasisServerTic);
-        snap.toPlayer(p);
 
         // Flatten the oldest relevant inputs into the player state before proceeding with the
         // other tics.  We do that because we want the true most recent input to go in on the
@@ -538,10 +566,10 @@ bool CL_PredictWorld()
                 DThinker::RunThinkers();
                 predicting = true;
             }
-        }
             if (cl_predictsectors)
                 //CL_PredictSectors(tic);
                 CL_PredictSectors2(s_predictingSectors);
+        }
 
 
         // If the player didn't just spawn or teleport, nudge the player from

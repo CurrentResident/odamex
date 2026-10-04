@@ -3886,7 +3886,8 @@ namespace
 			// Special exception: clc_netdemocap.  It must always be handled immediately because the
 			//                    NetDemo class always delineates local tics with it, and it contains
 			//                    critical information for the next tic, particularly PlayerInputs.
-			if (ThisMessageServerTic() <= currentExpectedNewestPacket
+			if (/*not ThisMessageIsHighPriority()
+                and*/ ThisMessageServerTic() <= currentExpectedNewestPacket
 				or result.cmd == clc_netdemocap)
 			{
 				// When echoing server gametic back to it, use the tic that comes from the High Priority packet.
@@ -4012,7 +4013,7 @@ void CL_ParseCommands(const std::optional<PacketHeaderType>& optionalHeader)
 		{
 			last_svgametic = s_currentHeader.originatorTic;
 		}
-
+        //else
 		if (s_currentHeader.originatorTic > currentExpectedNewestPacket)
 		{
 			auto headerProto = MSG_Header(s_currentHeader);
