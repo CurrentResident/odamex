@@ -1114,6 +1114,13 @@ void SectorSnapshotManager::addSnapshot(const SectorSnapshot &newsnap)
 		mMostRecent = time;
 }
 
+SectorSnapshot SectorSnapshotManager::getExactSnapshot(int time) const
+{
+	if (mValidSnapshot(time))
+		return mSnaps[time % NUM_SNAPSHOTS];
+
+	return SectorSnapshot();
+}
 
 //
 // SectorSnapshotManager::getSnapshot()

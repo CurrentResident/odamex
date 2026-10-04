@@ -887,6 +887,7 @@ public:
 
 	void addSnapshot(const SectorSnapshot &snap);
 	SectorSnapshot getSnapshot(int time) const;
+	SectorSnapshot getExactSnapshot(int time) const;
 
 private:
 	bool mValidSnapshot(int time) const;
