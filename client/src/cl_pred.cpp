@@ -84,6 +84,20 @@ bool CL_SectorHasSnapshots(sector_t *sector)
 	return (mgr && !mgr->empty());
 }
 
+namespace
+{
+    struct SectorNumberIdentityHasher
+    {
+        size_t operator()(const sector_t* sectorPtr) const noexcept
+        {
+            return sectorPtr - sectors;
+        }
+    };
+
+    using DeadReckoningSectorMap = std::unordered_map<sector_t*, int, SectorNumberIdentityHasher>;
+    DeadReckoningSectorMap s_deadReckoningSectors;
+}
+
 //
 // CL_ResetSectors
 //
@@ -91,7 +105,10 @@ bool CL_SectorHasSnapshots(sector_t *sector)
 // Also performs cleanup on the list of predicting sectors when
 // sectors have finished their movement.
 //
-void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_predictingSectors)
+void CL_ResetSectors(int                            snapBasisServerTic,
+                     int                            predictionTic,
+                     ActivePredictingSectorsVector& io_predictingSectors,
+                     DeadReckoningSectorMap&        io_deadReckoningSectors)
 {
 	std::list<movingsector_t>::iterator itr;
 	itr = movingsectors.begin();
@@ -107,7 +124,8 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
 		// Find the most recent snapshot received from the server for this sector
 		SectorSnapshotManager *mgr = CL_GetSectorSnapshotManager(sector);
 
-		bool snapfinished = false;
+		bool snapfinished  = false;
+		bool snapIsApplied = false;
 
 		if (mgr && !mgr->empty())
 		{
@@ -127,6 +145,7 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
 					// reset this sector to the most recent snapshot from the server
 					snap.toSector(sector);
 					io_predictingSectors.push_back(itr);
+					snapIsApplied = true;
 				}
 			}
 		}
@@ -139,10 +158,24 @@ void CL_ResetSectors(int snapBasisServerTic, ActivePredictingSectorsVector& io_p
 		{
 			// no valid snapshots in the container so remove this sector from the
 			// movingsectors list whenever prediction is done
+			io_deadReckoningSectors.erase(sector);
 			movingsectors.erase(itr++);
 		}
 		else
 		{
+            if (not snapIsApplied)
+            {
+                // We have a moving sector that doesn't have a snapshot applied to it,
+                // we must be dead-reckoning it.
+                
+                // We use insert() so that the following line allows the initial value
+                // to persist and not be overwritten.
+                io_deadReckoningSectors.insert({sector, (gametic - predictionTic) * 2});
+            }
+            else
+            {
+                io_deadReckoningSectors.erase(sector);
+            }
 			++itr;
 		}
 	}
@@ -431,9 +464,45 @@ bool CL_PredictWorld()
 
 	s_predictingSectors.clear();
 
+    bool playerUnderDeadReckoningExemption = false;
+
 	// Move sectors to the last position received from the server
 	if (cl_predictsectors)
-		CL_ResetSectors(snaptime, s_predictingSectors);
+    {
+        CL_ResetSectors(snaptime, predtic, s_predictingSectors, s_deadReckoningSectors);
+
+        for (auto& [sectorPtr, deadReckoningCountdown] : s_deadReckoningSectors)
+        {
+            if (deadReckoningCountdown != 0)
+            {
+                --deadReckoningCountdown;
+            }
+        }
+
+        for (const msecnode_t* node = p.mo->touching_sectorlist; node; node = node->m_tnext)
+        {
+            auto iter = s_deadReckoningSectors.find(node->m_sector);
+            if (iter != s_deadReckoningSectors.end())
+            {
+                if (iter->second != 0)
+                {
+                    PrintFmt("Excluded player from sec {}\n", iter->first - sectors);
+                    playerUnderDeadReckoningExemption = true;
+                }
+            }
+            else
+            {
+                // Do we have a non-dead-reckoned active sector?  If so, we are definitely not
+                // excluding from ANY dead reckoning - snapshot based predictions have higher
+                // priority.
+                if (P_CeilingActive(node->m_sector) or P_FloorActive(node->m_sector))
+                {
+                    playerUnderDeadReckoningExemption = false;
+                    break;
+                }
+            }
+        }
+    }
 
 	bool playerWasPredicted = false;
 	while (++predtic < gametic)
@@ -460,7 +529,7 @@ bool CL_PredictWorld()
 	// If the player didn't just spawn or teleport, nudge the player from
 	// his position last tic to this new corrected position.  This smooths the
 	// view when there's a misprediction.
-	if (playerWasPredicted and snap.isContinuous())
+	if (playerWasPredicted and snap.isContinuous() and not playerUnderDeadReckoningExemption)
 	{
 		PlayerSnapshot correctedprevsnap(p.tic, p);
 
@@ -469,7 +538,7 @@ bool CL_PredictWorld()
 		               (correctedprevsnap.getY() == prevsnap.getY()) &&
 		               (correctedprevsnap.getZ() == prevsnap.getZ());
 
-		if (!correct)
+		if (not correct)
 		{
 			// Update the netgraph concerning our prediction's error
 			netgraph.setMisprediction(true);
