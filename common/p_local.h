@@ -247,6 +247,24 @@ extern sector_t			*tmfloorsector;
 
 extern	line_t* 		ceilingline;
 
+enum class SlopeWalkResult
+{
+    INVALID_ACTOR,
+    NO_GRAVITY,
+    FLOORSECTOR_MISMATCH,
+    IS_LEVEL,
+    NOT_ON_FLOOR,
+    TOO_STEEP,
+    NO_WALK_WITH_PUSH,
+    NO_WALK_WITHOUT_PUSH,
+    WALK_SLIDE_BELOW,
+    WALK_SLIDE_ABOVE,
+    ACTOR_TOO_HIGH,
+    UNKNOWN_DEFAULT
+};
+
+extern volatile SlopeWalkResult slopeResult;
+
 void    P_TestActorMovement(AActor *mo, fixed_t tryx, fixed_t tryy, fixed_t tryz,
                             fixed_t &destx, fixed_t &desty, fixed_t &destz);
 bool    P_TestMobjZ (AActor *actor);

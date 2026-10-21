@@ -2062,22 +2062,40 @@ namespace
     fixed_t lastC;
 }
 
+volatile SlopeWalkResult slopeResult;
+
 bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 {
+    slopeResult = SlopeWalkResult::UNKNOWN_DEFAULT;
+
 	if (!actor
-	 ||  actor->flags & MF_NOGRAVITY
 	 || !actor->floorsector
 	 || !actor->subsector)
+    {
+        slopeResult = SlopeWalkResult::INVALID_ACTOR;
 		return false;
+    }
 
-	const plane_t *plane = &actor->floorsector->floorplane;
+    if (actor->flags & MF_NOGRAVITY)
+    {
+        slopeResult = SlopeWalkResult::NO_GRAVITY;
+        return false;
+    }
+
+    const plane_t *plane = &actor->floorsector->floorplane;
 
 	if (actor->floorsector != actor->subsector->sector)
+    {
+        slopeResult = SlopeWalkResult::FLOORSECTOR_MISMATCH;
 		return false;
+    }
 
 	// Don't bother with non-sloping floors
 	if (P_IsPlaneLevel(plane))
+    {
+        slopeResult = SlopeWalkResult::IS_LEVEL;
 		return false;
+    }
 
     // The goal here is to compare C as we predict across varying slopes during prediction.
     if (plane->c != lastC and clientside and actor->player)
@@ -2091,7 +2109,10 @@ bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 
 	// not on floor ?
 	if (actor->z - floorheight > FRACUNIT)
+    {
+        slopeResult = SlopeWalkResult::NOT_ON_FLOOR;
 		return false;
+    }
 
 	fixed_t destx = actor->x + xmove;
 	fixed_t desty = actor->y + ymove;
@@ -2105,7 +2126,10 @@ bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 		{
 			// Can't climb up slopes of ~45 degrees or more
 			if (actor->flags & MF_NOCLIP || (actor->player && actor->player->spectator))
+            {
+                slopeResult = SlopeWalkResult::TOO_STEEP;
 				return true;
+            }
 			else
 			{
 				const msecnode_t *node;
@@ -2126,8 +2150,11 @@ bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 						}
 					}
 				}
+
+                slopeResult = SlopeWalkResult::NO_WALK_WITHOUT_PUSH;
 				if (dopush)
 				{
+                    slopeResult = SlopeWalkResult::NO_WALK_WITH_PUSH;
 					xmove = actor->momx = plane->a * 2;
 					ymove = actor->momy = plane->b * 2;
 				}
@@ -2139,6 +2166,8 @@ bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 		// so that it lies on the plane's surface
 		xmove -= FixedMul(plane->a, t);
 		ymove -= FixedMul(plane->b, t);
+        slopeResult = SlopeWalkResult::WALK_SLIDE_BELOW;
+
 		return true;
 	}
 	else if (t > 0)
@@ -2149,8 +2178,10 @@ bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 			// Same principle as walking up, except reversed
 			xmove += FixedMul(plane->a, t);
 			ymove += FixedMul(plane->b, t);
+            slopeResult = SlopeWalkResult::WALK_SLIDE_ABOVE;
 			return true;
 		}
+        slopeResult = SlopeWalkResult::ACTOR_TOO_HIGH;
 	}
 
 	return false;
