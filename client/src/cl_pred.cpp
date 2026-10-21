@@ -380,6 +380,19 @@ void CL_AdvanceWorldPredictionTic(int serverTic)
 int NumDeferredMessages();
 int FirstDeferredMessageTic();
 
+template <typename ElementType>
+std::string JoinString(const std::vector<ElementType> i_vector, const char* separator)
+{
+    std::string result;
+    for (const ElementType& element : i_vector)
+    {
+        result += std::to_string(element) + separator;
+    }
+    return result;
+}
+
+
+
 struct PredictionInstrType
 {
     int gametic             { 0 };
@@ -400,6 +413,11 @@ struct PredictionInstrType
     int worldPredictionTic { 0 };
     int startingLocalTic { 0 };
     int iterationCount  { 0 };
+    std::vector<int> inputForward;
+    std::vector<int> inputSide;
+    std::vector<int> iterationX;
+    std::vector<int> iterationY;
+    std::vector<int> iterationZ;
 
     fixed_t prevSnapX { 0 };
     fixed_t prevSnapY { 0 };
@@ -425,9 +443,9 @@ struct PredictionInstrType
     fixed_t deltaSnapMomZ { 0 };
     angle_t deltaSnapAngle { 0 };
 
-    void Print()
+    std::string Heading() const
     {
-        PrintFmt("gametic,"
+        return "gametic,"
                  "snaptime,"
                  "last_svgametic,"
                  "world_index,"
@@ -443,106 +461,61 @@ struct PredictionInstrType
                  "worldPredictionTic,"
                  "startingLocalTic,"
                  "iterationCount,"
+                 "inputForward,"
+                 "inputSide,"
+                 "iterationX,"
+                 "iterationY,"
+                 "iterationZ,"
                  "prevSnapX,"
                  "prevSnapY,"
                  "prevSnapZ,"
-                 "prevSnapMomX,"
-                 "prevSnapMomY,"
-                 "prevSnapMomZ,"
-                 "prevSnapAngle,"
                  "corrSnapX,"
                  "corrSnapY,"
                  "corrSnapZ,"
-                 "corrSnapMomX,"
-                 "corrSnapMomY,"
-                 "corrSnapMomZ,"
-                 "corrSnapAngle,"
                  "deltaSnapX,"
                  "deltaSnapY,"
                  "deltaSnapZ,"
-                 "deltaSnapMomX,"
-                 "deltaSnapMomY,"
-                 "deltaSnapMomZ,"
-                 "deltaSnapAngle,"
-                 "\n");
-        PrintFmt("{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "{},"
-                 "\n",
-                 gametic,
-                 snaptime,
-                 last_svgametic,
-                 world_index,
-                 cl_interp,
-                 numDeferredMessages,
-                 firstDeferredMessageTic,
-                 idealInputTic,
-                 idealPredictionTic,
-                 pticBeforeSnap,
-                 pticAfterSnap,
-                 inputTic,
-                 predictionTic,
-                 worldPredictionTic,
-                 startingLocalTic,
-                 iterationCount,
-                 prevSnapX,
-                 prevSnapY,
-                 prevSnapZ,
-                 prevSnapMomX,
-                 prevSnapMomY,
-                 prevSnapMomZ,
-                 prevSnapAngle,
-                 corrSnapX,
-                 corrSnapY,
-                 corrSnapZ,
-                 corrSnapMomX,
-                 corrSnapMomY,
-                 corrSnapMomZ,
-                 corrSnapAngle,
-                 deltaSnapX,
-                 deltaSnapY,
-                 deltaSnapZ,
-                 deltaSnapMomX,
-                 deltaSnapMomY,
-                 deltaSnapMomZ,
-                 deltaSnapAngle
-                );
+                 "\n";
+    }
+
+    std::string DataLine() const
+    {
+        return
+                 std::to_string(gametic) + ',' +
+                 std::to_string(snaptime) + ',' +
+                 std::to_string(last_svgametic) + ',' +
+                 std::to_string(world_index) + ',' +
+                 std::to_string(cl_interp) + ',' +
+                 std::to_string(numDeferredMessages) + ',' +
+                 std::to_string(firstDeferredMessageTic) + ',' +
+                 std::to_string(idealInputTic) + ',' +
+                 std::to_string(idealPredictionTic) + ',' +
+                 std::to_string(pticBeforeSnap) + ',' +
+                 std::to_string(pticAfterSnap) + ',' +
+                 std::to_string(inputTic) + ',' +
+                 std::to_string(predictionTic) + ',' +
+                 std::to_string(worldPredictionTic) + ',' +
+                 std::to_string(startingLocalTic) + ',' +
+                 std::to_string(iterationCount) + ',' +
+                 JoinString(inputForward, " ; ") + ',' +
+                 JoinString(inputSide, " ; ") + ',' +
+                 JoinString(iterationX, " ; ") + ',' +
+                 JoinString(iterationY, " ; ") + ',' +
+                 JoinString(iterationZ, " ; ") + ',' +
+                 std::to_string(prevSnapX) + ',' +
+                 std::to_string(prevSnapY) + ',' +
+                 std::to_string(prevSnapZ) + ',' +
+                 std::to_string(corrSnapX) + ',' +
+                 std::to_string(corrSnapY) + ',' +
+                 std::to_string(corrSnapZ) + ',' +
+                 std::to_string(deltaSnapX) + ',' +
+                 std::to_string(deltaSnapY) + ',' +
+                 std::to_string(deltaSnapZ) + ',' +
+                 "\n";
     }
 };
+
+std::ofstream predictionCsv;
 
 //
 // CL_PredictWorld
@@ -703,6 +676,9 @@ bool CL_PredictWorld()
     instrumentation.pticAfterSnap       = p.tic;
     instrumentation.startingLocalTic    = startingLocalTic;
 
+    instrumentation.iterationX.push_back(p.mo->x);
+    instrumentation.iterationY.push_back(p.mo->y);
+    instrumentation.iterationZ.push_back(p.mo->z);
 
     for (int i = startingLocalTic; i < gametic; ++i)
     {
@@ -714,6 +690,12 @@ bool CL_PredictWorld()
             {
                 playerWasPredicted = true;
             }
+
+            instrumentation.inputForward.push_back(localcmds[i % MAXSAVETICS].move_forward());
+            instrumentation.inputSide.push_back(localcmds[i % MAXSAVETICS].move_side());
+            instrumentation.iterationX.push_back(p.mo->x);
+            instrumentation.iterationY.push_back(p.mo->y);
+            instrumentation.iterationZ.push_back(p.mo->z);
         }
 
         if (i >= worldPredictionTic)
@@ -869,6 +851,12 @@ bool CL_PredictWorld()
 	predicting = false;
 	CL_PredictLocalPlayer(gametic, gametic);
 
+    instrumentation.inputForward.push_back(localcmds[gametic % MAXSAVETICS].move_forward());
+    instrumentation.inputSide.push_back(localcmds[gametic % MAXSAVETICS].move_side());
+    instrumentation.iterationX.push_back(p.mo->x);
+    instrumentation.iterationY.push_back(p.mo->y);
+    instrumentation.iterationZ.push_back(p.mo->z);
+
 	if (not mobjsHaveBeenPredicted)
 	{
 		mobjsHaveBeenPredicted = true;
@@ -879,7 +867,19 @@ bool CL_PredictWorld()
 	if (cl_predictsectors)
 		CL_PredictAllSectors();
 
-    instrumentation.Print();
+    if (netdemo.isRecording() or netdemo.isPlaying())
+    {
+        if (not predictionCsv.is_open())
+        {
+            predictionCsv.open("prediction.csv");
+            predictionCsv << instrumentation.Heading();
+        }
+        predictionCsv << instrumentation.DataLine();
+    }
+    if (not (netdemo.isRecording() or netdemo.isPlaying()) and predictionCsv.is_open())
+    {
+        predictionCsv.close();
+    }
 	return mobjsHaveBeenPredicted;
 }
 
