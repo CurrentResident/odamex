@@ -3598,9 +3598,12 @@ void CL_NetdemoCap(const odaproto::clc::NetdemoCap* msg)
 	// as part of the overall prediction algorithm.
 	CLC_UnpackPlayerInputMessageToPlayer(currentInputMessage, clientPlayer);
 
+    //clientPlayer.tic = gametic;  /// WOWOWOWOW This makes it happen!
+
 	clientPlayer.readyweapon   = static_cast<weapontype_t>(msg->readyweapon());
 	clientPlayer.pendingweapon = static_cast<weapontype_t>(msg->pendingweapon());
 
+    /*
 	if (clientPlayer.mo)
 	{
 		clientPlayer.mo->x             = msg->actor().pos().x();
@@ -3617,6 +3620,7 @@ void CL_NetdemoCap(const odaproto::clc::NetdemoCap* msg)
 		clientPlayer.mo->reactiontime  = msg->actor().reactiontime();
 		clientPlayer.mo->waterlevel    = msg->actor().waterlevel();;
 	}
+    */
 }
 
 void CL_NetDemoStop( [[ maybe_unused ]] const odaproto::clc::NetDemoStop* msg)
@@ -3688,6 +3692,15 @@ namespace
 	std::multimap<int32_t, ParseResultType> s_deferredMessages;
 }
 
+int NumDeferredMessages()
+{
+    return static_cast<int>(s_deferredMessages.size());
+}
+
+int FirstDeferredMessageTic()
+{
+    return s_deferredMessages.size() > 0 ? s_deferredMessages.begin()->first : -1;
+}
 
 /**
  * @brief Read a server message off the wire.
@@ -3984,7 +3997,8 @@ void CL_ParseCommands(const std::optional<PacketHeaderType>& optionalHeader)
 {
 	const bool syncValuesAreSet           = world_index != 0 and last_svgametic != 0;
 	const bool worldIsCycling             = gamestate == GS_LEVEL;
-	const int currentExpectedNewestPacket = syncValuesAreSet and worldIsCycling ? (world_index + int(cl_interp)) : std::numeric_limits<int>::max();
+	const int currentExpectedNewestPacket = syncValuesAreSet and worldIsCycling ? (world_index + static_cast<int>(cl_interp))
+	                                                                            : std::numeric_limits<int>::max();
 
 	for (auto deferredMessageIter  = s_deferredMessages.begin();
 	          deferredMessageIter != s_deferredMessages.end();

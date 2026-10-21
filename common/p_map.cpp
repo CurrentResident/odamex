@@ -2057,6 +2057,11 @@ bool P_ThingHeightClip (AActor& thing)
 //
 //============================================================================
 
+namespace
+{
+    fixed_t lastC;
+}
+
 bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 {
 	if (!actor
@@ -2073,6 +2078,14 @@ bool P_CheckSlopeWalk (AActor *actor, fixed_t &xmove, fixed_t &ymove)
 	// Don't bother with non-sloping floors
 	if (P_IsPlaneLevel(plane))
 		return false;
+
+    // The goal here is to compare C as we predict across varying slopes during prediction.
+    if (plane->c != lastC and clientside and actor->player)
+    {
+        auto sectorNumber = actor->floorsector - sectors;
+        PrintFmt("gt {} sector {} c changed from {} to {}:\n", gametic, sectorNumber, lastC, plane->c);
+        lastC = plane->c;
+    }
 
 	fixed_t floorheight = P_FloorHeight(actor->x, actor->y, actor->floorsector);
 

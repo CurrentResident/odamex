@@ -377,6 +377,173 @@ void CL_AdvanceWorldPredictionTic(int serverTic)
 	}
 }
 
+int NumDeferredMessages();
+int FirstDeferredMessageTic();
+
+struct PredictionInstrType
+{
+    int gametic             { 0 };
+    int snaptime            { 0 };
+    int last_svgametic      { 0 };
+    int world_index         { 0 };
+    int cl_interp           { 0 };
+    int numDeferredMessages { 0 };
+    int firstDeferredMessageTic { 0 };
+
+    int idealInputTic       { 0 };
+    int idealPredictionTic  { 0 };
+    int pticBeforeSnap      { 0 };
+    int pticAfterSnap       { 0 };
+
+    int inputTic        { 0 };
+    int predictionTic   { 0 };
+    int worldPredictionTic { 0 };
+    int startingLocalTic { 0 };
+    int iterationCount  { 0 };
+
+    fixed_t prevSnapX { 0 };
+    fixed_t prevSnapY { 0 };
+    fixed_t prevSnapZ { 0 };
+    fixed_t prevSnapMomX { 0 };
+    fixed_t prevSnapMomY { 0 };
+    fixed_t prevSnapMomZ { 0 };
+    angle_t prevSnapAngle { 0 };
+
+    fixed_t corrSnapX { 0 };
+    fixed_t corrSnapY { 0 };
+    fixed_t corrSnapZ { 0 };
+    fixed_t corrSnapMomX { 0 };
+    fixed_t corrSnapMomY { 0 };
+    fixed_t corrSnapMomZ { 0 };
+    angle_t corrSnapAngle { 0 };
+
+    fixed_t deltaSnapX { 0 };
+    fixed_t deltaSnapY { 0 };
+    fixed_t deltaSnapZ { 0 };
+    fixed_t deltaSnapMomX { 0 };
+    fixed_t deltaSnapMomY { 0 };
+    fixed_t deltaSnapMomZ { 0 };
+    angle_t deltaSnapAngle { 0 };
+
+    void Print()
+    {
+        PrintFmt("gametic,"
+                 "snaptime,"
+                 "last_svgametic,"
+                 "world_index,"
+                 "cl_interp,"
+                 "numDeferredMessages,"
+                 "firstDeferredMessageTic,"
+                 "idealInputTic,"
+                 "idealPredictionTic,"
+                 "pticBeforeSnap,"
+                 "pticAfterSnap,"
+                 "inputTic,"
+                 "predictionTic,"
+                 "worldPredictionTic,"
+                 "startingLocalTic,"
+                 "iterationCount,"
+                 "prevSnapX,"
+                 "prevSnapY,"
+                 "prevSnapZ,"
+                 "prevSnapMomX,"
+                 "prevSnapMomY,"
+                 "prevSnapMomZ,"
+                 "prevSnapAngle,"
+                 "corrSnapX,"
+                 "corrSnapY,"
+                 "corrSnapZ,"
+                 "corrSnapMomX,"
+                 "corrSnapMomY,"
+                 "corrSnapMomZ,"
+                 "corrSnapAngle,"
+                 "deltaSnapX,"
+                 "deltaSnapY,"
+                 "deltaSnapZ,"
+                 "deltaSnapMomX,"
+                 "deltaSnapMomY,"
+                 "deltaSnapMomZ,"
+                 "deltaSnapAngle,"
+                 "\n");
+        PrintFmt("{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "{},"
+                 "\n",
+                 gametic,
+                 snaptime,
+                 last_svgametic,
+                 world_index,
+                 cl_interp,
+                 numDeferredMessages,
+                 firstDeferredMessageTic,
+                 idealInputTic,
+                 idealPredictionTic,
+                 pticBeforeSnap,
+                 pticAfterSnap,
+                 inputTic,
+                 predictionTic,
+                 worldPredictionTic,
+                 startingLocalTic,
+                 iterationCount,
+                 prevSnapX,
+                 prevSnapY,
+                 prevSnapZ,
+                 prevSnapMomX,
+                 prevSnapMomY,
+                 prevSnapMomZ,
+                 prevSnapAngle,
+                 corrSnapX,
+                 corrSnapY,
+                 corrSnapZ,
+                 corrSnapMomX,
+                 corrSnapMomY,
+                 corrSnapMomZ,
+                 corrSnapAngle,
+                 deltaSnapX,
+                 deltaSnapY,
+                 deltaSnapZ,
+                 deltaSnapMomX,
+                 deltaSnapMomY,
+                 deltaSnapMomZ,
+                 deltaSnapAngle
+                );
+    }
+};
+
 //
 // CL_PredictWorld
 //
@@ -433,6 +600,8 @@ bool CL_PredictWorld()
 	// does internally.  So as server tics progress, the local player state and inputs may not
 	// progress evenly.  In the meantime, the world-owned states are monotonic with server tics.
 
+    PredictionInstrType instrumentation;
+
 	const int            snaptime           = p.snapshots.getMostRecentTime();
 	const PlayerSnapshot snap               = p.snapshots.getSnapshot(snaptime);
 	const int            idealPredictionTic = snap.getClientTic();
@@ -454,6 +623,22 @@ bool CL_PredictWorld()
 
 	int worldPredictionTic = s_worldPredictionTic + 1;
 
+    instrumentation.gametic = gametic;
+    instrumentation.snaptime = snaptime;
+    instrumentation.last_svgametic = last_svgametic;
+    instrumentation.world_index = world_index;
+    instrumentation.cl_interp = static_cast<int>(cl_interp);
+    instrumentation.numDeferredMessages = NumDeferredMessages();
+    instrumentation.firstDeferredMessageTic = FirstDeferredMessageTic();
+
+    instrumentation.idealInputTic = idealInputTic;
+    instrumentation.idealPredictionTic = idealPredictionTic;
+    instrumentation.inputTic               = inputTic;
+    instrumentation.predictionTic               = predictionTic;
+    instrumentation.worldPredictionTic               = worldPredictionTic;
+    instrumentation.pticBeforeSnap               = p.tic;
+
+
 	// The value clamping here and the prediction iterations below are designed to ensure that
 	// if we get an invalid predictionTic due to extreme jitter or very recent prediction reset,
 	// we don't rollback - we just proceed with the next tic.
@@ -472,6 +657,14 @@ bool CL_PredictWorld()
 	// Save a snapshot of the player's state before prediction
 	const PlayerSnapshot prevsnap(p.tic, p, ::lastEchoedClientTic);
 	s_savedLocalPlayerSnaps[gametic % MAXSAVETICS] = prevsnap;
+
+    instrumentation.prevSnapX = prevsnap.getX();
+    instrumentation.prevSnapY = prevsnap.getY();
+    instrumentation.prevSnapZ = prevsnap.getZ();
+    instrumentation.prevSnapMomX    = prevsnap.getMomX();
+    instrumentation.prevSnapMomY    = prevsnap.getMomY();
+    instrumentation.prevSnapMomZ    = prevsnap.getMomZ();
+    instrumentation.prevSnapAngle   = prevsnap.getAngle();
 
 //#define ODAMEX_PREDICTION_DEBUG           // SUPER IMPORTANT NOTE WITH THIS BLOCK:
 #ifdef ODAMEX_PREDICTION_DEBUG              //  Sector 1 is checked because nuts.wad is such a great test case here,
@@ -504,11 +697,17 @@ bool CL_PredictWorld()
 
     const int startingLocalTic = std::min({ predictionTic, inputTic, worldPredictionTic });
 
+    instrumentation.pticAfterSnap       = p.tic;
+    instrumentation.startingLocalTic    = startingLocalTic;
+
+
     for (int i = startingLocalTic; i < gametic; ++i)
     {
+        ++instrumentation.iterationCount;
+
         if (i >= inputTic)
         {
-            if (CL_PredictLocalPlayer(std::max(i, predictionTic), i))
+            if (CL_PredictLocalPlayer(std::max(i, predictionTic), i))   // std::max because inputTic *can* be behind predictionTic.
             {
                 playerWasPredicted = true;
             }
@@ -604,6 +803,22 @@ bool CL_PredictWorld()
 	{
 		const PlayerSnapshot correctedprevsnap(p.tic, p, ::lastEchoedClientTic);
 
+    instrumentation.corrSnapX = correctedprevsnap.getX();
+    instrumentation.corrSnapY = correctedprevsnap.getY();
+    instrumentation.corrSnapZ = correctedprevsnap.getZ();
+    instrumentation.corrSnapMomX    = correctedprevsnap.getMomX();
+    instrumentation.corrSnapMomY    = correctedprevsnap.getMomY();
+    instrumentation.corrSnapMomZ    = correctedprevsnap.getMomZ();
+    instrumentation.corrSnapAngle   = correctedprevsnap.getAngle();
+
+    instrumentation.deltaSnapX = correctedprevsnap.getX() - prevsnap.getX();
+    instrumentation.deltaSnapY = correctedprevsnap.getY() - prevsnap.getY();
+    instrumentation.deltaSnapZ = correctedprevsnap.getZ() - prevsnap.getZ();
+    instrumentation.deltaSnapMomX    = correctedprevsnap.getMomX() - prevsnap.getMomX();
+    instrumentation.deltaSnapMomY    = correctedprevsnap.getMomY() - prevsnap.getMomY();
+    instrumentation.deltaSnapMomZ    = correctedprevsnap.getMomZ() - prevsnap.getMomZ();
+    instrumentation.deltaSnapAngle   = correctedprevsnap.getAngle() - prevsnap.getAngle();
+
 		// Did we predict correctly?
 		const bool correct = (correctedprevsnap.getX() == prevsnap.getX()) and
 		                     (correctedprevsnap.getY() == prevsnap.getY()) and
@@ -611,6 +826,33 @@ bool CL_PredictWorld()
 
 		if (not correct)
 		{
+#if 0
+            PrintFmt("gt {}, snaptic {}, idealinputtic {} (used {}), idealpredtic (client tic) {}, worldpredtic {}, error ({}, {}, {})\n",
+                    gametic,
+                    snaptime,
+                    idealInputTic,
+                    idealInputTic + 1,
+                    idealPredictionTic,
+                    s_worldPredictionTic,
+                    correctedprevsnap.getX() - prevsnap.getX(),
+                    correctedprevsnap.getY() - prevsnap.getY(),
+                    correctedprevsnap.getZ() - prevsnap.getZ());
+
+            for (int i = s_worldPredictionTic + 1; i < gametic; ++i)
+            {
+                const PlayerSnapshot&               snap    = s_savedLocalPlayerSnaps[i % MAXSAVETICS];
+                const odaproto::clc::PlayerInput&   netcmd  = localcmds              [i % MAXSAVETICS];
+                PrintFmt("   roll {}, snap: (x {}, y {}, z {}), cmd: tic {}, wi {}, forward {}, side {}\n",
+                        i,
+                        snap.getX(),
+                        snap.getY(),
+                        snap.getZ(),
+                        netcmd.tic(),
+                        netcmd.world_index(),
+                        netcmd.move_forward(),
+                        netcmd.move_side());
+            }
+#endif
 			// Update the netgraph concerning our prediction's error
 			netgraph.setMisprediction(true);
 
@@ -635,6 +877,7 @@ bool CL_PredictWorld()
 	if (cl_predictsectors)
 		CL_PredictAllSectors();
 
+    instrumentation.Print();
 	return mobjsHaveBeenPredicted;
 }
 

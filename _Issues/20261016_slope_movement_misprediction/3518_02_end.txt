@@ -1,0 +1,192 @@
++		DThinker	{refCount=0 m_optionalVectorIndex=2 m_Next=0x0000020ca8bc22b8 {self={m_pointer={...} } x=265945088 y=...} ...}	DThinker
++		self	{m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr  [958 strong refs] [] } x=28341036 y=58739111 ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] }	szp<AActor>
+		x	28341036	int
+		y	58739111	int
+		z	7252	int
+		prevx	28053914	int
+		prevy	57673713	int
+		prevz	544	int
++		snext	0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={m_pointer=shared_ptr 0x0000020ca978f770 {self={...} x=12201608 y=62826946 ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...}	AActor *
++		sprev	0x0000020ca988f4b0 {0x0000020ca8b89d08 {self={m_pointer={...} } x=28341036 y=58739111 ...}}	AActor * *
+		angle	1226833920	unsigned int
+		prevangle	1218445312	unsigned int
+		sprite	28	int
+		frame	0	int
+		pitch	-12582912	int
+		prevpitch	4282384384	unsigned int
+		effects	0	unsigned int
++		subsector	0x0000020ca8b0a560 {sector=0x0000020ca988f458 {floortexz=0 ceilingtexz=52428800 floorpic=480 ...} numlines=...}	subsector_t *
++		flags	{...}	flags_detail::flag_set<enum mobjflag_t>
++		flags2	{...}	flags_detail::flag_set<enum mobjflag2_t>
++		flags3	{...}	flags_detail::flag_set<enum mobjflag3_t>
++		oflags	{...}	flags_detail::flag_set<enum mobjoflag_t>
+		statusflags	0	int
+		health	56	int
+		type	0	int
+		translucency	65536	int
++		translation	{m_table=0x0000020ca7f64200 "" m_player_id=1 }	translationref_t
+-		player	0x0000020ca31f8670 {id=1 '\x1' playerstate=4 '\x4' mo={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={...} x=28341036 y=58739111 ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...}	player_t *
+		id	1 '\x1'	unsigned char
+		playerstate	4 '\x4'	unsigned char
++		mo	{m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr  [958 strong refs] [] } x=28341036 y=58739111 ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] }	szp<AActor>
++		cmd	{buttons=0 '\0' pitch=0 yaw=128 ...}	ticcmd_t
++		cmdqueue	{ size=0 }	std::deque<odaproto::clc::PlayerInput,std::allocator<odaproto::clc::PlayerInput>>
++		userinfo	{netname="The Resident" team=TEAM_BLUE (0) aimdist=0 ...}	UserInfo
+		isFreecam	false	bool
+		fov	90.0000000	float
+		viewz	2559852	int
+		prevviewz	2409040	int
+		viewheight	2679792	int
+		deltaviewheight	898	int
+		bob	1048576	int
+		health	56	int
+		armorpoints	8	int
+		armortype	1	int
++		powers	{ size=6 }	std::array<int,6>
++		cards	{ size=6 }	std::array<bool,6>
+		backpack	false	bool
+		lives	1	int
+		roundwins	0	int
+		points	0	int
++		flags	{ size=3 }	std::array<bool,3>
+		fragcount	0	int
+		deathcount	0	int
+		monsterdmgcount	2403	int
+		killcount	66	int
+		itemcount	0	int
+		secretcount	0	int
+		didsecret	true	bool
+		totalpoints	0	int
+		totaldeaths	0	int
+		pendingweapon	wp_nochange (11 '\v')	weapontype_t
+		readyweapon	wp_missile (4 '\x4')	weapontype_t
++		weaponowned	{ size=10 }	std::array<bool,10>
++		ammo	{ size=4 }	std::array<int,4>
++		maxammo	{ size=4 }	std::array<int,4>
+		psprnum	0	int
++		psprites	{ size=2 }	std::array<pspdef_t,2>
+		psprite_authority_tic	-1	int
++		pendingweaponMonitor	{m_itemRef=wp_nochange (11 '\v') m_latchedValue=wp_fist (0 '\0') m_isArmed=false }	LatchedItemMonitor<enum weapontype_t>
++		readyweaponMonitor	{m_itemRef=wp_missile (4 '\x4') m_latchedValue=wp_fist (0 '\0') m_isArmed=false }	LatchedItemMonitor<enum weapontype_t>
++		weaponOwnedMonitors	{m_refs={ size=10 } m_latchedValues={ size=10 } m_equalsFunctor=equal_to ...}	LatchedItemArrayMonitor<bool,10,bool,std::equal_to<bool>>
++		ammoMonitors	{m_refs={ size=4 } m_latchedValues={ size=4 } m_equalsFunctor=equal_to ...}	LatchedItemArrayMonitor<int,4,int,std::equal_to<int>>
++		maxAmmoMonitors	{m_refs={ size=4 } m_latchedValues={ size=4 } m_equalsFunctor=equal_to ...}	LatchedItemArrayMonitor<int,4,int,std::equal_to<int>>
++		powerMonitors	{m_refs={ size=6 } m_latchedValues={ size=6 } m_equalsFunctor=equal_to ...}	LatchedItemArrayMonitor<int,6,int,std::equal_to<int>>
++		pspriteMonitors	{m_refs={ size=2 } m_latchedValues={ size=2 } m_equalsFunctor={...} ...}	LatchedItemArrayMonitor<pspdef_t,2,PspriteStateType,player_t::PspriteEquals>
+		attackdown	false	bool
+		usedown	false	bool
+		cheats	0	unsigned int
+		refire	0	short
+		damagecount	0	int
+		bonuscount	0	int
++		attacker	{ptr={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={m_pointer=shared_ptr 0x0000020ca978a8b8 {self={...} x=-42335018 y=-29347361 ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } ...} [4 strong refs] [make_shared] } }	AActor::AActorPtrCounted
+		extralight	0	int
+		fixedcolormap	0	int
+		xviewshift	0	int
+		jumpTics	0	int
+		death_time	0	int
+		suicidedelay	0	int
++		oldvelocity	0x0000020ca31f8980 {0, 0, 0}	int[3]
++		camera	{m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr 0x0000020ca8b89d08 {self={m_pointer=shared_ptr  [958 strong refs] [] } x=28341036 y=58739111 ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] } ...} [958 strong refs] [make_shared] }	szp<AActor>
+		air_finished	3614	int
+		GameTime	11	int
+		JoinTime	0	__int64
+		ping	143	int
+		last_received	0	int
+		tic	3513	int
++		snapshots	{mSnaps={ size=32 } mMostRecent=3743 }	PlayerSnapshotManager
+		spying	0 '\0'	unsigned char
+		spectator	false	bool
+		joindelay	0	int
+		timeout_callvote	0	int
+		timeout_vote	0	int
+		ready	false	bool
+		timeout_ready	0	int
++		prefcolor	{value=0 channels=0x0000020ca31f9ce0 "" }	argb_t
++		blend_color	{value=0 channels=0x0000020ca31f9ce4 "" }	argb_t
+		doreborn	false	bool
+		QueuePosition	0 '\0'	unsigned char
+		requestedNetIdUpdate	0	unsigned int
+		hazardcount	0	int
+		hazardinterval	0 '\0'	unsigned char
++		LastMessage	{Time=0 Message="" }	player_t::LastMessage_s
++		mobjsToSpawn	{ size=0 }	std::queue<szp<AActor>,std::deque<szp<AActor>,std::allocator<szp<AActor>>>>
++		mobjsToUpdate	{ size=0 }	std::unordered_set<szp<AActor>,std::hash<szp<AActor>>,std::equal_to<szp<AActor>>,std::allocator<szp<AActor>>>
++		sortedMobjs	{ size=0 }	std::vector<player_t::ActorDistanceType,std::allocator<player_t::ActorDistanceType>>
+		playerInfoIsRequested	false	bool
+		inventoryCheckRequestsAreEnabled	false	bool
++		hordeInfo	{state=HS_STARTING (0) wave=-1 waveTime=-1 ...}	hordeInfo_t
++		client	{pool=unique_ptr {_Options={max_blocks_per_chunk=9223372036854775807 largest_required_pool_block=576460752303423488 } ...} ...}	client_t
++		netcmds	0x0000020ca31f9e70 {{buttons=0 '\0' pitch=0 yaw=0 ...}, {buttons=0 '\0' pitch=0 yaw=0 ...}, {buttons=...}, ...}	ticcmd_t[12]
+		floorz	7252	int
+		ceilingz	52428800	int
+		dropoffz	0	int
++		floorsector	0x0000020ca988f458 {floortexz=0 ceilingtexz=52428800 floorpic=480 ...}	sector_t *
+		radius	1048576	int
+		height	3670016	int
+		momx	260205	int
+		momy	965516	int
+		momz	0	int
+		validcount	0	int
++		info	0x0000020c88122b00 {type=0 doomednum=-1 spawnstate=S_PLAY (149) ...}	mobjinfo_t *
+		tics	1	int
+-		state	0x0000020c88976ab0 {statenum=S_PLAY_RUN1 (150) sprite=28 frame=0 ...}	const state_t *
+		statenum	S_PLAY_RUN1 (150)	statenum_t
+		sprite	28	int
+		frame	0	int
+		tics	4	int
+		action	0x0000000000000000	void(*)(AActor *)
+		nextstate	S_PLAY_RUN2 (151)	statenum_t
+		misc1	0	int
+		misc2	0	int
++		args	0x0000020c88976ad4 {0, 0, 0, 0, 0, 0, 0, 0}	int[8]
+		flags	0	int
+		damage	0	int
+		special1	0	int
+		special2	0	int
+		movedir	0 '\0'	unsigned char
+		movecount	0	int
+		visdir	0 '\0'	char
++		target	{m_pointer=empty }	szp<AActor>
++		lastenemy	{m_pointer=empty }	szp<AActor>
+		reactiontime	0	int
+		threshold	0	int
+		lastlook	2	unsigned int
++		spawnpoint	{thingid=0 x=0 y=0 ...}	mapthing2_t
++		tracer	{m_pointer=shared_ptr 0x0000000000000000 <NULL> [1 strong ref] [make_shared] }	szp<AActor>
+		special	0 '\0'	unsigned char
++		args	{ size=5 }	std::array<unsigned char,5>
++		inext	0x0000000000000000 <NULL>	AActor *
++		iprev	0x0000000000000000 <NULL>	AActor *
++		playersAware	{m_player={ size=255 } }	ActorAwarenessState<255>
++		goal	{m_pointer=empty }	szp<AActor>
+		waterlevel	0 '\0'	unsigned char
+		gear	0	short
+		onground	true	bool
++		touching_sectorlist	0x0000020c88f85880 {m_sector=0x0000020ca988f458 {floortexz=0 ceilingtexz=52428800 floorpic=480 ...} ...}	msecnode_t *
+		deadtic	0	short
+		rndindex	163 '£'	unsigned char
+		spawnRndindex	163 '£'	unsigned char
+		friend_playerid	0 '\0'	unsigned char
+		friend_teamid	TEAM_NONE (4)	team_t
+		pursuecount	0	short
+		strafecount	0	short
+		netid	197	unsigned int
+		tid	0	short
++		baseline	{pos={x=0 y=0 z=0 } mom={x=0 y=0 z=0 } angle=0 ...}	baseline_t
+		baseline_set	false	bool
+		mode	SEE (1)	MobjModeEnum
+		updatedDuringLocalTic	254	int
+		updatedDuringServerTic	479	int
+		spawnTic	254	int
+		mobjtic	254	int
++		credibility	{m_credibility=ALWAYS_CREDIBLE (1) m_crediblePosition={x=0 y=0 z=0 } m_predictedMotionTicCount=0 }	CredibilityState
++		tlnext	0x0000000000000000 <NULL>	AActor *
++		tlprev	0x0000000000000000 <NULL>	AActor *
++		anext	0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={m_pointer=shared_ptr 0x0000020ca8bc22b8 {self={...} x=265945088 y=185860096 ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...}	AActor *
++		aprev	0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={m_pointer=shared_ptr 0x0000020ca8b948c8 {self={...} x=324141056 y=186449920 ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...} [2 strong refs] [make_shared] } ...}	AActor *
++		enext	0x0000000000000000 <NULL>	AActor *
++		eprev	0x0000000000000000 <NULL>	AActor *
++		tlist	0x0000000000000000 <NULL>	AActor::ActorClassList *
++		bmapnode	{m_actor=0x0000020ca8b89d08 {self={m_pointer={...} } x=28341036 y=58739111 ...} m_originx=33 m_originy=...}	AActor::ActorBlockMapListNode
+
