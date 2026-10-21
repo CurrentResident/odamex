@@ -6,6 +6,9 @@
 *.pyc
 *.orig
 
+/_Issues*
+!/_Issues/20261016_slope_movement_misprediction
+
 # Artifacts from Marp
 /documentation/presentations/marp/**.pdf
 /documentation/presentations/marp/**.html
