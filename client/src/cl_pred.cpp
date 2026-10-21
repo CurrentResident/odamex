@@ -642,10 +642,15 @@ bool CL_PredictWorld()
 	// The value clamping here and the prediction iterations below are designed to ensure that
 	// if we get an invalid predictionTic due to extreme jitter or very recent prediction reset,
 	// we don't rollback - we just proceed with the next tic.
-	if (predictionTic < gametic - MAXSAVETICS or gametic < predictionTic)
+
+    const int startingLocalTic = std::min({ predictionTic, inputTic, worldPredictionTic });
+
+	if (startingLocalTic < gametic - MAXSAVETICS or gametic < startingLocalTic)
 	{
 		predictionTic = gametic;
 		inputTic      = gametic;
+        worldPredictionTic = gametic;
+        startingLocalTic = gametic;
 
 		// Leave serverTic as is.
 		// It's still making an accurate statement of the tic we're predicting.
@@ -695,8 +700,6 @@ bool CL_PredictWorld()
 	bool playerWasPredicted = false;
 	bool mobjsHaveBeenPredicted = false;
 
-    const int startingLocalTic = std::min({ predictionTic, inputTic, worldPredictionTic });
-
     instrumentation.pticAfterSnap       = p.tic;
     instrumentation.startingLocalTic    = startingLocalTic;
 
@@ -737,7 +740,6 @@ bool CL_PredictWorld()
         }
 
     }
-
 
 #if 0
 	// Because input tic can be behind or match, but never exceed, predictionTic,
