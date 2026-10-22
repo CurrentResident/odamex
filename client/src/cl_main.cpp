@@ -2283,6 +2283,10 @@ MessageResultEnum CL_AcceptNetMessage()
 		}
 		return MessageResultEnum::ACCEPT;
 	}
+    else
+    {
+        CL_ParseCommands();
+    }
 	return MessageResultEnum::DEFER;
 }
 
