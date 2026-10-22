@@ -616,7 +616,7 @@ bool CL_PredictWorld()
 	// if we get an invalid predictionTic due to extreme jitter or very recent prediction reset,
 	// we don't rollback - we just proceed with the next tic.
 
-    const int startingLocalTic = std::min({ predictionTic, inputTic, worldPredictionTic });
+    int startingLocalTic = std::min({ predictionTic, inputTic, worldPredictionTic });
 
 	if (startingLocalTic < gametic - MAXSAVETICS or gametic < startingLocalTic)
 	{
