@@ -418,9 +418,13 @@ struct PredictionInstrType
     std::vector<int> iterationX;
     std::vector<int> iterationY;
     std::vector<int> iterationZ;
+    std::vector<int> floorz;
     std::vector<int> iterationMomX;
     std::vector<int> iterationMomY;
     std::vector<int> iterationMomZ;
+
+    std::vector<int> sector;
+    std::vector<int> floorsector;
 
     fixed_t prevSnapX { 0 };
     fixed_t prevSnapY { 0 };
@@ -469,9 +473,12 @@ struct PredictionInstrType
                  "iterationX,"
                  "iterationY,"
                  "iterationZ,"
+                 "floorz,"
                  "iterationMomX,"
                  "iterationMomY,"
                  "iterationMomZ,"
+                 "sector,"
+                 "floorsector,"
                  "prevSnapX,"
                  "prevSnapY,"
                  "prevSnapZ,"
@@ -508,9 +515,12 @@ struct PredictionInstrType
                  JoinString(iterationX, " ; ") + ',' +
                  JoinString(iterationY, " ; ") + ',' +
                  JoinString(iterationZ, " ; ") + ',' +
+                 JoinString(floorz, " ; ") + ',' +
                  JoinString(iterationMomX, " ; ") + ',' +
                  JoinString(iterationMomY, " ; ") + ',' +
                  JoinString(iterationMomZ, " ; ") + ',' +
+                 JoinString(sector, " ; ") + ',' +
+                 JoinString(floorsector, " ; ") + ',' +
                  std::to_string(prevSnapX) + ',' +
                  std::to_string(prevSnapY) + ',' +
                  std::to_string(prevSnapZ) + ',' +
@@ -688,8 +698,12 @@ bool CL_PredictWorld()
     instrumentation.iterationX.push_back(p.mo->x);
     instrumentation.iterationY.push_back(p.mo->y);
     instrumentation.iterationZ.push_back(p.mo->z);
+    instrumentation.floorz.push_back(p.mo->floorz);
     instrumentation.iterationMomX.push_back(p.mo->momx);
     instrumentation.iterationMomY.push_back(p.mo->momy);
+    instrumentation.iterationMomZ.push_back(p.mo->momz);
+    instrumentation.sector.push_back(p.mo->subsector ? p.mo->subsector->sector - sectors : -1);
+    instrumentation.floorsector.push_back(p.mo->floorsector ? p.mo->floorsector - sectors : -1);
     instrumentation.iterationMomZ.push_back(p.mo->momz);
 
     for (int i = startingLocalTic; i < gametic; ++i)
@@ -708,9 +722,12 @@ bool CL_PredictWorld()
             instrumentation.iterationX.push_back(p.mo->x);
             instrumentation.iterationY.push_back(p.mo->y);
             instrumentation.iterationZ.push_back(p.mo->z);
+            instrumentation.floorz.push_back(p.mo->floorz);
             instrumentation.iterationMomX.push_back(p.mo->momx);
             instrumentation.iterationMomY.push_back(p.mo->momy);
             instrumentation.iterationMomZ.push_back(p.mo->momz);
+            instrumentation.sector.push_back(p.mo->subsector ? p.mo->subsector->sector - sectors : -1);
+            instrumentation.floorsector.push_back(p.mo->floorsector ? p.mo->floorsector - sectors : -1);
         }
 
         if (i >= worldPredictionTic)
@@ -871,9 +888,12 @@ bool CL_PredictWorld()
     instrumentation.iterationX.push_back(p.mo->x);
     instrumentation.iterationY.push_back(p.mo->y);
     instrumentation.iterationZ.push_back(p.mo->z);
+    instrumentation.floorz.push_back(p.mo->floorz);
     instrumentation.iterationMomX.push_back(p.mo->momx);
     instrumentation.iterationMomY.push_back(p.mo->momy);
     instrumentation.iterationMomZ.push_back(p.mo->momz);
+    instrumentation.sector.push_back(p.mo->subsector ? p.mo->subsector->sector - sectors : -1);
+    instrumentation.floorsector.push_back(p.mo->floorsector ? p.mo->floorsector - sectors : -1);
 
 	if (not mobjsHaveBeenPredicted)
 	{
